@@ -1,0 +1,107 @@
+{template "header.html"}
+
+<div class="note note-danger">
+    <p>{dr_lang('通过审核将自动扣除该用户账户中的冻结资金')}</p>
+</div>
+<form action="" class="form-horizontal" method="post" name="myform" id="myform">
+    {$form}
+    <div class="row myfbody ">
+        <div class="col-md-12">
+
+            <div class="portlet light bordered">
+                <div class="portlet-title">
+                    <div class="caption">
+                        <span class="caption-subject font-green sbold ">{dr_lang('申请详情')}</span>
+                    </div>
+
+                    <div class="actions">
+                        <div class="btn-group">
+                            <a class="btn" href="{$reply_url}"> <i class="fa fa-mail-reply"></i> {dr_lang('返回列表')}</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <div class="form-body">
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">{dr_lang('账号')}</label>
+                            <div class="col-md-9">
+                                <p class="form-control-static">{Function_list::author($username)}</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">{dr_lang('提现金额')}</label>
+                            <div class="col-md-9">
+                                <p class="form-control-static">￥{dr_price_value($value)}元</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">{dr_lang('打款金额')}</label>
+                            <div class="col-md-9">
+                                <p class="form-control-static">￥{dr_price_value($money)}元</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">{dr_lang('手续费')}</label>
+                            <div class="col-md-9">
+                                <p class="form-control-static">{$ci->member_cache['pay']['cash']['price']}%</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">{dr_lang('收款信息')}</label>
+                            <div class="col-md-9">
+                                <p class="form-control-static">{nl2br($content)}</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">{dr_lang('申请时间')}</label>
+                            <div class="col-md-9">
+                                <p class="form-control-static">{dr_date($inputtime)}</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">{dr_lang('审核状态')}</label>
+                            <div class="col-md-9">
+                                {if $status}
+                                <p class="form-control-static">
+                                    {if $status == 1}
+                                    <span class="label label-sm label-danger"> {dr_lang('已拒绝')} </span>
+                                    {else}
+                                    <span class="label label-sm label-success"> {dr_lang('已打款')} </span>
+                                    {/if}
+                                </p>
+                                {else}
+                                <div class="mt-radio-inline">
+                                    <label class="mt-radio mt-radio-outline"><input name="data[status]" type="radio" value="1" checked /> {dr_lang('通过')} <span></span></label>
+                                    <label class="mt-radio mt-radio-outline"><input name="data[status]" type="radio" value="0"  /> {dr_lang('拒绝')} <span></span></label>
+                                </div>
+                                {/if}
+
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">处理结果</label>
+                            <div class="col-md-9">
+                                <textarea class="form-control" name="data[result]" placeholder="" rows="3">{$result}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+
+
+    </div>
+    {if !$status}
+    <div class="portlet-body form myfooter">
+        <div class="form-actions text-center">
+            <button type="button" onclick="dr_ajax_submit('{dr_now_url()}', 'myform', '2000', '{$reply_url}')" class="btn green"> <i class="fa fa-save"></i> {dr_lang('提交审核')}</button>
+
+        </div>
+    </div>
+    {/if}
+</form>
+
+{template "footer.html"}

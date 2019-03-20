@@ -1,0 +1,67 @@
+{template "mheader.html"}
+
+<div class="portlet light ">
+    <div class="fc-register portlet-title tabbable-line">
+        <ul class="nav nav-tabs" style="float:left;">
+            <li class="{if \Phpcmf\Service::L('Router')->method == 'index'}active{/if}">
+                <a href="{dr_member_url('cash/index')}" > 提现管理 </a>
+            </li>
+            <li class="{if \Phpcmf\Service::L('Router')->method == 'add'}active{/if}">
+                <a href="{dr_member_url('cash/add')}" > 提现申请 </a>
+            </li>
+        </ul>
+    </div>
+    <div class="portlet-body">
+        <div class="fc-table-note">
+            可用余额：￥{number_format($member.money, 2)}元
+            &nbsp;&nbsp;&nbsp;
+            冻结资金：￥{number_format($member.freeze, 2)}元
+        </div>
+        <div class="table-scrollable">
+            <table class="table table-striped table-bordered table-hover table-checkable dataTable">
+                <thead>
+                <tr class="heading">
+                    <th width="50" class="{dr_sorting('id')}" name="id"> Id</th>
+                    <th width="150" class="{dr_sorting('inputtime')}" name="inputtime">时间</th>
+                    <th width="120" class="{dr_sorting('value')}" name="value" style="padding-left:15px">金额</th>
+                    <th style="text-align:center" width="70" class="{dr_sorting('status')}" name="status">状态</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {loop $list $t}
+                <tr class="odd gradeX" id="dr_row_{$t.id}">
+                    <td>{$t.id}</td>
+                    <td>{dr_date($t.inputtime)}</td>
+                    <td><b>{dr_pay_money_html(-$t.value)}</b></td>
+                    <td style="text-align:center">
+                        {if $t.status == 0}
+                        <span class="label label-sm label-warning"> {dr_lang('审核中')} </span>
+                        {else if $t.status == 1}
+                        <span class="label label-sm label-danger"> {dr_lang('已拒绝')} </span>
+                        {else}
+                        <span class="label label-sm label-success"> {dr_lang('已打款')} </span>
+                        {/if}
+                    </td>
+                    <td>
+                        {if $t.status == 0}
+                        <a class="tooltips" data-container="body" data-placement="top" data-original-title="{str_replace('"', '', $t.content)}">{dr_strcut($t.content, 80)}</a>
+                        {else}
+                        <a class="tooltips" data-container="body" data-placement="top" data-original-title="{str_replace('"', '', $t.result)}">{dr_strcut($t.result, 80)}</a>
+                        {/if}
+                    </td>
+                </tr>
+                {/loop}
+                </tbody>
+            </table>
+        </div>
+
+        {if $mypages}
+        <div class="fc-pages text-center">{$mypages}</div>
+        {/if}
+    </div>
+</div>
+
+
+
+{template "mfooter.html"}

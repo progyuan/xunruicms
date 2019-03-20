@@ -1,0 +1,62 @@
+{template "header.html"}
+
+<header class="hui-header">
+    <div id="hui-back"></div>
+    <h1>栏目列表：{$cat.name}</h1>
+</header>
+<div class="hui-header-line"></div>
+
+
+<div class="page-content">
+
+
+
+
+    <div class="search-page search-content-1">
+
+                <div class="search-container">
+                    <ul class="search-container">
+                        <!--分页显示列表数据-->
+                        {module catid=$catid field=thumb,title,url,updatetime,description,keywords,hits,comments order=updatetime page=1}
+                        <li class="search-item clearfix">
+                            <a title="{$t.title}" href="{$t.url}">
+                                <img src="{dr_thumb($t.thumb, 100, 90)}" width="100" height="90" style="margin-top: 15px;">
+                            </a>
+                            <div class="search-content text-left">
+                                <h4 class="search-title">
+                                    <a title="{$t.title}" href="{$t.url}">{$t.title}</a>
+                                </h4>
+                                <p class="search-desc">{$t.description}</p>
+                                <div class="search-post-foot">
+                                    {php $kw=@explode(',', $t.keywords);}
+                                    {if $kw}
+                                    <ul class="search-post-tags">
+                                        {loop $kw $a}
+                                        {if $a}
+                                        <li class="uppercase">
+                                            <a href="{Router::tag_url($a)}" target="_blank">{$a}</a>
+                                        </li>
+                                        {/if}
+                                        {/loop}
+                                    </ul>
+                                    {/if}
+                                    <div class="search-post-meta">
+                                        <i class="icon-calendar font-blue"></i>
+                                        <a href="javascript:;">{$t.updatetime}</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        {/module}
+                    </ul>
+                    <div class="search-pagination">
+                        {$pages}
+                    </div>
+                </div>
+
+    </div>
+
+
+</div>
+
+{template "footer.html"}

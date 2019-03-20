@@ -1,0 +1,69 @@
+{template "mheader.html"}
+
+<div class="portlet light ">
+    <div class="fc-register portlet-title tabbable-line">
+        <ul class="nav nav-tabs" style="float:left;">
+            <li class="{if \Phpcmf\Service::L('Router')->method == 'index'}active{/if}">
+                <a href="{dr_member_url('cash/index')}" > 提现管理 </a>
+            </li>
+            <li class="{if \Phpcmf\Service::L('Router')->method == 'add'}active{/if}">
+                <a href="{dr_member_url('cash/add')}" > 提现申请 </a>
+            </li>
+        </ul>
+    </div>
+    <div class="portlet-body form fc-form">
+        <form action="" class="form-horizontal" method="post" name="myform" id="myform">
+            {$form}
+            <div class="form-group">
+                <label class="col-md-2 control-label">账号</label>
+                <div class="col-md-9">
+                    <p class="form-control-static"> {$member.username} </p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label">可用余额</label>
+                <div class="col-md-9">
+                    <p class="form-control-static"> ￥{number_format($member.money, 2)}元 </p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label">冻结资金</label>
+                <div class="col-md-9">
+                    <p class="form-control-static"> ￥{number_format($member.freeze, 2)}元 </p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label">提现金额</label>
+                <div class="col-md-9">
+                    <label><input type="text" name="data[value]" class="form-control" placeholder=""></label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label">收款账号信息</label>
+                <div class="col-md-9">
+                    <textarea class="form-control" name="data[content]" placeholder="银行账号请填写: 开户行 账号 姓名" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label">申请手续费</label>
+                <div class="col-md-9">
+                    <p class="form-control-static"> {if $ci->member_cache['pay']['cash']['price']} {$ci->member_cache['pay']['cash']['price']}% {else}免费{/if} </p>
+                </div>
+            </div>
+
+
+
+            <div class="form-actions fc-form-actions">
+                <label class="col-md-2 control-label">  </label>
+                <div class="col-md-9 fc-form-submit">
+                    <button type="button" onclick="dr_ajax_submit('{dr_now_url()}', 'myform', '2000', '{$reply_url}')" class="btn green"> 提交申请 </button>
+                    </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+{template "mfooter.html"}

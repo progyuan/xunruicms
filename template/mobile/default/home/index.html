@@ -1,0 +1,132 @@
+{template "header.html"}
+<header class="hui-header">
+    <h1>首页</h1>
+</header>
+<div class="hui-header-line"></div>
+
+
+
+<div class="page-content">
+
+    <div class="container">
+
+        <div class="portlet light  bordered">
+            <div class="portlet-title">
+                <div class="caption">
+                    <span class="caption-subject">共享栏目</span>
+                </div>
+            </div>
+            <div class="portlet-body">
+
+                <div class="" style="height: 100px">
+
+                    <ul class="nav navbar-nav">
+                        <li id="dr_nav_0" class="menu-dropdown classic-menu-dropdown {if $indexc}active{/if}">
+                            <a href="{SITE_MURL}" title="{SITE_TITLE}">首页</a>
+                        </li>
+
+                        <!--调用共享栏目-->
+                        <!--第一层：调用pid=0表示顶级-->
+                        {category module=share pid=0}
+                        <li class="menu-dropdown classic-menu-dropdown {if IS_SHARE && in_array($catid, $t.catids)} active{/if}">
+                            <a href="{$t.url}" title="{$t.name}">{$t.name}</a>
+                            {if $t.child}
+                            <ul class="dropdown-menu pull-left">
+                                <!--第二层-->
+                                {category module=share pid=$t.id return=t2}
+                                <li class="{if $t2.child} dropdown-submenu{/if} {if IS_SHARE && in_array($catid, $t2.catids)} active{/if}">
+                                    <a href="{$t2.url}" class="nav-link nav-toggle " title="{$t2.name}">
+                                        {$t2.name}
+                                    </a>
+                                    {if $t2.child}
+                                    <ul class="dropdown-menu pull-left">
+                                        <!--第三层：调用type=0的网站导航数据-->
+                                        {category module=share pid=$t2.id return=t3}
+                                        <li class="{if IS_SHARE && in_array($catid, $t3.catids)} active{/if}">
+                                            <a href="{$t3.url}" title="{$t3.name}">
+                                                {$t3.name}
+                                            </a>
+                                        </li>
+                                        {/category}
+                                    </ul>
+                                    {/if}
+                                </li>
+                                {/category}
+                            </ul>
+                            {/if}
+                        </li>
+                        {/category}
+
+
+
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="portlet light  bordered">
+            <div class="portlet-title">
+                <div class="caption">
+                    <span class="caption-subject">搜索功能</span>
+                </div>
+            </div>
+            <div class="portlet-body">
+                <form class="search-form" action="/index.php" method="get">
+                    <input type="hidden" name="s" value="api">
+                    <input type="hidden" name="c" value="api">
+                    <input type="hidden" name="m" value="search">
+                    <input type="hidden" name="dir" id="dr_search_module_dir" >
+                    <div class="input-group">
+                        <div class="input-group-btn btn-group">
+                            <button id="dr_search_module_name" type="button" class="btn default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                <i class="fa fa-angle-down"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <!--这是来列出全部可以搜索的内容模块-->
+                                {php $top_search=[];}
+                                {cache name=module-content}
+                                {if $t.search}
+                                {php !$top_search && $top_search=$t;}
+                                <li><a href="javascript:dr_search_module_select('{$t.dirname}', '{$t.name}');"> {$t.name} </a></li>
+                                {/if}
+                                {/cache}
+                            </ul>
+                        </div>
+                        <input type="text" placeholder="搜索内容..." name="keyword" class="fc-search-keyword form-control">
+                        <div class="input-group-btn">
+                            <button class="btn default" type="submit"> 搜索 </button>
+                        </div>
+                    </div>
+                    <script>
+                        // 这段js是用来执行搜索的
+                        function dr_search_module_select(dir, name) {
+                            $("#dr_search_module_dir").val(dir);
+                            $("#dr_search_module_name").html(name+' <i class="fa fa-angle-down"></i>');
+                        }
+                        dr_search_module_select('{php echo defined('MOD_DIR') ? MOD_DIR : $top_search.dirname}', '{php echo defined('MOD_DIR') ? MODULE_NAME : $top_search.name}');
+                    </script>
+                </form>
+            </div>
+        </div>
+
+        <div class="portlet light  bordered">
+            <div class="portlet-title">
+                <div class="caption">
+                    <span class="caption-subject">最新10条news模块内容</span>
+                </div>
+            </div>
+            <div class="portlet-body">
+                <ul class="list-unstyled">
+                    <!--最新10条-->
+                    {module module=news order=updatetime num=10}
+                    <li style="line-height: 23px"><span class="badge badge-empty badge-success"></span>&nbsp;<a href="{$t.url}" class="title">{dr_strcut($t.title, 28)}</a></li>
+                    {/module}
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{template "footer.html"}

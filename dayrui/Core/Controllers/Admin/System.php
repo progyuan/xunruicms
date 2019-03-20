@@ -1,0 +1,60 @@
+<?php namespace Phpcmf\Controllers\Admin;
+
+/**
+ * PHPCMF框架文件
+ * 二次开发时请勿修改本文件
+ * 成都天睿信息技术有限公司 www.phpcmf.net
+ */
+
+class System extends \Phpcmf\Common
+{
+	public function index() {
+
+        if (is_file(WRITEPATH.'config/system.php')) {
+            $data = require WRITEPATH.'config/system.php'; // 加载网站系统配置文件
+        } else {
+            $data = [];
+        }
+
+		if (IS_AJAX_POST) {
+		    $post = \Phpcmf\Service::L('Input')->post('data', true);
+            $save = [
+                'SYS_DEBUG' => (int)$post['SYS_DEBUG'],
+                'SYS_AUTO_FORM' => (int)$post['SYS_AUTO_FORM'],
+
+                'SYS_CAT_RNAME' => (int)$post['SYS_CAT_RNAME'],
+                'SYS_PAGE_RNAME' => (int)$post['SYS_PAGE_RNAME'],
+
+                'SYS_EMAIL' => $post['SYS_EMAIL'],
+                'SYS_ADMIN_LOG' => intval($post['SYS_ADMIN_LOG']),
+                'SYS_ADMIN_CODE' => intval($post['SYS_ADMIN_CODE']),
+                'SYS_ADMIN_PAGESIZE' => intval($post['SYS_ADMIN_PAGESIZE']),
+
+                'SYS_KEY' => $post['SYS_KEY'] == '***' ? $data['SYS_KEY'] : $post['SYS_KEY'],
+                'SYS_HTTPS' => (int)$post['SYS_HTTPS'],
+            ];
+            foreach ($data as $name => $value) {
+                strpos($name, 'SYS_CACHE') === 0 && $save[$name] = intval($post[$name]);
+            }
+			\Phpcmf\Service::M('System')->save_config($data, $save);
+			\Phpcmf\Service::L('Input')->system_log('设置系统配置参数');
+			exit($this->_json(1, dr_lang('操作成功')));
+		}
+
+		$page = (int)\Phpcmf\Service::L('Input')->get('page');
+		\Phpcmf\Service::V()->assign([
+			'data' => $data,
+			'page' => $page,
+			'form' => dr_form_hidden(['page' => $page]),
+            'menu' => \Phpcmf\Service::M('auth')->_admin_menu(
+                [
+                    '系统参数' => ['system/index', 'fa fa-cog'],
+                    'help' => [503],
+                ]
+            ),
+            'config' => \Phpcmf\Service::M('System')->config,
+		]);
+		\Phpcmf\Service::V()->display('system_index.html');
+	}
+
+}

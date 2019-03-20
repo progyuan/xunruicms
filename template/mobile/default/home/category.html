@@ -1,0 +1,36 @@
+{template "header.html"}
+<header class="hui-header">
+    <div id="hui-back"></div>
+    <h1>栏目封面：{$cat.name}</h1>
+</header>
+<div class="hui-header-line"></div>
+
+<div class="page-content">
+
+
+    <!--循环输出顶级栏目下面的子栏目及其内容，运用到了双list循环标签因此需要定义返回值return=c（都懂得）-->
+    {category pid=$catid return=c}
+
+    <div class="portlet light">
+        <div class="portlet-title">
+            <div class="caption">
+                <span class="caption-subject bold uppercase"><a class=" font-green" href="{$c.url}">{$c.name}</a></span>
+            </div>
+        </div>
+        <div class="portlet-body">
+            <ul class="list-unstyled fc-list-row">
+                <!-- 调用MOD_DIR模块的指定栏目下的最新的数据,显示9条数据 -->
+                {module module=MOD_DIR field=url,title catid=$c.id order=updatetime num=9}
+                <li><span class="badge badge-empty badge-success"></span> <a href="{$t.url}" class="title">{dr_strcut($t.title, 18)}</a></li>
+                {/module}
+            </ul>
+        </div>
+    </div>
+
+    {/category}
+
+
+
+</div>
+
+{template "footer.html"}

@@ -1,0 +1,287 @@
+{template "header.html"}
+
+<div class="note note-danger">
+    <p><a href="javascript:dr_update_cache('urlrule', '');">{dr_lang('更改数据之后需要更新缓存之后才能生效')}</a></p>
+</div>
+
+<form action="" class="form-horizontal" method="post" name="myform" id="myform">
+    {$form}
+    <div class="portlet bordered light myfbody">
+        <div class="portlet-title tabbable-line">
+            <ul class="nav nav-tabs" style="float:left;">
+                <li class="{if $page==0}active{/if}">
+                    <a href="#tab_0" data-toggle="tab" onclick="$('#dr_page').val('0')"> <i class="fa fa-cloud"></i> {dr_lang('远程附件')} </a>
+                </li>
+            </ul>
+        </div>
+        <div class="portlet-body">
+            <div class="tab-content">
+
+                <div class="tab-pane {if $page==0}active{/if}" id="tab_0">
+                    <div class="form-body form">
+
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">{dr_lang('名称')}</label>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control input-large" value="{htmlspecialchars($data.name)}" name="data[name]" />
+                                <span class="help-block">{dr_lang('给它一个描述名称')}</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">{dr_lang('存储类型')}</label>
+                            <div class="col-md-9">
+                                <div class="mt-radio-inline">
+                                    {loop $ci->type $i $n}
+                                    <label class="mt-radio mt-radio-outline"><input type="radio" name="data[type]" onclick="dr_remote('{$i}')" value="{$i}" {if (int)$data['type'] == $i}checked{/if} /> {$n} <span></span> </label>
+                                    {/loop}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group r r0">
+                            <label class="col-md-2 control-label">{dr_lang('使用说明')}</label>
+                            <div class="col-md-9">
+                                <p class="form-control-static"> {dr_lang('本地磁盘存储是将文件存储到本地的一块盘之中')} </p>
+                            </div>
+                        </div>
+                        <div class="form-group r r0">
+                            <label class="col-md-2 control-label">{dr_lang('本地绝对路径')}</label>
+                            <div class="col-md-7">
+                                <input class="form-control" type="text" name="data[value][0][path]" value="{$data['value']['path']}" />
+                                <span class="help-block">{dr_lang('填写磁盘绝对路径，一定要以“/”结尾')}</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group r r1">
+                            <label class="col-md-2 control-label">{dr_lang('使用说明')}</label>
+                            <div class="col-md-9">
+                                <p class="form-control-static"> {dr_lang('Ftp服务器同步适用于小文件同步，例如图片')} </p>
+                            </div>
+                        </div>
+                        <div class="form-group r r1">
+                            <label class="col-md-2 control-label">{dr_lang('服务器端口')}</label>
+                            <div class="col-md-9">
+                                <label><input name="data[value][1][port]" value="{$data['value']['port']}" class="form-control" type="text" /></label>
+                                <span class="help-block"> {dr_lang('例如常用端口21')} </span>
+                            </div>
+                        </div>
+                        <div class="form-group r r1">
+                            <label class="col-md-2 control-label">{dr_lang('服务器地址')}</label>
+                            <div class="col-md-9">
+                                <input class="form-control input-large" type="text" name="data[value][1][host]" value="{$data['value']['host']}" />
+                                <span class="help-block"> {dr_lang('可以是FTP服务器的IP地址或域名')} </span>
+                            </div>
+                        </div>
+                        <div class="form-group r r1">
+                            <label class="col-md-2 control-label">{dr_lang('服务器帐号')}</label>
+                            <div class="col-md-9">
+                                <input name="data[value][1][username]" value="{$data['value']['username']}" class="form-control input-large" type="text" />
+                                <span class="help-block"> {dr_lang('该帐号必需具有以下权限：读取、写入、删除、创建目录、子目录继承')} </span>
+                            </div>
+                        </div>
+                        <div class="form-group r r1">
+                            <label class="col-md-2 control-label">{dr_lang('服务器密码')}</label>
+                            <div class="col-md-9">
+                                <input id="password" class="form-control input-large" type="text" name="data[value][1][password]" value="{$data['value']['password']}" />
+                                <span class="help-block"> {dr_lang('FTP帐号验证的密码')} </span>
+                            </div>
+                        </div>
+                        <div class="form-group r r1">
+                            <label class="col-md-2 control-label">{dr_lang('服务器目录')}</label>
+                            <div class="col-md-9">
+                                <input class="form-control input-large" type="text" name="data[value][1][path]" value="{$data['value']['path']}" />
+                                <span class="help-block"> {dr_lang('绝对路径或相对于FTP主目录的相对路径，留空表示FTP主目录，一定要以“/”结尾')} </span>
+                            </div>
+                        </div>
+                        <div class="form-group r r1">
+                            <label class="col-md-2 control-label">{dr_lang('被动模式连接')}</label>
+                            <div class="col-md-9">
+                                <div class="mt-radio-inline">
+                                    <label class="mt-radio mt-radio-outline"><input class="pasv" type="radio" name="data[value][1][pasv]" value="1" {if $data['value']['pasv']}checked{/if} /> {dr_lang('开启')} <span></span> </label>
+                                    <label class="mt-radio mt-radio-outline"><input class="pasv" type="radio" name="data[value][1][pasv]" value="0" {if !$data['value']['pasv']}checked{/if} /> {dr_lang('关闭')} <span></span> </label>
+
+                                </div>
+                                <span class="help-block"> {dr_lang('一般情况下非被动模式即可，如果存在上传失败问题，可尝试打开此设置')} </span>
+                            </div>
+                        </div>
+                        <div class="form-group r r1">
+                            <label class="col-md-2 control-label">{dr_lang('文件传输模式')}</label>
+                            <div class="col-md-9">
+                                <div class="mt-radio-inline">
+                                    <label class="mt-radio mt-radio-outline"><input class="mode" type="radio" name="data[value][1][mode]" value="auto" {if empty($data['value']['mode']) || $data['value']['mode'] == 'auto'}checked{/if} /> {dr_lang('自动模式')} <span></span> </label>
+                                    <label class="mt-radio mt-radio-outline"><input class="mode" type="radio" name="data[value][1][mode]" value="ascii" {if $data['value']['mode']=='ascii'}checked{/if} /> {dr_lang('ASCII模式')} <span></span> </label>
+                                    <label class="mt-radio mt-radio-outline"><input class="mode" type="radio" name="data[value][1][mode]" value="binary" {if $data['value']['mode']=='binary'}checked{/if} /> {dr_lang('二进制模式')} <span></span> </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group r r2">
+                            <label class="col-md-2 control-label">Access Key ID</label>
+                            <div class="col-md-7">
+                                <input name="data[value][2][accessKeyId]" value="{$data['value']['accessKeyId']}" class="form-control" type="text" />
+                            </div>
+                        </div>
+                        <div class="form-group r r2">
+                            <label class="col-md-2 control-label">Access Key Secret</label>
+                            <div class="col-md-7">
+                                <input name="data[value][2][accessKeySecret]" value="{$data['value']['accessKeySecret']}" class="form-control" type="text" />
+                            </div>
+                        </div>
+                        <div class="form-group r r2">
+                            <label class="col-md-2 control-label">BucketName</label>
+                            <div class="col-md-7">
+                                <input name="data[value][2][bucket]" value="{$data['value']['bucket']}" class="form-control" type="text" />
+                            </div>
+                        </div>
+                        <div class="form-group r r2">
+                            <label class="col-md-2 control-label">{dr_lang('OSS域名')}</label>
+                            <div class="col-md-7">
+                                <input class="form-control " type="text" name="data[value][2][endpoint]" value="{$data['value']['endpoint']}" />
+                                <span class="help-block"> {dr_lang('如果和服务器在同一网段，尽量使用内网域名，不要填写自定义域名，也不要加http://')} </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group r r3">
+                            <label class="col-md-2 control-label">APP ID</label>
+                            <div class="col-md-7">
+                                <input name="data[value][3][Id]" value="{$data['value']['Id']}" class="form-control" type="text" />
+                            </div>
+                        </div>
+                        <div class="form-group r r3">
+                            <label class="col-md-2 control-label">SecretID</label>
+                            <div class="col-md-7">
+                                <input name="data[value][3][KeyId]" value="{$data['value']['KeyId']}" class="form-control" type="text" />
+                            </div>
+                        </div>
+                        <div class="form-group r r3">
+                            <label class="col-md-2 control-label">SecretKey</label>
+                            <div class="col-md-7">
+                                <input name="data[value][3][KeySecret]" value="{$data['value']['KeySecret']}" class="form-control" type="text" />
+                            </div>
+                        </div>
+                        <div class="form-group r r3">
+                            <label class="col-md-2 control-label">BucketName</label>
+                            <div class="col-md-7">
+                                <input name="data[value][3][bucket]" value="{$data['value']['bucket']}" class="form-control" type="text" />
+                            </div>
+                        </div>
+                        <div class="form-group r r3">
+                            <label class="col-md-2 control-label">{dr_lang('区域代码')}</label>
+                            <div class="col-md-7">
+                                <input name="data[value][3][Region]" value="{$data['value']['Region']}" class="form-control" type="text" />
+                            </div>
+                        </div>
+                        <div class="form-group r r3">
+                            <label class="col-md-2 control-label">{dr_lang('域名设置')}</label>
+                            <div class="col-md-7">
+                                <input class="form-control " type="text" name="data[value][3][host]" value="{$data['value']['host']}" />
+                                <span class="help-block"> {dr_lang('如果和服务器在同一网段，尽量使用内网域名，不要填写自定义域名，也不要加http://')} </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group r r4">
+                            <label class="col-md-2 control-label">Access Key ID</label>
+                            <div class="col-md-7">
+                                <input name="data[value][4][KeyId]" value="{$data['value']['KeyId']}" class="form-control" type="text" />
+                            </div>
+                        </div>
+                        <div class="form-group r r4">
+                            <label class="col-md-2 control-label">Secret Access Key</label>
+                            <div class="col-md-7">
+                                <input name="data[value][4][KeySecret]" value="{$data['value']['KeySecret']}" class="form-control" type="text" />
+                            </div>
+                        </div>
+                        <div class="form-group r r4">
+                            <label class="col-md-2 control-label">BucketName</label>
+                            <div class="col-md-7">
+                                <input name="data[value][4][bucket]" value="{$data['value']['bucket']}" class="form-control" type="text" />
+                            </div>
+                        </div>
+                        <div class="form-group r r4">
+                            <label class="col-md-2 control-label">{dr_lang('BOS官方域名')}</label>
+                            <div class="col-md-7">
+                                <input class="form-control " type="text" name="data[value][4][host]" value="{$data['value']['host']}" />
+                                <span class="help-block"> {dr_lang('如果和服务器在同一网段，尽量使用内网域名，不要填写自定义域名，也不要加http://')} </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group r r5">
+                            <label class="col-md-2 control-label">AK</label>
+                            <div class="col-md-7">
+                                <input name="data[value][5][AK]" value="{$data['value']['AK']}" class="form-control" type="text" />
+                            </div>
+                        </div>
+                        <div class="form-group r r5">
+                            <label class="col-md-2 control-label">SK</label>
+                            <div class="col-md-7">
+                                <input name="data[value][5][SK]" value="{$data['value']['SK']}" class="form-control" type="text" />
+                            </div>
+                        </div>
+                        <div class="form-group r r5">
+                            <label class="col-md-2 control-label">Bucket</label>
+                            <div class="col-md-7">
+                                <input name="data[value][5][bucket]" value="{$data['value']['bucket']}" class="form-control" type="text" />
+                            </div>
+                        </div>
+                        <div class="form-group r r5">
+                            <label class="col-md-2 control-label">{dr_lang('域名设置')}</label>
+                            <div class="col-md-7">
+                                <input class="form-control " type="text" name="data[value][5][host]" value="{$data['value']['host']}" />
+                                <span class="help-block"> {dr_lang('如果和服务器在同一网段，尽量使用内网域名，不要填写自定义域名，也不要加http://')} </span>
+                            </div>
+                        </div>
+
+
+
+
+
+
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">{dr_lang('附件远程访问URL')}</label>
+                            <div class="col-md-7">
+                                <input type="text" class="form-control" value="{$data.url}" name="data[url]" />
+                                <span class="help-block">{dr_lang('浏览器可访问的URL地址，必须以http://或https://开头，要以“/”结尾')}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="portlet-body form myfooter">
+        <div class="form-actions text-center">
+            <button type="button" onclick="dr_ajax_submit('{dr_now_url()}&page='+$('#dr_page').val(), 'myform', '2000')" class="btn green"> <i class="fa fa-save"></i> {dr_lang('保存')}</button>
+            <button type="button" onclick="dr_test_attach()" class="btn red"> <i class="fa fa-cloud"></i> {dr_lang('测试')}</button>
+        </div>
+    </div>
+</form>
+<script type="text/javascript">
+    $(function() {
+        dr_remote({intval($data.type)});
+    });
+    function dr_test_attach() {
+        var loading = layer.load(2, {
+            shade: [0.3,'#fff'], //0.1透明度的白色背景
+            time: 10000
+        });
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "{dr_url('api/test_attach')}",
+            data: $("#myform").serialize(),
+            success: function(json) {
+                layer.close(loading);
+                dr_tips(json.code, json.msg);
+            },
+            error: function(HttpRequest, ajaxOptions, thrownError) {
+                layer.closeAll('loading');
+                alert(HttpRequest.responseText);
+            }
+        });
+    }
+    function dr_remote(i) {
+        $('.r').hide();
+        $('.r'+i).show();
+    }
+</script>
+{template "footer.html"}

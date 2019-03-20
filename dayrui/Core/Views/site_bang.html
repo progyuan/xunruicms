@@ -1,0 +1,54 @@
+{template "header.html"}
+<div class="note note-danger">
+    <p><a href="javascript:dr_update_cache();">{dr_lang('更改数据之后需要更新缓存之后才能生效')}</a></p>
+</div>
+<form action="" class="form-horizontal" method="post" name="myform" id="myform">
+
+    <div class="portlet bordered light myfbody">
+
+        <div class="portlet-body">
+            <div class="tab-content">
+
+                <div class="tab-pane active" id="tab_0">
+                    <div class="form-body" style="padding-top: 20px;">
+
+                        {loop $ci->site_info $sid $t}
+                        <div class="form-group" style="margin-bottom: 30px;">
+                            <label class="col-md-2 control-label">{dr_strcut($t['SITE_NAME'], 10)}</label>
+                            <div class="col-md-9">
+
+                                <span class="form-control-static">
+                                    {$t['SITE_DOMAIN']}
+                                    {loop $t['SITE_DOMAINS'] $c}
+                                    &nbsp;&nbsp;{$c}
+                                    {/loop}
+                                </span>
+                                <span class="help-block">{php echo \Phpcmf\Service::L('html')->get_webpath($sid, 'site', '');}</span>
+
+
+                                {if $t['SITE_MOBILE']}
+                                <span class="form-control-static" style="margin-top: 20px">
+                                    {$t['SITE_MOBILE']}
+                                </span>
+                                <span class="help-block">{php echo \Phpcmf\Service::L('html')->get_webpath($sid, 'site', 'mobile/');}</span>
+
+                                {/if}
+                            </div>
+                        </div>
+                        {/loop}
+
+
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+
+</form>
+
+
+
+{template "footer.html"}
