@@ -160,12 +160,18 @@ class Content extends \Phpcmf\Model {
             // 新增数据
             $main['hits'] = 0;
             $main['tableid'] = 0;
-            $main['donation'] = 0;
+            if (dr_is_app('shang')) {
+                $main['donation'] = 0;
+            }
+            if (dr_is_app('favorite')) {
+                $main['favorites'] = 0;
+            }
+            if (dr_is_app('zan')) {
+                $main['support'] = 0;
+                $main['oppose'] = 0;
+            }
             $main['comments'] = 0;
-            $main['favorites'] = 0;
             $main['avgsort'] = 0;
-            $main['support'] = 0;
-            $main['oppose'] = 0;
             $main['displayorder'] = 0;
             $rt = $this->table($this->mytable)->replace($main);
             if (!$rt['code']) {
