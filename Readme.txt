@@ -1,5 +1,7 @@
 TPCMF内容管理框架官方下载地址：http://www.tpcmf.com/down/
 
+程序安装地址：/install.php
+
 官方技术QQ群：758974716
 
 
