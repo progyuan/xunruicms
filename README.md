@@ -5,3 +5,6 @@
 在Finecms部分用户的建议之下，在PHP7语言基础上发布全新CMS程序（TPCMF），它任然继承Finecms的开放性和免费模式！
 
 TPCMF源码下载地址： http://www.tpcmf.com/down/
+
+
+本代码仓库不做源码更新，转移至新仓库：https://gitee.com/dayrui/tpcmf
