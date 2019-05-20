@@ -274,8 +274,7 @@
                 dr_tips(json.code, json.msg);
             },
             error: function(HttpRequest, ajaxOptions, thrownError) {
-                layer.closeAll('loading');
-                alert(HttpRequest.responseText);
+                dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError)
             }
         });
     }

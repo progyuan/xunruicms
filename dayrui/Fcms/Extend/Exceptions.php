@@ -1,6 +1,27 @@
 <?php
 namespace Phpcmf\Extend;
 
+/* *
+ *
+ * Copyright [2018] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 /**
  * 继承异常类，用于Services.php
  */
@@ -25,6 +46,7 @@ class Exceptions extends \CodeIgniter\Debug\Exceptions
     protected function render(\Throwable $exception, int $statusCode)
     {
 
+
         $file = $exception->getFile();
         $line = $exception->getLine();
         $title = get_class($exception);
@@ -36,27 +58,25 @@ class Exceptions extends \CodeIgniter\Debug\Exceptions
         if (empty($message)) {
             $message = '(null)';
         } elseif (strpos($message, 'The action you requested is not allowed') !== false) {
-            $this->_save_error_file($title, $file, $line, $message);
+            $this->_save_error_file($statusCode, $title, $file, $line, $message);
             dr_exit_msg(0, '提交验证超时，请重试', 'CSRFVerify');
         } else {
-            $this->_save_error_file($title, $file, $line, $message);
+            $this->_save_error_file($statusCode, $title, $file, $line, $message);
         }
 
         // ajax 返回
         if (IS_AJAX) {
             dr_exit_msg(0, $message);
-        } elseif (CI_DEBUG) {
-            echo '<pre>文件: '.$file."<br>";
-            echo '行号: '.$line."<br>";
-            echo '错误: '.$message."</pre><br>";
-            echo self::highlightFile($file, $line);
-            exit;
         }
 
         return parent::render($exception, $statusCode);
     }
 
-    private function _save_error_file($title, $file, $line, $message, $is_kz = 0) {
+    private function _save_error_file($statusCode, $title, $file, $line, $message, $is_kz = 0) {
+
+        if ($statusCode == 404) {
+            return;
+        }
 
         // 写入错误日志
         $filepath = WRITEPATH.'error_php/'.date('Y-m-d').'.php';

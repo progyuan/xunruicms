@@ -1,4 +1,5 @@
-<?php namespace CodeIgniter\Cache\Handlers;
+<?php
+
 
 /**
  * CodeIgniter
@@ -32,12 +33,19 @@
  * @copyright  2014-2019 British Columbia Institute of Technology (https://bcit.ca/)
  * @license    https://opensource.org/licenses/MIT	MIT License
  * @link       https://codeigniter.com
- * @since      Version 3.0.0
+ * @since      Version 4.0.0
  * @filesource
  */
 
+namespace CodeIgniter\Cache\Handlers;
+
 use CodeIgniter\Cache\CacheInterface;
 
+/**
+ * Cache handler for WinCache from Microsoft & IIS.
+ * Windows-only, so not testable on travis-ci.
+ * Unusable methods flagged for code coverage ignoring.
+ */
 class WincacheHandler implements CacheInterface
 {
 
@@ -50,6 +58,12 @@ class WincacheHandler implements CacheInterface
 
 	//--------------------------------------------------------------------
 
+	/**
+	 * Constructor.
+	 *
+	 * @param  type $config
+	 * @throws type
+	 */
 	public function __construct($config)
 	{
 		$this->prefix = $config->prefix ?: '';
@@ -59,6 +73,8 @@ class WincacheHandler implements CacheInterface
 
 	/**
 	 * Takes care of any handler-specific setup that must be done.
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public function initialize()
 	{
@@ -69,6 +85,8 @@ class WincacheHandler implements CacheInterface
 
 	/**
 	 * Attempts to fetch an item from the cache store.
+	 *
+	 * @codeCoverageIgnore
 	 *
 	 * @param string $key Cache item name
 	 *
@@ -82,13 +100,15 @@ class WincacheHandler implements CacheInterface
 		$data    = wincache_ucache_get($key, $success);
 
 		// Success returned by reference from wincache_ucache_get()
-		return ($success) ? $data : false;
+		return ($success) ? $data : null;
 	}
 
 	//--------------------------------------------------------------------
 
 	/**
 	 * Saves an item to the cache store.
+	 *
+	 * @codeCoverageIgnore
 	 *
 	 * @param string  $key   Cache item name
 	 * @param mixed   $value The data to save
@@ -108,6 +128,8 @@ class WincacheHandler implements CacheInterface
 	/**
 	 * Deletes a specific item from the cache store.
 	 *
+	 * @codeCoverageIgnore
+	 *
 	 * @param string $key Cache item name
 	 *
 	 * @return mixed
@@ -124,8 +146,9 @@ class WincacheHandler implements CacheInterface
 	/**
 	 * Performs atomic incrementation of a raw stored value.
 	 *
-	 * @param string  $key    Cache ID
-	 * @param integer $offset Step/value to increase by
+	 * @codeCoverageIgnore
+	 * @param              string  $key    Cache ID
+	 * @param              integer $offset Step/value to increase by
 	 *
 	 * @return mixed
 	 */
@@ -143,6 +166,8 @@ class WincacheHandler implements CacheInterface
 
 	/**
 	 * Performs atomic decrementation of a raw stored value.
+	 *
+	 * @codeCoverageIgnore
 	 *
 	 * @param string  $key    Cache ID
 	 * @param integer $offset Step/value to increase by
@@ -164,6 +189,8 @@ class WincacheHandler implements CacheInterface
 	/**
 	 * Will delete all items in the entire cache.
 	 *
+	 * @codeCoverageIgnore
+	 *
 	 * @return mixed
 	 */
 	public function clean()
@@ -175,6 +202,8 @@ class WincacheHandler implements CacheInterface
 
 	/**
 	 * Returns information on the entire cache.
+	 *
+	 * @codeCoverageIgnore
 	 *
 	 * The information returned and the structure of the data
 	 * varies depending on the handler.
@@ -191,7 +220,8 @@ class WincacheHandler implements CacheInterface
 	/**
 	 * Returns detailed information about the specific item in the cache.
 	 *
-	 * @param string $key Cache item name.
+	 * @codeCoverageIgnore
+	 * @param              string $key Cache item name.
 	 *
 	 * @return mixed
 	 */

@@ -1,5 +1,28 @@
 <?php namespace Phpcmf\Admin;
 
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 // 内容模块操作类 基于 Ftable
 class Module extends \Phpcmf\Table
 {
@@ -22,6 +45,7 @@ class Module extends \Phpcmf\Table
         $this->tpl_name = APP_DIR;
         // 模块显示名称
         $this->name = dr_lang('内容模块[%s]（%s）', APP_DIR, $this->module['cname']);
+        $this->where_list_sql = dr_is_app('cqx') ? \Phpcmf\Service::M('content', 'cqx')->get_list_where() : '';
         // 初始化数据表
         $this->_init([
             'table' => SITE_ID.'_'.APP_DIR,
@@ -29,6 +53,7 @@ class Module extends \Phpcmf\Table
             'sys_field' => ['inputtime', 'updatetime', 'inputip', 'displayorder', 'hits', 'author'],
             'date_field' => 'updatetime',
             'show_field' => 'title',
+            'where_list' => $this->where_list_sql,
             'order_by' => $this->module['setting']['order'],
             'list_field' => $this->module['setting']['list_field'],
         ]);
@@ -136,7 +161,11 @@ class Module extends \Phpcmf\Table
         $draft = $did ? $this->content_model->get_draft($did) : [];
 
         list($tpl, $data) = $this->_Post($id, $draft);
-        !$data && $this->_admin_msg(0, dr_lang('数据#%s不存在', $id));
+        if (!$data) {
+            $this->_admin_msg(0, dr_lang('数据#%s不存在', $id));
+        } elseif ($this->where_list_sql && \Phpcmf\Service::M('content', 'cqx')->is_edit($data['catid'], $data['uid'])) {
+            $this->_admin_msg(0, dr_lang('当前角色无权限管理此栏目'));
+        }
 
         $select = \Phpcmf\Service::L('Tree')->select_category(
             $this->module['category'],
@@ -201,8 +230,15 @@ class Module extends \Phpcmf\Table
 
         $ids = \Phpcmf\Service::L('Input')->get_post_ids();
         $catid = (int)\Phpcmf\Service::L('Input')->post('catid');
-        !$ids && $this->_json(0, dr_lang('参数不存在'));
-        !$this->content_model->admin_category_auth($catid, 'edit') && $this->_json(0, dr_lang('无权限操作此栏目'));
+        if (!$ids) {
+            $this->_json(0, dr_lang('选择内容不存在'));
+        } elseif (!$catid) {
+            $this->_json(0, dr_lang('目标栏目未选择'));
+        } elseif (!$this->content_model->admin_category_auth($catid, 'edit')) {
+            $this->_json(0, dr_lang('无权限操作此栏目'));
+        } elseif ($this->where_list_sql && \Phpcmf\Service::M('content', 'cqx')->is_edit($catid)) {
+            $this->_json(0, dr_lang('当前角色无权限管理此栏目'));
+        }
 
         $rt = $this->content_model->move_category($ids, $catid);
 
@@ -222,6 +258,9 @@ class Module extends \Phpcmf\Table
 
             $syncat = [];
             foreach ($catid as $i) {
+                if ($this->where_list_sql && \Phpcmf\Service::M('content', 'cqx')->is_edit($i)) {
+                    $this->_json(0, dr_lang('当前角色无权限管理此栏目'));
+                }
                 if (!$this->module['category'][$i]) {
                     continue;
                 } elseif ($this->module['category'][$i]['tid'] != 1) {
@@ -282,6 +321,9 @@ class Module extends \Phpcmf\Table
                         $u = 0;
                         foreach ($catids as $catid) {
                             if ($catid && $catid != $t['catid']) {
+                                if ($this->where_list_sql && \Phpcmf\Service::M('content', 'cqx')->is_edit($catid)) {
+                                    $this->_json(0, dr_lang('当前角色无权限管理此栏目'));
+                                }
                                 // 插入到同步栏目中
                                 $new[1] = $t;
                                 $new[1]['catid'] = $catid;
@@ -412,7 +454,7 @@ class Module extends \Phpcmf\Table
             'table' => SITE_ID.'_'.APP_DIR.'_verify',
             'date_field' => 'inputtime',
             'order_by' => 'inputtime desc',
-            'where_list' => 'status > 0',
+            'where_list' => 'status > 0'.($this->where_list_sql ? ' AND '.$this->where_list_sql : ''),
         ]);
 
         $this->_List();
@@ -435,7 +477,11 @@ class Module extends \Phpcmf\Table
 
         $id = intval(\Phpcmf\Service::L('Input')->get('id'));
         list($tpl, $data) = $this->_Post($id);
-        !$data && $this->_admin_msg(0, dr_lang('内容不存在'));
+        if (!$data) {
+            $this->_admin_msg(0, dr_lang('内容不存在'));
+        } elseif ($this->where_list_sql && \Phpcmf\Service::M('content', 'cqx')->is_edit($data['catid'], $data['uid'])) {
+            $this->_admin_msg(0, dr_lang('当前角色无权限管理此栏目'));
+        }
 
         $select = \Phpcmf\Service::L('Tree')->select_category(
             $this->module['category'],
@@ -483,7 +529,13 @@ class Module extends \Phpcmf\Table
         $this->_init([
             'table' => SITE_ID.'_'.APP_DIR.'_verify',
         ]);
-        $this->_Del(\Phpcmf\Service::L('Input')->get_post_ids(), null, function($rows) {
+        $this->_Del(\Phpcmf\Service::L('Input')->get_post_ids(), function ($rows) {
+            foreach ($rows as $t) {
+                if ($this->where_list_sql && \Phpcmf\Service::M('content', 'cqx')->is_edit($t['catid'], $t['uid'])) {
+                    return dr_return_data(0, dr_lang('当前角色无权限管理此栏目'));
+                }
+            }
+        }, function($rows) {
             foreach ($rows as $t) {
                 // 删除索引
                 $t['isnew'] && \Phpcmf\Service::M()->table(SITE_ID.'_'.APP_DIR.'_index')->delete($t['id']);
@@ -687,7 +739,7 @@ class Module extends \Phpcmf\Table
             'order_by' => 'inputtime desc',
             'show_field' => 'title',
             'list_field' => $this->module['setting']['list_field'],
-            'where_list' => 'id IN (select id from `'.\Phpcmf\Service::M()->dbprefix(SITE_ID.'_'.APP_DIR.'_flag').'` where flag='.$flag.')',
+            'where_list' => 'id IN (select id from `'.\Phpcmf\Service::M()->dbprefix(SITE_ID.'_'.APP_DIR.'_flag').'` where flag='.$flag.')'.($this->where_list_sql ? ' AND '.$this->where_list_sql : ''),
         ]);
 
         list($tpl, $data) = $this->_List();
@@ -716,6 +768,7 @@ class Module extends \Phpcmf\Table
     }
 
 
+
     // ===========================
 
     /**
@@ -736,6 +789,7 @@ class Module extends \Phpcmf\Table
             $data = dr_string2array($row['content']);
             $data['verify'] = [
                 'uid' => $row['backuid'],
+                'isnew' => $row['isnew'],
                 'backinfo' => $row['backinfo'],
             ];
             $this->is_get_catid = $catid ? $catid : $data['catid'];
@@ -900,8 +954,6 @@ class Module extends \Phpcmf\Table
                     !$old && \Phpcmf\Service::L('Input')->post('sync_cat') && $this->content_model->sync_cat(\Phpcmf\Service::L('Input')->post('sync_cat'), $data);
                     // 同步微博
                     !$old && \Phpcmf\Service::L('Input')->post('sync_weibo') && $this->content_model->sync_weibo($data);
-                    // 判断栏目是否变化
-                    $old && $data[1]['catid'] != $old['catid'] && $this->content_model->update_catid($id, $data[1]['catid']);
                     return $data;
                 }
             );

@@ -1,4 +1,4 @@
-<?php namespace CodeIgniter\View;
+<?php
 
 /**
  * CodeIgniter
@@ -32,14 +32,21 @@
  * @copyright  2014-2019 British Columbia Institute of Technology (https://bcit.ca/)
  * @license    https://opensource.org/licenses/MIT	MIT License
  * @link       https://codeigniter.com
- * @since      Version 3.0.0
+ * @since      Version 4.0.0
  * @filesource
  */
 
+namespace CodeIgniter\View;
+
+ /**
+  * View plugins
+  */
 class Plugins
 {
 
 	/**
+	 * Wrap helper function to use as view plugin.
+	 *
 	 * @param array $params
 	 *
 	 * @return string|\CodeIgniter\HTTP\URI
@@ -52,6 +59,8 @@ class Plugins
 	//--------------------------------------------------------------------
 
 	/**
+	 * Wrap helper function to use as view plugin.
+	 *
 	 * @param array $params
 	 *
 	 * @return \CodeIgniter\HTTP\URI|mixed|string
@@ -64,11 +73,13 @@ class Plugins
 	//--------------------------------------------------------------------
 
 	/**
+	 * Wrap helper function to use as view plugin.
+	 *
 	 * @param array $params
 	 *
 	 * @return string
 	 */
-	public static function mailto(array $params = [])
+	public static function mailto(array $params = []): string
 	{
 		$email = $params['email'] ?? '';
 		$title = $params['title'] ?? '';
@@ -80,11 +91,13 @@ class Plugins
 	//--------------------------------------------------------------------
 
 	/**
+	 * Wrap helper function to use as view plugin.
+	 *
 	 * @param array $params
 	 *
 	 * @return string
 	 */
-	public static function safeMailto(array $params = [])
+	public static function safeMailto(array $params = []): string
 	{
 		$email = $params['email'] ?? '';
 		$title = $params['title'] ?? '';
@@ -96,11 +109,13 @@ class Plugins
 	//--------------------------------------------------------------------
 
 	/**
+	 * Wrap helper function to use as view plugin.
+	 *
 	 * @param array $params
 	 *
 	 * @return string
 	 */
-	public static function lang(array $params = [])
+	public static function lang(array $params = []): string
 	{
 		$line = array_shift($params);
 
@@ -110,11 +125,13 @@ class Plugins
 	//--------------------------------------------------------------------
 
 	/**
+	 * Wrap helper function to use as view plugin.
+	 *
 	 * @param array $params
 	 *
 	 * @return string
 	 */
-	public static function ValidationErrors(array $params = [])
+	public static function ValidationErrors(array $params = []): string
 	{
 		$validator = \Config\Services::validation();
 		if (empty($params))
@@ -128,9 +145,11 @@ class Plugins
 	//--------------------------------------------------------------------
 
 	/**
+	 * Wrap helper function to use as view plugin.
+	 *
 	 * @param array $params
 	 *
-	 * @return string|
+	 * @return string|false
 	 */
 	public static function route(array $params = [])
 	{
@@ -140,11 +159,13 @@ class Plugins
 	//--------------------------------------------------------------------
 
 	/**
+	 * Wrap helper function to use as view plugin.
+	 *
 	 * @param array $params
 	 *
 	 * @return string
 	 */
-	public static function siteURL(array $params = [])
+	public static function siteURL(array $params = []): string
 	{
 		return site_url(...$params);
 	}

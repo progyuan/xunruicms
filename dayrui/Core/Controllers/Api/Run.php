@@ -1,10 +1,28 @@
 <?php namespace Phpcmf\Controllers\Api;
 
-/**
- * PHPCMF框架文件
- * 二次开发时请勿修改本文件
- * 成都天睿信息技术有限公司 www.phpcmf.net
- */
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 
 /**
  * 运行任务接口
@@ -17,7 +35,7 @@ class Run extends \Phpcmf\Common
 
         // 未到时间
         if (\Phpcmf\Service::L('input')->get_cookie('cron')) {
-            exit('未到时间');
+            exit('未到执行时间');
         }
 
         // 批量执行站点动作
@@ -79,6 +97,19 @@ class Run extends \Phpcmf\Common
         if (is_file(MYPATH.'Config/Cron.php')) {
             require MYPATH.'Config/Cron.php';
         }
+
+        // 为插件单独执行计划
+        $local = dr_dir_map(dr_get_app_list(), 1);
+        if ($local) {
+            foreach ($local as $dir) {
+                $path = dr_get_app_dir($dir);
+                if (is_file($path.'Config/Cron.php')
+                    && is_file($path.'Config/App.php')) {
+                    require $path.'Config/Cron.php';
+                }
+            }
+        }
+
 
         exit('Run '.$i);
 

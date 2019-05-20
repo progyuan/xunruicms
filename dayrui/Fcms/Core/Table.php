@@ -1,5 +1,30 @@
 <?php namespace Phpcmf;
 
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
+
+
 // 内容操作类
 class Table extends \Phpcmf\Common
 {
@@ -14,7 +39,7 @@ class Table extends \Phpcmf\Common
     protected $is_data; // 是否支持附表
     protected $is_post_code; // 是否提交验证码
     protected $is_module_index; // 是否支持模块索引
-    protected $is_category_data_field; // 是否支持模块栏目附加字段
+    protected $is_category_data_field; // 是否支持模块栏目模型字段
 
     protected $edit_where; // 修改数据时的条件
     protected $delete_where; // 删除数据时的条件
@@ -55,7 +80,7 @@ class Table extends \Phpcmf\Common
 
         $field = $this->sys_field && IS_ADMIN ? dr_array22array($this->sys_field, $this->field) : $this->field;
 
-        // 栏目附加字段
+        // 栏目模型字段
         $this->is_category_data_field && $catid
         && $this->module['category'][$catid]['field']
         && $field = dr_array22array($field, $this->module['category'][$catid]['field']);
@@ -80,7 +105,7 @@ class Table extends \Phpcmf\Common
         $field = $this->field;
         $my_field = $sys_field = $diy_field = $cat_field = [];
 
-        // 栏目附加字段
+        // 栏目模型字段
         $this->is_category_data_field && $data['catid']
         && $this->module['category'][$data['catid']]['field']
         && $field = dr_array22array($field, $this->module['category'][$data['catid']]['field']);

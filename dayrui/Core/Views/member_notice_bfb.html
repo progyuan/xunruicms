@@ -48,6 +48,9 @@
                     $('#dr_check_button').attr('disabled', true);
                     dr_ajax2ajax(1);
                 }
+            },
+            error: function(HttpRequest, ajaxOptions, thrownError) {
+                dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError);
             }
         });
     }
@@ -75,6 +78,9 @@
                         dr_ajax2ajax(json.code);
                     }
                 }
+            },
+            error: function(HttpRequest, ajaxOptions, thrownError) {
+                dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError);
             }
         });
     }

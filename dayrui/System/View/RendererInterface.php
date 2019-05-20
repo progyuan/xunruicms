@@ -1,4 +1,4 @@
-<?php namespace CodeIgniter\View;
+<?php
 
 /**
  * CodeIgniter
@@ -32,9 +32,11 @@
  * @copyright  2014-2019 British Columbia Institute of Technology (https://bcit.ca/)
  * @license    https://opensource.org/licenses/MIT	MIT License
  * @link       https://codeigniter.com
- * @since      Version 3.0.0
+ * @since      Version 4.0.0
  * @filesource
  */
+
+namespace CodeIgniter\View;
 
 /**
  * Interface RendererInterface
@@ -60,7 +62,7 @@ interface RendererInterface
 	 *
 	 * @return string
 	 */
-	public function render(string $view, array $options = null, $saveData = false): string;
+	public function render(string $view, array $options = null, bool $saveData = false): string;
 
 	//--------------------------------------------------------------------
 
@@ -78,7 +80,7 @@ interface RendererInterface
 	 *
 	 * @return string
 	 */
-	public function renderString(string $view, array $options = null, $saveData = false): string;
+	public function renderString(string $view, array $options = null, bool $saveData = false): string;
 
 	//--------------------------------------------------------------------
 

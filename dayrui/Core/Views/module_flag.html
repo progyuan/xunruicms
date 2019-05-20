@@ -22,14 +22,14 @@
                 <td><input class="form-control" type="text" name="flag[{$i}][icon]" value="{$flag[$i]['icon']}" placeholder="{dr_lang('fa fa-user')}" />
                 </td>
                 <td>
-                    {list action=cache name=member.group return=group}
+                    {cache name=member.group return=group}
                     {if $group.id > 2}
                     {loop $group.level $level}
                     {php $iid=$group['id'].'_'.$level['id'];}
                     <input name="flag[{$i}][value][{$iid}]" class="dr_flag_{$i}" iid="{$iid}" id="dr_flag_{$i}_{$iid}" type="hidden" value="{intval($flag[$i]['value'][$iid])}" />
                     {/loop}
                     {/if}
-                    {/list}
+                    {/cache}
                     <label class="hide"><a href="javascript:;" onclick="dr_set_flag('{$i}')" class="btn btn-xs green"> <i class="fa fa-cog"></i> {dr_lang('收费设置')} </a></label>
                     <label id="dr_status_{$i}"></label>
                 </td>

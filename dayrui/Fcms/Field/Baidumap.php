@@ -1,26 +1,47 @@
 <?php namespace Phpcmf\Field;
 
+/* *
+ *
+ * Copyright [2018] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 class Baidumap extends \Phpcmf\Library\A_Field {
-	
-	/**
+
+    /**
      * 构造函数
      */
     public function __construct(...$params) {
         parent::__construct(...$params);
-		$this->fieldtype = ['INT' => 10];
-		$this->defaulttype = 'INT';
+        $this->fieldtype = ['INT' => 10];
+        $this->defaulttype = 'INT';
     }
-	
-	/**
-	 * 字段相关属性参数
-	 *
-	 * @param	array	$value	值
-	 * @return  string
-	 */
-	public function option($option) {
 
-		return [
-			'
+    /**
+     * 字段相关属性参数
+     *
+     * @param	array	$value	值
+     * @return  string
+     */
+    public function option($option) {
+
+        return [
+            '
 				<div class="form-group">
                     <label class="col-md-2 control-label">'.dr_lang('显示级层').'</label>
                     <div class="col-md-9">
@@ -28,7 +49,7 @@ class Baidumap extends \Phpcmf\Library\A_Field {
 						<span class="help-block">'.dr_lang('值越大地图显示越详细').'</span>
                     </div>
                 </div>',
-			'<div class="form-group">
+            '<div class="form-group">
 				<label class="col-md-2 control-label">'.dr_lang('控件宽度').'</label>
 				<div class="col-md-9">
 					<label><input type="text" class="form-control" size="10" name="data[setting][option][width]" value="'.$option['width'].'"></label>
@@ -42,120 +63,139 @@ class Baidumap extends \Phpcmf\Library\A_Field {
 					<label>px</label>
 				</div>
 			</div>'
-		];
-	}
-	
-	/**
-	 * 创建sql语句
-	 */
-	public function create_sql($name, $option, $cname) {
+        ];
+    }
+
+    /**
+     * 创建sql语句
+     */
+    public function create_sql($name, $option, $cname) {
         $tips = $cname ? ' COMMENT \''.$cname.'\'' : '';
-		return 'ALTER TABLE `{tablename}` ADD `'.$name.'_lng` DECIMAL(9,6) NULL '.$tips.', ADD `'.$name.'_lat` DECIMAL(9,6) NULL '.$tips;
-	}
-	
-	/**
-	 * 修改sql语句
-	 */
-	public function alter_sql($name, $option, $cname) {
-		return NULL;
-	}
-	
-	/**
-	 * 删除sql语句
-	 */
-	public function drop_sql($name) {
+        return 'ALTER TABLE `{tablename}` ADD `'.$name.'_lng` DECIMAL(9,6) NULL '.$tips.', ADD `'.$name.'_lat` DECIMAL(9,6) NULL '.$tips;
+    }
+
+    /**
+     * 修改sql语句
+     */
+    public function alter_sql($name, $option, $cname) {
+        return NULL;
+    }
+
+    /**
+     * 删除sql语句
+     */
+    public function drop_sql($name) {
         return 'ALTER TABLE `{tablename}` DROP `'.$name.'_lng`, DROP `'.$name.'_lat`';
-	}
-	
-	/**
-	 * 字段入库值
-	 */
-	public function insert_value($field) {
-		
-		if (\Phpcmf\Service::L('Field')->post[$field['fieldname']]) {
-			$map = explode(',', \Phpcmf\Service::L('Field')->post[$field['fieldname']]);
-			\Phpcmf\Service::L('Field')->data[$field['ismain']][$field['fieldname'].'_lng'] = (double)$map[0];
-			\Phpcmf\Service::L('Field')->data[$field['ismain']][$field['fieldname'].'_lat'] = (double)$map[1];
-		} else {
-			\Phpcmf\Service::L('Field')->data[$field['ismain']][$field['fieldname'].'_lng'] = 0;
-			\Phpcmf\Service::L('Field')->data[$field['ismain']][$field['fieldname'].'_lat'] = 0;
-		}
-		
-	}
-	
-	/**
-	 * 字段值
-	 */
-	public function get_value($name, $data) {
-		return $data[$name.'_lng'] > 0 || $data[$name.'_lat'] > 0 ? $data[$name.'_lng'].','.$data[$name.'_lat'] : '';
-	}
-	
-	/**
-	 * 字段输出
-	 *
-	 * @param	array	$value	值
-	 * @return  string
-	 */
-	public function output($value) {
-	}
-	
-	/**
-	 * 字段显示
-	 *
-	 * @return  string
-	 */
-	public function show($field, $value = null) {
+    }
+
+    // 测试字段是否被创建成功，默认成功为0，需要继承开发
+    public function test_sql($tables, $field) {
+
+        if (!$tables) {
+            return 0;
+        }
+
+        foreach ($tables as $table) {
+            if (!\Phpcmf\Service::M()->db->fieldExists($field.'_lat', $table)) {
+                return '给表['.$table.']创建字段['.$field.'_lng'.']失败';
+            }
+            if (!\Phpcmf\Service::M()->db->fieldExists($field.'_lat', $table)) {
+                return '给表['.$table.']创建字段['.$field.'_lng'.']失败';
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     * 字段入库值
+     */
+    public function insert_value($field) {
+
+        if (\Phpcmf\Service::L('Field')->post[$field['fieldname']]) {
+            $map = explode(',', \Phpcmf\Service::L('Field')->post[$field['fieldname']]);
+            \Phpcmf\Service::L('Field')->data[$field['ismain']][$field['fieldname'].'_lng'] = (double)$map[0];
+            \Phpcmf\Service::L('Field')->data[$field['ismain']][$field['fieldname'].'_lat'] = (double)$map[1];
+        } else {
+            \Phpcmf\Service::L('Field')->data[$field['ismain']][$field['fieldname'].'_lng'] = 0;
+            \Phpcmf\Service::L('Field')->data[$field['ismain']][$field['fieldname'].'_lat'] = 0;
+        }
+
+    }
+
+    /**
+     * 字段值
+     */
+    public function get_value($name, $data) {
+        return $data[$name.'_lng'] > 0 || $data[$name.'_lat'] > 0 ? $data[$name.'_lng'].','.$data[$name.'_lat'] : '';
+    }
+
+    /**
+     * 字段输出
+     *
+     * @param	array	$value	值
+     * @return  string
+     */
+    public function output($value) {
+    }
+
+    /**
+     * 字段显示
+     *
+     * @return  string
+     */
+    public function show($field, $value = null) {
         return $this->input_format($field['fieldname'], $field['name'], dr_baidu_map(
             $value,
             (int)$field['setting']['option']['level'],
-            \Phpcmf\Service::IS_MOBILE() ? '100%' : ($field['setting']['option']['width'] ? $field['setting']['option']['width'] : 400),
+            \Phpcmf\Service::_is_mobile() ? '100%' : ($field['setting']['option']['width'] ? $field['setting']['option']['width'] : 400),
             $field['setting']['option']['height'] ? $field['setting']['option']['height'] : 200,
             'form-control-static'
         ));
     }
 
-	/**
-	 * 字段表单输入
-	 *
-	 * @return  string
-	 */
-	public function input($field, $value = null) {
+    /**
+     * 字段表单输入
+     *
+     * @return  string
+     */
+    public function input($field, $value = null) {
 
-		// 字段禁止修改时就返回显示字符串
-		if ($this->_not_edit($field, $value)) {
-			return $this->show($field, $value);
-		}
+        // 字段禁止修改时就返回显示字符串
+        if ($this->_not_edit($field, $value)) {
+            return $this->show($field, $value);
+        }
 
-		// 字段存储名称
-		$name = $field['fieldname'];
+        // 字段存储名称
+        $name = $field['fieldname'];
 
-		// 字段显示名称
-		$text = ($field['setting']['validate']['required'] ? '<span class="required" aria-required="true"> * </span>' : '').$field['name'];
+        // 字段显示名称
+        $text = ($field['setting']['validate']['required'] ? '<span class="required" aria-required="true"> * </span>' : '').$field['name'];
 
-		// 表单宽度设置
-		$width = \Phpcmf\Service::IS_MOBILE() ? '100%' : ($field['setting']['option']['width'] ? $field['setting']['option']['width'] : 400);
-		$height = $field['setting']['option']['height'] ? $field['setting']['option']['height'] : 200;
+        // 表单宽度设置
+        $width = \Phpcmf\Service::_is_mobile() ? '100%' : ($field['setting']['option']['width'] ? $field['setting']['option']['width'] : 400);
+        $height = $field['setting']['option']['height'] ? $field['setting']['option']['height'] : 200;
 
-		// 表单附加参数
-		$attr = $field['setting']['validate']['formattr'];
+        // 表单附加参数
+        $attr = $field['setting']['validate']['formattr'];
 
-		// 字段提示信息
-		$tips = $field['setting']['validate']['tips'] ? '<span class="help-block" id="dr_'.$field['fieldname'].'_tips">'.$field['setting']['validate']['tips'].'</span>' : '';
+        // 字段提示信息
+        $tips = $field['setting']['validate']['tips'] ? '<span class="help-block" id="dr_'.$field['fieldname'].'_tips">'.$field['setting']['validate']['tips'].'</span>' : '';
 
-		// 当字段必填时，加入html5验证标签
-		$required =  $field['setting']['validate']['required'] ? ' required="required"' : '';
+        // 当字段必填时，加入html5验证标签
+        $required =  $field['setting']['validate']['required'] ? ' required="required"' : '';
 
-		// 地图默认值
-		!$value && $value = $this->get_default_value($field['setting']['option']['value']);
-		$value = ($value == '0,0' || $value == '0.000000,0.000000' || strlen($value) < 5) ? '' : $value;
+        // 地图默认值
+        !$value && $value = $this->get_default_value($field['setting']['option']['value']);
+        $value = ($value == '0,0' || $value == '0.000000,0.000000' || strlen($value) < 5) ? '' : $value;
 
-		$city = \Phpcmf\Service::L('ip')->city(\Phpcmf\Service::L('Input')->ip_address());
-		$level = $field['setting']['option']['level'] ? $field['setting']['option']['level'] : 15;
+        $city = \Phpcmf\Service::L('ip')->city(\Phpcmf\Service::L('Input')->ip_address());
+        $level = $field['setting']['option']['level'] ? $field['setting']['option']['level'] : 15;
 
-		$str = '';
+        $str = '';
         if (!defined('PHPCMF_FIELD_BAIDUMAP')) {
             $str = '
-		<script type="text/javascript" src="http://api.map.baidu.com/api?v=1.2&key="></script>
+		<script type="text/javascript" src="'.(strpos(FC_NOW_URL, 'https') === 0 ? 'https' : 'http').'://api.map.baidu.com/api?v=2.0&ak='.SYS_BDMAP_API.'"></script>
 		<script type="text/javascript" src="'.ROOT_THEME_PATH.'assets/js/baidumap.js"></script>';
             define('PHPCMF_FIELD_BAIDUMAP', 1);
         }
@@ -195,7 +235,7 @@ class Baidumap extends \Phpcmf\Library\A_Field {
 		';
 
 
-		return $this->input_format($name, $text, $str.$tips);
-	}
-	
+        return $this->input_format($name, $text, $str.$tips);
+    }
+
 }

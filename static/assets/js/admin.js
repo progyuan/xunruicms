@@ -196,8 +196,7 @@ function dr_admin_menu_ajax(url, not_sx) {
            // }
         },
         error: function(HttpRequest, ajaxOptions, thrownError) {
-            layer.closeAll('loading');
-            alert(HttpRequest.responseText);
+            dr_ajax_admin_alert_error(HttpRequest, ajaxOptions, thrownError);
         }
     });
 }
@@ -232,8 +231,7 @@ function dr_load_ajax(msg, url, go) {
                     }
                 },
                 error: function(HttpRequest, ajaxOptions, thrownError) {
-                    layer.closeAll('loading');
-                    alert(HttpRequest.responseText);
+                    dr_ajax_admin_alert_error(HttpRequest, ajaxOptions, thrownError);
                 }
             });
         });
@@ -262,8 +260,7 @@ function dr_install_module_select(url) {
                     }
                 },
                 error: function(HttpRequest, ajaxOptions, thrownError) {
-                    layer.closeAll('loading');
-                    alert(HttpRequest.responseText);
+                    dr_ajax_admin_alert_error(HttpRequest, ajaxOptions, thrownError);
                 }
             });
         }, function(index){
@@ -280,8 +277,7 @@ function dr_install_module_select(url) {
                     }
                 },
                 error: function(HttpRequest, ajaxOptions, thrownError) {
-                    layer.closeAll('loading');
-                    alert(HttpRequest.responseText);
+                    dr_ajax_admin_alert_error(HttpRequest, ajaxOptions, thrownError);
                 }
             });
         }
@@ -309,8 +305,7 @@ function dr_install_module(url) {
                     }
                 },
                 error: function(HttpRequest, ajaxOptions, thrownError) {
-                    layer.closeAll('loading');
-                    alert(HttpRequest.responseText);
+                    dr_ajax_admin_alert_error(HttpRequest, ajaxOptions, thrownError);
                 }
             });
         }, function(index){
@@ -341,8 +336,7 @@ function dr_install_app(url) {
                     }
                 },
                 error: function(HttpRequest, ajaxOptions, thrownError) {
-                    layer.closeAll('loading');
-                    alert(HttpRequest.responseText);
+                    dr_ajax_admin_alert_error(HttpRequest, ajaxOptions, thrownError);
                 }
             });
         }, function(index){
@@ -388,8 +382,7 @@ function dr_module_send(title, url) {
                     return false;
                 },
                 error: function(HttpRequest, ajaxOptions, thrownError) {
-                    layer.closeAll('loading');
-                    alert(HttpRequest.responseText);
+                    dr_ajax_admin_alert_error(HttpRequest, ajaxOptions, thrownError);
                 }
             });
             return false;
@@ -428,8 +421,7 @@ function dr_module_send_ajax(url) {
             }
         },
         error: function(HttpRequest, ajaxOptions, thrownError) {
-            layer.closeAll('loading');
-            alert(HttpRequest.responseText);
+            dr_ajax_admin_alert_error(HttpRequest, ajaxOptions, thrownError);
         }
     });
 }
@@ -450,8 +442,7 @@ function dr_add_menu() {
             dr_tips(json.code, json.msg);
         },
         error: function(HttpRequest, ajaxOptions, thrownError) {
-            layer.closeAll('loading');
-            alert(HttpRequest.responseText);
+            dr_ajax_admin_alert_error(HttpRequest, ajaxOptions, thrownError);
         }
     });
 }
@@ -481,8 +472,7 @@ function dr_ajax_open_close(e, url, fan) {
             dr_tips(json.code, json.msg);
         },
         error: function(HttpRequest, ajaxOptions, thrownError) {
-            layer.closeAll('loading');
-            alert(HttpRequest.responseText);
+            dr_ajax_admin_alert_error(HttpRequest, ajaxOptions, thrownError);
         }
     });
 }
@@ -553,8 +543,7 @@ function dr_bfb_submit(title, myform, url) {
             return false;
         },
         error: function(HttpRequest, ajaxOptions, thrownError) {
-            layer.closeAll('loading');
-            alert(HttpRequest.responseText);
+            dr_ajax_admin_alert_error(HttpRequest, ajaxOptions, thrownError);
         }
     });
 }
@@ -677,8 +666,7 @@ function dr_submit_post_todo(myform, url) {
             return false;
         },
         error: function(HttpRequest, ajaxOptions, thrownError) {
-            layer.closeAll('loading');
-            alert(HttpRequest.responseText);
+            dr_ajax_admin_alert_error(HttpRequest, ajaxOptions, thrownError);
         }
     });
 }
@@ -701,8 +689,7 @@ function dr_submit_sql_todo(myform, url) {
             return false;
         },
         error: function(HttpRequest, ajaxOptions, thrownError) {
-            layer.closeAll('loading');
-            alert(HttpRequest.responseText);
+            dr_ajax_admin_alert_error(HttpRequest, ajaxOptions, thrownError);
         }
     });
 }
@@ -722,8 +709,7 @@ function dr_ajax_save(value, url, name) {
             dr_tips(json.code, json.msg);
         },
         error: function(HttpRequest, ajaxOptions, thrownError) {
-            layer.closeAll('loading');
-            alert(HttpRequest.responseText);
+            dr_ajax_admin_alert_error(HttpRequest, ajaxOptions, thrownError);
         }
     });
 }
@@ -953,8 +939,25 @@ function dr_test_html_dir(id) {
             dr_tips(json.code, json.msg);
         },
         error: function(HttpRequest, ajaxOptions, thrownError) {
-            layer.closeAll('loading');
-            alert(HttpRequest.responseText);
+            dr_ajax_admin_alert_error(HttpRequest, ajaxOptions, thrownError)
         }
     });
+}
+
+function dr_ajax_admin_alert_error(HttpRequest, ajaxOptions, thrownError) {
+    layer.closeAll('loading');
+    var msg = HttpRequest.responseText;
+    if (!msg) {
+        dr_tips(0, lang['error']);
+    } else {
+        layer.open({
+            type: 1,
+            title: lang['error'],
+            fix:true,
+            shadeClose: true,
+            shade: 0,
+            area: ['50%', '50%'],
+            content: "<div style=\"padding:10px;\">"+msg+"</div>"
+        });
+    }
 }

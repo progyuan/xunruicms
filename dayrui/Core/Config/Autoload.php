@@ -102,13 +102,11 @@ class Autoload extends \CodeIgniter\Config\AutoloadConfig
 		    'Phpcmf\Table'                => CMSPATH.'Core/Table.php',
 		    'Phpcmf\Model'                => CMSPATH.'Core/Model.php',
 		    'Phpcmf\View'                 => CMSPATH.'Core/View.php',
-		    'Phpcmf\Cloud'                => CMSPATH.'Core/Cloud.php',
 		    'Phpcmf\Hooks'                => CMSPATH.'Core/Hooks.php',
 		    'Phpcmf\Service'              => CMSPATH.'Core/Service.php',
             'Phpcmf\App\Common'           => CMSPATH.'Core/Common.php',
-            'CodeIgniter\Events\Events'	  => CMSPATH.'Extend/Events.php',
-
-            'CodeIgniter\Debug\Toolbar\Collectors\Views'	  => CMSPATH.'Extend/View.php',
+            //'CodeIgniter\Events\Events'	  => CMSPATH.'Extend/Events.php',
+            //'CodeIgniter\Debug\Toolbar\Collectors\Views'	  => CMSPATH.'Extend/View.php',
 
 
 

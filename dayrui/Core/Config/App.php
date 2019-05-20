@@ -275,7 +275,7 @@ class App extends BaseConfig
 	| the better.
 	|
 	*/
-	public $salt = '';
+	public $salt = SYS_KEY;
 
 	//--------------------------------------------------------------------
 

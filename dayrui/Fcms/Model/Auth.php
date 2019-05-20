@@ -1,5 +1,28 @@
 <?php namespace Phpcmf\Model;
 
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 // 后台权限控制模型
 
 class Auth extends \Phpcmf\Model {
@@ -369,6 +392,9 @@ class Auth extends \Phpcmf\Model {
             if (strpos($uri, 'ajax:') === 0) {
                 $uri = substr($uri, 5);
                 $url = 'javascript:dr_admin_menu_ajax(\'' . \Phpcmf\Service::L('router')->url($uri, $p) . '\');';
+            } elseif (strpos($uri, 'blank:') === 0) {
+                $uri = substr($uri, 6);
+                $url = dr_url($uri).'" target="_blank';
             } elseif (strpos($uri, 'add:') === 0) {
                 $w = isset($t[2]) ? $t[2] : '';
                 $h = isset($t[3]) ? $t[3] : '';
@@ -383,14 +409,18 @@ class Auth extends \Phpcmf\Model {
                 $t[1] = 'fa fa-question-circle';
                 $name = dr_lang('在线帮助');
                 if (SYS_HTTPS) {
+                    $url = 'http://help.phpcmf.net/'.$uri.'.html" target="_blank';
+                } else {
+                    $url = 'javascript:dr_help(\''.$uri.'\');';
+                }
+            } elseif ($name == 'ba') {
+                $t[1] = 'fa fa-question-circle';
+                $name = dr_lang('在线帮助');
+                if (SYS_HTTPS) {
                     $url = 'http://help.phpcmf.net/'.$uri.'.html " target="_blank';
                 } else {
                     $url = 'javascript:dr_help(\''.$uri.'\');';
                 }
-                //$id = substr($uri, 5);
-                //$_attr = ' target="_blank"';
-                //$url = dr_help_url($id);
-                //$_li_class = 'remove-fa-circle';
             } elseif (strpos($uri, 'hide:') === 0) {
                 $uri = substr($uri, 5);
                 $url = dr_now_url();
@@ -429,7 +459,7 @@ class Auth extends \Phpcmf\Model {
     // 模块后台菜单
     public function _module_menu($module, $list_name, $list_url, $post_url) {
 
-        $module_menu = '<a class="dropdown-toggle {ON}" data-toggle="dropdown" aria-expanded="true"><i class="fa fa-angle-double-down"></i></a>';
+        $module_menu = '<a class="dropdown-toggle {ON}"  data-hover="dropdown" data-close-others="true" aria-expanded="true"><i class="fa fa-angle-double-down"></i></a>';
         $module_menu.= '<ul class="dropdown-menu">';
         $this->_is_admin_auth($module['dirname'].'/home/index') && $module_menu.= '<li><a href="'.\Phpcmf\Service::L('router')->url($module['dirname'].'/home/index').'"> <i class="'.dr_icon($module['icon']).'"></i> '.dr_lang('%s管理', $module['cname']).' </a></li>';
         $this->_is_admin_auth($module['dirname'].'/comment/index') && $module['comment'] && $module_menu.= '<li><a href="'.\Phpcmf\Service::L('router')->url($module['dirname'].'/comment/index').'"> <i class="fa fa-comment"></i> '.dr_lang('评论管理').' </a></li>';
@@ -456,7 +486,7 @@ class Auth extends \Phpcmf\Model {
 
         // 显示菜单
         $menu = '';
-        $menu.= '<li> <a href="'.$list_url.'" class="{ON}">'.$list_name.'</a> '.$module_menu.' <i class="fa fa-circle"></i> </li>';
+        $menu.= '<li class="dropdown"> <a href="'.$list_url.'" class="{ON}">'.$list_name.'</a> '.$module_menu.' <i class="fa fa-circle"></i> </li>';
 
         // 非内容页面就显示返回链接
         if (\Phpcmf\Service::L('router')->uri() != $module['dirname'].'/home/index'
@@ -478,7 +508,7 @@ class Auth extends \Phpcmf\Model {
     // 导航后台菜单
     public function _navigator_menu($type, $list_name, $list_url, $post_url) {
 
-        $module_menu = '<a class="dropdown-toggle {ON}" data-toggle="dropdown" aria-expanded="true"><i class="fa fa-angle-double-down"></i></a>';
+        $module_menu = '<a class="dropdown-toggle {ON}" data-toggle="dropdown" data-close-others="true" aria-expanded="true"><i class="fa fa-angle-double-down"></i></a>';
         $module_menu.= '<ul class="dropdown-menu">';
 
         if ($type) {
@@ -491,7 +521,7 @@ class Auth extends \Phpcmf\Model {
 
         // 显示菜单
         $menu = '';
-        $menu.= '<li> <a href="'.$list_url.'" class="{ON}">'.$list_name.'</a> '.$module_menu.' <i class="fa fa-circle"></i> </li>';
+        $menu.= '<li class="dropdown"> <a href="'.$list_url.'" class="{ON}">'.$list_name.'</a> '.$module_menu.' <i class="fa fa-circle"></i> </li>';
         $post_url && $menu.= '<li> <a href="'.$post_url.'" class="'.(\Phpcmf\Service::L('router')->method == 'add' ? 'on' : '').'"> <i class="fa fa-plus"></i> '.dr_lang('添加').'</a> <i class="fa fa-circle"></i> </li>';
         \Phpcmf\Service::L('router')->method == 'edit' && $menu.= '<li> <a href="'.dr_now_url().'" class="on"> <i class="fa fa-edit"></i> '.dr_lang('修改').'</a> <i class="fa fa-circle"></i> </li>';
         // 自定义字段

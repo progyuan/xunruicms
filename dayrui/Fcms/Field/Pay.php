@@ -1,5 +1,26 @@
 <?php namespace Phpcmf\Field;
 
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 class Pay extends \Phpcmf\Library\A_Field  {
 	
 	/**
@@ -71,7 +92,7 @@ class Pay extends \Phpcmf\Library\A_Field  {
             // 字段显示名称
             $text = ($field['setting']['validate']['required'] ? '<span class="required" aria-required="true"> * </span>' : '').$field['name'];
             // 表单宽度设置
-            $width = \Phpcmf\Service::IS_MOBILE() ? '100%' : ((int)$field['setting']['option']['width'] ? $field['setting']['option']['width'] : 250);
+            $width = \Phpcmf\Service::_is_mobile() ? '100%' : ((int)$field['setting']['option']['width'] ? $field['setting']['option']['width'] : 250);
 
             // 表单附加参数
             $attr = 'style="width:'.$width.(is_numeric($width) ? 'px' : '').';" '.$field['setting']['validate']['formattr'];
@@ -93,7 +114,8 @@ class Pay extends \Phpcmf\Library\A_Field  {
             // 付款方式
             $html['pay_type'] = [];
             $html['pay_default'] = '';
-            if ($field['setting']['option']['is_finecms']
+            if (\Phpcmf\Service::C()->member
+                && $field['setting']['option']['is_finecms']
                 && is_file(ROOTPATH.'api/pay/finecms/config.php')) {
                 // 余额支付
                 $html['pay_default'] = 'finecms';

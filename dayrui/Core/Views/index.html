@@ -17,7 +17,7 @@
                     <a class="dropdown-toggle popovers" data-container="body" data-trigger="hover" data-placement="bottom" data-content="{dr_lang($t.name)}"  href="javascript:Mlink('{$t.id}', '{$t.left_id}', '{$t.link_id}', '{$t.url}');">
                         <i class="{$t.icon}"></i>
                         <br>
-                        <i class="top-txt-menu">{$t.name}</i>
+                        <i class="top-txt-menu">{dr_lang($t.name)}</i>
                     </a>
                 </li>
                 {/loop}
@@ -34,7 +34,7 @@
                         {loop $top $t}
                         <li>
                             <a id="dr_mini_menu_top_{$t.id}" class="dr_mini_menu_top {if $t.id==$first}open{/if}" href="javascript:Mlink('{$t.id}', '{$t.left_id}', '{$t.link_id}', '{$t.url}');">
-                                <i class="{$t.icon}"></i> {$t.name}
+                                <i class="{$t.icon}"></i> {dr_lang($t.name)}
                             </a>
                         </li>
                         {/loop}
@@ -191,8 +191,7 @@
                 dr_tips(json.code, json.msg);
             },
             error: function(HttpRequest, ajaxOptions, thrownError) {
-                layer.closeAll('loading');
-                alert(HttpRequest.responseText);
+                dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError)
             }
         });
     }
@@ -211,7 +210,7 @@
                     dr_tips(json.code, json.msg);
                 },
                 error: function(HttpRequest, ajaxOptions, thrownError) {
-                    alert(HttpRequest.responseText);
+                    dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError)
                 }
             });
         }

@@ -95,11 +95,13 @@
                                                 <div> 没帮助 </div>
                                                 <span class="badge badge-danger" id="module_digg_{$id}_0"> {intval($oppose)} </span>
                                             </a>
+                                            {if dr_is_app('shang')}
                                             <a href="{Router::donation_url($id)}" class="icon-btn">
                                                 <i class="fa fa-rmb"></i>
                                                 <div> 打赏 </div>
                                                 <span class="badge badge-danger"> {floatval($donation)} </span>
                                             </a>
+                                            {/if}
                                         </div>
                                     </div>
                                 </div>

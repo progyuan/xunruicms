@@ -1,5 +1,28 @@
 <?php namespace Phpcmf\Model;
 
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 // 字段操作表
 class Field extends \Phpcmf\Model
 {
@@ -93,10 +116,13 @@ class Field extends \Phpcmf\Model
      * 添加字段
      *
      * @param	array	$data
-     * @param	string	$sql
+     * @param	object	$field
      * @return	void
      */
-    public function add($data, $sql) {
+    public function add($data, $field) {
+
+        // 先读取sql语句
+        $sql = $field->create_sql($data['fieldname'], $data['setting']['option'], $data['name']);
 
         // 当为编辑器类型时，关闭xss过滤
         $data['fieldtype'] == 'Ueditor' && $data['setting']['validate']['xss'] = 1;
@@ -115,7 +141,17 @@ class Field extends \Phpcmf\Model
         $rt = $this->table('field')->insert($data);
 
         // 执行数据库语句
-        $rt['code'] && $sql && $this->update_table($sql, $data['ismain']);
+        if ($rt['code'] && $sql) {
+            $this->_table_field = [];
+            $this->update_table($sql, $data['ismain']);
+            // 验证字段是否上传成功
+            $this->db->resetDataCache();// 清除缓存，影响字段存在的重复
+            if ($this->_table_field && $yz = $field->test_sql($this->_table_field, $data['fieldname'])) {
+                // 删除本字段
+                $this->table('field')->delete($rt['code']);
+                return dr_return_data(0, dr_lang('字段创建失败: %s', $yz));
+            }
+        }
         
         return $rt;
     }
@@ -193,23 +229,12 @@ class Field extends \Phpcmf\Model
             return 0;
         }
 
-        $field = $this->db->query('select '.$id.' from '.$table.' order by '.$id.' asc LIMIT 1')->getFieldData();
-        if (!$field) {
-            return 0;
-        }
-
-        foreach ($field as $t) {
-            if ($t->name == $name) {
-                return 1;
-            }
-        }
-
-        return 0;
+        return $this->db->fieldExists($name, $table);
     }
 
     //--------------------------------------------------------------------
 
-    // 栏目附加字段
+    // 栏目模型字段
     private function _sql_category_data($sql, $ismain) {
         $table = $this->dbprefix(SITE_ID.'_'.$this->data['dirname'].'_category_data'); // 主表名称
         if (!$this->db->tableExists($table)) {
@@ -218,12 +243,14 @@ class Field extends \Phpcmf\Model
         if ($ismain) {
             // 更新主表 格式: 站点id_名称
             $this->db->simpleQuery(str_replace('{tablename}', $table, $sql));
+            $this->_table_field[] = $table;
         } else {
             for ($i = 0; $i < 200; $i ++) {
                 if (!$this->db->query("SHOW TABLES LIKE '".$table.'_'.$i."'")->getRowArray()) {
                     break;
                 }
                 $this->db->simpleQuery(str_replace('{tablename}', $table.'_'.$i, $sql)); //执行更新语句
+                $this->_table_field[] = $table.'_'.$i;
             }
         }
     }
@@ -257,6 +284,7 @@ class Field extends \Phpcmf\Model
                 return;
             }
             $this->db->simpleQuery(str_replace('{tablename}', $table, $sql));
+            $this->_table_field[] = $table;
         }
     }
     // 字段是否存在
@@ -283,6 +311,7 @@ class Field extends \Phpcmf\Model
                 return;
             }
             $this->db->simpleQuery(str_replace('{tablename}', $table, $sql));
+            $this->_table_field[] = $table;
         }
     }
     // 字段是否存在
@@ -302,6 +331,7 @@ class Field extends \Phpcmf\Model
     // 会员字段
     private function _sql_member($sql, $ismain) {
         $this->db->simpleQuery(str_replace('{tablename}', $this->dbprefix('member_data'), $sql));
+        $this->_table_field[] = $this->dbprefix('member_data');
     }
     // 字段是否存在
     private function _field_member($name) {
@@ -327,12 +357,14 @@ class Field extends \Phpcmf\Model
         if ($ismain) {
             // 更新主表 格式: 站点id_名称
             $this->db->simpleQuery(str_replace('{tablename}', $table, $sql));
+            $this->_table_field[] = $table;
         } else {
             for ($i = 0; $i < 200; $i ++) {
                 if (!$this->db->query("SHOW TABLES LIKE '".$table.'_data_'.$i."'")->getRowArray()) {
                     break;
                 }
                 $this->db->simpleQuery(str_replace('{tablename}', $table.'_data_'.$i, $sql)); //执行更新语句
+                $this->_table_field[] = $table.'_data_'.$i;
             }
         }
     }
@@ -363,6 +395,7 @@ class Field extends \Phpcmf\Model
             return;
         }
         $this->db->simpleQuery(str_replace('{tablename}', $table, $sql));
+        $this->_table_field[] = $table;
     }
     // 字段是否存在
     private function _field_linkage($name) {
@@ -384,6 +417,7 @@ class Field extends \Phpcmf\Model
             return;
         }
         $this->db->simpleQuery(str_replace('{tablename}', $table, $sql));
+        $this->_table_field[] = $table;
     }
     // 字段是否存在
     private function _field_tag($name) {
@@ -405,6 +439,7 @@ class Field extends \Phpcmf\Model
             return;
         }
         $this->db->simpleQuery(str_replace('{tablename}', $table, $sql));
+        $this->_table_field[] = $table;
     }
     // 字段是否存在
     private function _field_navigator($name) {
@@ -428,6 +463,7 @@ class Field extends \Phpcmf\Model
             return;
         }
         $this->db->simpleQuery(str_replace('{tablename}', $table, $sql));
+        $this->_table_field[] = $table;
     }
     // 字段是否存在
     private function _field_page($name) {
@@ -457,6 +493,7 @@ class Field extends \Phpcmf\Model
             if ($ismain) {
                 // 更新主表 格式: 站点id_名称
                 $this->db->simpleQuery(str_replace('{tablename}', $table, $sql));
+                $this->_table_field[] = $table;
             } else {
                 // 更新副表 格式: 名称_站点id_data_副表id
                 for ($i = 0; $i < 200; $i ++) {
@@ -464,6 +501,7 @@ class Field extends \Phpcmf\Model
                         break;
                     }
                     $this->db->simpleQuery(str_replace('{tablename}', $table.'_data_'.$i, $sql)); //执行更新语句
+                    $this->_table_field[] = $table.'_data_'.$i;
                 }
             }
         }
@@ -501,6 +539,7 @@ class Field extends \Phpcmf\Model
             if ($ismain) {
                 // 更新主表 格式: 站点id_名称
                 $this->db->simpleQuery(str_replace('{tablename}', $table, $sql));
+                $this->_table_field[] = $table;
             } else {
                 // 更新副表 格式: 名称_站点id_data_副表id
                 for ($i = 0; $i < 200; $i ++) {
@@ -508,6 +547,7 @@ class Field extends \Phpcmf\Model
                         break;
                     }
                     $this->db->simpleQuery(str_replace('{tablename}', $table.'_data_'.$i, $sql)); //执行更新语句
+                    $this->_table_field[] = $table.'_data_'.$i;
                 }
             }
         }
@@ -541,6 +581,7 @@ class Field extends \Phpcmf\Model
             return;
         }
         $this->db->simpleQuery(str_replace('{tablename}', $table, $sql));
+        $this->_table_field[] = $table;
     }
     // 字段是否存在
     private function _field_table($name) {

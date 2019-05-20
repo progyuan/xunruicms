@@ -21,13 +21,7 @@
                 <div class="tab-pane {if $page==0}active{/if}" id="tab_0">
 
                     <div class="form-body">
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">{dr_lang('1元兑换')}</label>
-                            <div class="col-md-9">
-                                <label><input class="form-control input-small" style="width:75px!important;" type="text" name="data[convert]" value="{$data['convert']}" /></label>
-                                <label>&nbsp;&nbsp;SITE_SCORE</label>
-                            </div>
-                        </div>
+
                         <div class="form-group">
                             <label class="col-md-2 control-label">SITE_EXPERIENCE</label>
                             <div class="col-md-9">
@@ -40,6 +34,13 @@
                             <div class="col-md-9">
                                 <label><input class="form-control" type="text" name="data[score]" value="{$data['score']}" ></label>
                                 <span class="help-block">{dr_lang('例如“虚拟币”，“F币”，“A币”，“B币”等等')}</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">{dr_lang('1元兑换')}</label>
+                            <div class="col-md-9">
+                                <label><input class="form-control input-small" style="width:75px!important;" type="text" name="data[convert]" value="{$data['convert']}" /></label>
+                                <label>&nbsp;&nbsp;{SITE_SCORE}</label>
                             </div>
                         </div>
                         <div class="form-group">
@@ -57,6 +58,7 @@
                                 <span class="help-block">{dr_lang('用户中心在线充值功能的最小充值金额')}</span>
                             </div>
                         </div>
+                        {if dr_is_app('shang')}
                         <div class="form-group">
                             <label class="col-md-2 control-label">{dr_lang('最小打赏金额')}</label>
                             <div class="col-md-9">
@@ -65,6 +67,7 @@
                                 <span class="help-block">{dr_lang('模块内容打赏功能的最小打赏输入金额值')}</span>
                             </div>
                         </div>
+                        {/if}
                     </div>
 
                 </div>

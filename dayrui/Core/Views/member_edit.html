@@ -38,7 +38,9 @@
                 }
                 dr_layer_tips(json.msg);
             },
-            error: function(HttpRequest, ajaxOptions, thrownError) {}
+            error: function(HttpRequest, ajaxOptions, thrownError) {
+                dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError);
+            }
         });
     }
     function dr_delete(id) {
@@ -58,7 +60,9 @@
                 }
                 dr_layer_tips(json.msg);
             },
-            error: function(HttpRequest, ajaxOptions, thrownError) {}
+            error: function(HttpRequest, ajaxOptions, thrownError) {
+                dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError);
+            }
         });
     }
 </script>
@@ -86,6 +90,11 @@
                     <a href="#tab_5" data-toggle="tab" onclick="$('#dr_page').val('5')"> <i class="fa fa-calendar"></i> {dr_lang('登录记录')} </a>
                 </li>
             </ul>
+            <div class="actions">
+                <div class="btn-group">
+                    <a class="btn" href="{$reply_url}"> <i class="fa fa-mail-reply"></i> {dr_lang('返回列表')}</a>
+                </div>
+            </div>
         </div>
         <div class="portlet-body">
 
@@ -288,6 +297,7 @@
     <div class="portlet-body form myfooter">
         <div class="form-actions text-center">
             <button type="button" onclick="dr_ajax_submit('{dr_now_url()}&page='+$('#dr_page').val(), 'myform', '2000')" class="btn green"> <i class="fa fa-save"></i> {dr_lang('保存')}</button>
+            <a href="{dr_url('member/alogin_index', ['id'=>$id])}" target="_blank" class="btn red"> <i class="fa fa-user"></i> {dr_lang('授权登录')}</a>
         </div>
     </div>
 </form>

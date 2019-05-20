@@ -10,9 +10,6 @@ header('Content-Type: text/html; charset=utf-8');
 if (version_compare(PHP_VERSION, '7.1.0') < 0) {
     echo "<font color=red>PHP版本必须在7.1以上</font>";exit;
 }
-if (!extension_loaded('ionCube Loader')) {
-    echo "<font color=red>必须安装最新版的ionCube组件</font>";exit;
-}
 
 
 define('WEBPATH', dirname(__FILE__).'/');

@@ -1,10 +1,28 @@
 <?php namespace Phpcmf\Controllers\Member;
 
-/**
- * PHPCMF框架文件
- * 二次开发时请勿修改本文件
- * 成都天睿信息技术有限公司 www.phpcmf.net
- */
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 
 class Scorelog extends \Phpcmf\Table
 {
@@ -81,13 +99,20 @@ class Scorelog extends \Phpcmf\Table
         if (IS_POST) {
 
             $value = intval(\Phpcmf\Service::L('Input')->post('value'));
-            !$this->member_cache['pay']['convert'] && $this->_json(0, dr_lang('系统没有设置兑换比例'));
-            !$value && $this->_json(0, dr_lang('兑换数量必须填写'), ['field' => 'value']);
-            $value % $this->member_cache['pay']['convert'] != 0 && $this->_json(0, dr_lang('兑换数量必须比例数的倍数'), ['field' => 'value']);
+            if (!$this->member_cache['pay']['convert']) {
+                $this->_json(0, dr_lang('系统没有设置兑换比例'));
+            } elseif (!$value) {
+                $this->_json(0, dr_lang('兑换数量必须填写'), ['field' => 'value']);
+            } elseif ($value % $this->member_cache['pay']['convert'] != 0) {
+                $this->_json(0, dr_lang('兑换数量必须比例数的倍数'), ['field' => 'value']);
+            }
 
             $price = floatval($value / $this->member_cache['pay']['convert']);
-            $price <= 0 && $this->_json(0, dr_lang('支付价格有误'), ['field' => 'value']);
-            $this->member['money'] - $price < 0 && $this->_json(0, dr_lang('账户余额不足'));
+            if ($price <= 0) {
+                $this->_json(0, dr_lang('支付价格有误'), ['field' => 'value']);
+            } elseif ($this->member['money'] - $price < 0) {
+                $this->_json(0, dr_lang('账户余额不足'));
+            }
 
             $rt = \Phpcmf\Service::M('Pay')->add_money($this->uid, -$price);
             !$rt['code'] && $this->_json(0, $rt['msg']);

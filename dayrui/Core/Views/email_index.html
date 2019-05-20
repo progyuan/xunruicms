@@ -69,6 +69,9 @@
             success: function(json) {
                 dr_tips(json.code, json.msg);
                 $("#dr_sending_"+id).html(" <i class='fa fa-send'></i> {dr_lang('发送测试')}");
+            },
+            error: function(HttpRequest, ajaxOptions, thrownError) {
+                dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError)
             }
         });
     }

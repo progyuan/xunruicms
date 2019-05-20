@@ -13,6 +13,9 @@
                 <li class="{if $page==1}active{/if}">
                     <a href="#tab_1" data-toggle="tab" onclick="$('#dr_page').val('1')"> <i class="fa fa-photo"></i> {dr_lang('缩略图设置')} </a>
                 </li>
+                <li class="{if $page==2}active{/if}">
+                    <a href="#tab_2" data-toggle="tab" onclick="$('#dr_page').val('2')"> <i class="fa fa-user"></i> {dr_lang('头像存储')} </a>
+                </li>
             </ul>
         </div>
         <div class="portlet-body">
@@ -75,6 +78,34 @@
                                 <div class="col-md-9">
                                     <input class="form-control input-xlarge" type="text" name="image[cache_url]" value="{$image['cache_url']}" >
                                     <span class="help-block">{dr_lang('缩略图文件访问地址，可单独指定域名，默认/uploadfile/thumb/')}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <div class="tab-pane {if $page==2}active{/if}" id="tab_2">
+                    <div class="form-body">
+
+
+
+                        <div class="form-body">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">{dr_lang('头像存储目录')}</label>
+                                <div class="col-md-9">
+                                    <input class="form-control input-xlarge" type="text" name="image[avatar_path]" value="{$image['avatar_path']}" >
+                                    <span class="help-block">{dr_lang('绝对路径请以“/”开头，默认/api/member/')}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-body">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">{dr_lang('头像访问URL地址')}</label>
+                                <div class="col-md-9">
+                                    <input class="form-control input-xlarge" type="text" name="image[avatar_url]" value="{$image['avatar_url']}" >
+                                    <span class="help-block">{dr_lang('头像文件访问地址，可单独指定域名，默认/api/member/')}</span>
                                 </div>
                             </div>
                         </div>

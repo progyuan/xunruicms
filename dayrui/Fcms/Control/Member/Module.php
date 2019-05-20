@@ -1,5 +1,30 @@
 <?php namespace Phpcmf\Member;
 
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
+
+
 // 内容模块操作类 基于 Ftable
 class Module extends \Phpcmf\Table
 {
@@ -12,7 +37,7 @@ class Module extends \Phpcmf\Table
         $this->is_data = 1;
         // 是否支持模块表
         $this->is_module_index = 1;
-        // 是否支持附加字段
+        // 是否支持模型字段
         $this->is_category_data_field = (int)$this->module['category_data_field'];
         // 模板前缀(避免混淆)
         $this->tpl_prefix = 'module_';
@@ -80,13 +105,12 @@ class Module extends \Phpcmf\Table
                 );
             }
             !$category[$catid] && exit($this->_msg(0, dr_lang('当前栏目(%s)没有发布权限', (int)$catid)));
-            $this->is_post_code = dr_member_auth($this->member_authid, $this->member_cache['auth_module'][SITE_ID][$this->module['dirname']]['category'][$this->is_get_catid]['code']);
+            $this->is_post_code = dr_member_auth($this->member_authid, $this->member_cache['auth_module'][SITE_ID][$this->module['dirname']]['category'][$catid]['code']);
         } else {
             // 不走栏目权限，走自定义权限
             $this->content_model->_hcategory_member_add_auth();
             $this->is_post_code = $this->content_model->_hcategory_member_post_code();
         }
-
 
         $this->is_get_catid = $catid;
         $draft && $draft['catid'] = $catid;
@@ -443,8 +467,6 @@ class Module extends \Phpcmf\Table
                 },
                 // 保存之后
                 function ($id, $data, $old) {
-                    // 判断栏目是否变化
-                    $old && !$this->is_hcategory && $data[1]['catid'] != $old['catid'] && $this->content_model->update_catid($id, $data[1]['catid']);
                     return $data;
                 }
             );

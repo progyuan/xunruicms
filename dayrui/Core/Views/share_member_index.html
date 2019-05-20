@@ -46,7 +46,7 @@
                 <form id="form1">
                     {dr_form_hidden()}
                     <div class="form-body">
-                        <div class="form-group">
+                        <div class="table-scrollable">
                             <table class="fc-user-table table table-striped table-bordered table-checkable dataTable">
                                 <thead>
                                 <tr class="heading">
@@ -99,7 +99,7 @@
                 <form id="form2">
                     {dr_form_hidden()}
                     <div class="form-body">
-                        <div class="form-group">
+                        <div class="table-scrollable">
                             <table class="fc-user-table table table-striped table-bordered table-checkable dataTable">
                                 <thead>
                                 <tr class="heading">
@@ -154,7 +154,7 @@
         <form id="form3">
             {dr_form_hidden()}
             <div class="form-body">
-                <div class="form-group">
+                <div class="table-scrollable">
                     <table class="fc-user-table table table-striped table-bordered table-checkable dataTable">
                         <thead>
                         <tr class="heading">
@@ -261,13 +261,13 @@
                                                 <div class="input-inline input-small">
                                                     <div class="input-group">
                                                         <input type="text" name="id[{$cat.id}][exp][{$i}]" value="{$auth[category][$cat.id]['exp'][$i]}" class="form-control" placeholder="">
-                                                        <span class="input-group-addon">{dr_lang('经验值')}</span>
+                                                        <span class="input-group-addon">+{SITE_EXPERIENCE}</span>
                                                     </div>
                                                 </div>
                                                 <div class="input-inline input-small">
                                                     <div class="input-group">
                                                         <input type="text" name="id[{$cat.id}][score][{$i}]" value="{$auth[category][$cat.id]['score'][$i]}" class="form-control" placeholder="">
-                                                        <span class="input-group-addon">{dr_lang('虚拟币')}</span>
+                                                        <span class="input-group-addon">±{SITE_SCORE}</span>
                                                     </div>
                                                 </div>
                                                 <div class="input-inline input-small">
@@ -296,6 +296,9 @@
                         {/loop}
                         </tbody>
                     </table>
+                    <p>
+                        {dr_lang('±功能表示：正数为增加值，负数为扣减值')}
+                    </p>
                 </div>
                 <div class="form-actions text-center">
                     <button type="button" onclick="dr_submit_post_todo('form3', '{dr_url(APP_DIR.'/member/add')}&at=category')" class="btn blue"> <i class="fa fa-save"></i> {dr_lang('保存配置')}</button>
@@ -318,7 +321,7 @@
         <form id="form7">
             {dr_form_hidden()}
             <div class="form-body">
-                <div class="form-group">
+                <div class="table-scrollable">
                     <table class="fc-user-table table table-striped table-bordered table-checkable dataTable">
                         <thead>
                         <tr class="heading">
@@ -399,13 +402,13 @@
                                                 <div class="input-inline input-small">
                                                     <div class="input-group">
                                                         <input type="text" name="id[{$catid}][exp][{$i}]" value="{$auth[form][$catid]['exp'][$i]}" class="form-control" placeholder="">
-                                                        <span class="input-group-addon">{dr_lang('+经验值')}</span>
+                                                        <span class="input-group-addon">+{SITE_EXPERIENCE}</span>
                                                     </div>
                                                 </div>
                                                 <div class="input-inline input-small">
                                                     <div class="input-group">
                                                         <input type="text" name="id[{$catid}][score][{$i}]" value="{$auth[form][$catid]['score'][$i]}" class="form-control" placeholder="">
-                                                        <span class="input-group-addon">{dr_lang('+虚拟币')}</span>
+                                                        <span class="input-group-addon">+{SITE_SCORE}</span>
                                                     </div>
                                                 </div>
                                                 <div class="input-inline input-small">
@@ -497,13 +500,13 @@
                                     <div class="input-inline input-small">
                                         <div class="input-group">
                                             <input type="text" name="id[exp][{$i}]" value="{$auth[comment]['exp'][$i]}" class="form-control" placeholder="">
-                                            <span class="input-group-addon">{dr_lang('+经验值')}</span>
+                                            <span class="input-group-addon">+{SITE_EXPERIENCE}</span>
                                         </div>
                                     </div>
                                     <div class="input-inline input-small">
                                         <div class="input-group">
                                             <input type="text" name="id[score][{$i}]" value="{$auth[comment]['score'][$i]}" class="form-control" placeholder="">
-                                            <span class="input-group-addon">{dr_lang('+虚拟币')}</span>
+                                            <span class="input-group-addon">+{SITE_SCORE}</span>
                                         </div>
                                     </div>
                                 </td>

@@ -1,10 +1,28 @@
 <?php namespace Phpcmf\Controllers\Admin;
 
-/**
- * PHPCMF框架文件
- * 二次开发时请勿修改本文件
- * 成都天睿信息技术有限公司 www.phpcmf.net
- */
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 
 class Check extends \Phpcmf\Common
 {
@@ -21,6 +39,7 @@ class Check extends \Phpcmf\Common
         '08' => '程序兼容性检测',
         '09' => '网站安全性检测',
         '10' => '数据负载优化检测',
+        '11' => '域名绑定检测',
 
     ];
 
@@ -67,8 +86,12 @@ class Check extends \Phpcmf\Common
 
 
             case '02':
-
-                if (!function_exists('ini_get')) {
+			
+				if (!function_exists('mb_substr')) {
+                    $this->_json(0, 'PHP不支持mbstring扩展，必须开启');
+                } elseif (!function_exists('curl_init')) {
+                     $this->halt('PHP不支持CURL扩展，必须开启', 0);
+				} elseif (!function_exists('ini_get')) {
                     $this->_json(0, '系统函数ini_get未启用，将无法获取到系统环境参数');
                 } elseif (!function_exists('gzopen')) {
                     $this->halt('zlib扩展未启用，您将无法进行在线升级、无法下载插件等', 0);
@@ -78,8 +101,6 @@ class Check extends \Phpcmf\Common
                      $this->halt('PHP不支持fsockopen，可能充值接口无法使用、手机短信无法发送、电子邮件无法发送、一键登录无法登录等', 0);
                 } elseif (!function_exists('openssl_open')) {
                      $this->halt('PHP不支持openssl，可能充值接口无法使用、手机短信无法发送、电子邮件无法发送、一键登录无法登录等', 0);
-                } elseif (!function_exists('curl_init')) {
-                     $this->halt('PHP不支持CURL扩展，可能充值接口无法使用、手机短信无法发送、电子邮件无法发送、一键登录无法登录等', 0);
                 } elseif (!ini_get('allow_url_fopen')) {
                      $this->halt('allow_url_fopen未启用，远程图片无法保存、网络图片无法上传、可能充值接口无法使用、手机短信无法发送、电子邮件无法发送、一键登录无法登录等', 0);
                 }
@@ -88,10 +109,11 @@ class Check extends \Phpcmf\Common
             case '03':
 
                 list($thumb_path) = dr_thumb_path();
+                list($avatar_path) = dr_avatar_path();
 
                 $dir = array(
                     WRITEPATH => '无法生成系统缓存文件',
-                    ROOTPATH.'api/member/' => '无法上传头像',
+                    $avatar_path => '无法上传头像',
                     WRITEPATH.'data/' => '无法生成系统配置文件，会导致系统配置无效',
                     $thumb_path => '无法生成缩略图缓存文件',
                     SYS_UPLOAD_PATH => '无法上传附件',
@@ -137,13 +159,13 @@ class Check extends \Phpcmf\Common
 
                 // 模板文件
                 if (!is_file(TPLPATH.'pc/'.SITE_TEMPLATE.'/home/index.html')) {
-                    $this->halt('网站前端模板【电脑版】不存在：/pc/'.SITE_TEMPLATE.'/home/index.html', 0);
+                    $this->halt('网站前端模板【电脑版】不存在：TPLPATH/pc/'.SITE_TEMPLATE.'/home/index.html', 0);
                 } elseif (!is_file(TPLPATH.'pc/'.SITE_TEMPLATE.'/member/index.html')) {
-                    $this->halt('用户中心模板【电脑版】不存在：/pc/'.SITE_TEMPLATE.'/member/index.html', 0);
+                    $this->halt('用户中心模板【电脑版】不存在：TPLPATH/pc/'.SITE_TEMPLATE.'/member/index.html', 0);
                 } elseif (!is_file(TPLPATH.'mobile/'.SITE_TEMPLATE.'/home/index.html')) {
-                    $this->halt('网站前端模板【手机版】不存在：/mobile/'.SITE_TEMPLATE.'/home/index.html', 1);
+                    $this->halt('网站前端模板【手机版】不存在：TPLPATH/mobile/'.SITE_TEMPLATE.'/home/index.html', 1);
                 } elseif (!is_file(TPLPATH.'mobile/'.SITE_TEMPLATE.'/member/index.html')) {
-                    $this->halt('用户中心模板【手机版】不存在：/mobile/'.SITE_TEMPLATE.'/member/index.html', 1);
+                    $this->halt('用户中心模板【手机版】不存在：TPLPATH/mobile/'.SITE_TEMPLATE.'/member/index.html', 1);
                 }
                 break;
 
@@ -294,6 +316,42 @@ class Check extends \Phpcmf\Common
 
             case '11':
 
+                // 域名检测
+                list($module, $data) = \Phpcmf\Service::M('Site')->domain();
+                if ($data) {
+
+                    if (isset($data['mobile_domain']) && $data['mobile_domain']) {
+                        $url = dr_http_prefix($data['mobile_domain']) . '/api.php';
+                        if (!function_exists('stream_context_create')) {
+                            $this->halt('函数没有被启用：stream_context_create', 0);
+                        }
+                        $context = stream_context_create(array(
+                            'http' => array(
+                                'timeout' => 5 //超时时间，单位为秒
+                            )
+                        ));
+                        $code = file_get_contents($url, 0, $context);
+                        if ($code != 'phpcmf ok') {
+                            $this->halt('手机域名绑定异常，无法访问：' . $url . '，可以尝试手动访问此地址，如果提示phpcmf ok就表示成功', 0);
+                        }
+                    } else {
+                        $this->halt('当前站点没有绑定手机域名，可能无法使用移动端界面', 0);
+                    }
+                    foreach ($data as $domain) {
+                        if (strpos($domain, '/') !== false) {
+                            $this->halt('域名【'.$domain.'】格式不对，请不要带/符号', 0);
+                        }
+                    }
+                }
+                $this->_json(1,'通过');
+
+                break;
+
+            case '12':
+                break;
+
+            case '13':
+
                 break;
 
         }
@@ -311,9 +369,14 @@ class Check extends \Phpcmf\Common
     }
 
     private function _check_table_counts($table, $name) {
+
+	    $ptable = \Phpcmf\Service::M()->dbprefix($table);
+	    if (!\Phpcmf\Service::M()->db->tableExists($ptable)) {
+            return '数据表【'.$name.'/'.$ptable.'】不存在，请创建';
+        }
 	    $counts = \Phpcmf\Service::M()->table($table)->counts();
 	    if ($counts > 100000) {
-            return '数据表【'.$name.'/'.\Phpcmf\Service::M()->dbprefix($table).'】数据量超过10万，会影响加载速度，建议对其进行数据优化';
+            return '数据表【'.$name.'/'.$ptable.'】数据量超过10万，会影响加载速度，建议对其进行数据优化';
         }
     }
 

@@ -1,10 +1,10 @@
 {template "header.html"}
 <script>
     function dr_page_content(id) {
-        dr_iframe('<i class="fa fa-edit"></i> {dr_lang('编辑内容')}','{dr_url('category/content_edit')}&id='+id, '90%', '90%');
+        dr_iframe('<i class="fa fa-edit"></i> {dr_lang('编辑内容')}','{dr_url(APP_DIR.'/category/content_edit')}&id='+id, '90%', '90%');
     }
     function dr_link_url(id) {
-        dr_iframe('<i class="fa fa-edit"></i> {dr_lang('编辑地址')}','{dr_url('category/link_edit')}&id='+id, '50%', '40%');
+        dr_iframe('<i class="fa fa-edit"></i> {dr_lang('编辑地址')}','{dr_url(APP_DIR.'/category/link_edit')}&id='+id, '50%', '40%');
     }
     // ajax关闭或启用
     function dr_cat_ajax_open_close(e, url, fan) {
@@ -43,6 +43,9 @@
                 } else {
                     dr_tips(0, json.msg);
                 }
+            },
+            error: function(HttpRequest, ajaxOptions, thrownError) {
+                dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError);
             }
         });
     }
@@ -64,6 +67,9 @@
                 } else {
                     dr_tips(0, json.msg);
                 }
+            },
+            error: function(HttpRequest, ajaxOptions, thrownError) {
+                dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError);
             }
         });
     }
@@ -93,6 +99,9 @@
                 } else {
                     dr_tips(0, json.msg);
                 }
+            },
+            error: function(HttpRequest, ajaxOptions, thrownError) {
+                dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError);
             }
         });
     }
@@ -172,8 +181,10 @@
                 <th width="50" style="text-align:center"> {dr_lang('显示')} </th>
                 <th width="50" style="text-align:center"> Id </th>
                 <th> {dr_lang('栏目')} </th>
-                {if $module.share}
+                {if $is_scategory}
                 <th width="60" style="text-align:center"> {dr_lang('类型')} </th>
+                {/if}
+                {if $module.share}
                 <th width="70" style="text-align:center"> {dr_lang('模块')} </th>
                 {/if}
                 <th width="90" style="text-align:center"> {dr_lang('数据')} </th>

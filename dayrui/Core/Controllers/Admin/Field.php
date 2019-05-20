@@ -1,10 +1,28 @@
 <?php namespace Phpcmf\Controllers\Admin;
 
-/**
- * PHPCMF框架文件
- * 二次开发时请勿修改本文件
- * 成都天睿信息技术有限公司 www.phpcmf.net
- */
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 
 class Field extends \Phpcmf\Common
 {
@@ -139,7 +157,7 @@ class Field extends \Phpcmf\Common
 					\Phpcmf\Service::M('Field')->data = $cache['dirname'];
                     $this->namespace = $cache['dirname'];
 				} else {
-					// 识别栏目附加字段
+					// 识别栏目模型字段
 					$issearch = 1;
 					$iscategory = 1;
 					list($module, $s) = explode('-', $this->relatedname);
@@ -151,11 +169,11 @@ class Field extends \Phpcmf\Common
                         $this->data['tid'] != 1 && $this->_admin_msg(0, dr_lang('模块栏目才支持创建'));
                         $this->data['dirname'] = $this->data['mid'];
                         $this->backurl =\Phpcmf\Service::L('Router')->url('category/index'); // 返回uri地址
-                        $this->name = '模块【'.$this->data['mid'].'】栏目【#'.$this->relatedid.'】附加字段';
+                        $this->name = '模块【'.$this->data['mid'].'】栏目【#'.$this->relatedid.'】模型字段';
                     } else {
                         $this->data['dirname'] = $module;
                         $this->backurl =\Phpcmf\Service::L('Router')->url($module.'/category/index'); // 返回uri地址
-                        $this->name = '模块【'.$module.'】栏目【#'.$this->relatedid.'】附加字段';
+                        $this->name = '模块【'.$module.'】栏目【#'.$this->relatedid.'】模型字段';
                     }
 					\Phpcmf\Service::M('Field')->func = 'category_data'; // 重要标识: 函数和识别码
 					\Phpcmf\Service::M('Field')->data = $this->data;
@@ -189,18 +207,24 @@ class Field extends \Phpcmf\Common
 		
 	}
 
+	public function test() {
+
+        \Phpcmf\Service::V()->assign(array(
+            'list' => $list,
+        ));
+        \Phpcmf\Service::V()->display('field_list.html');
+    }
+
 	public function index() {
 
         $field = \Phpcmf\Service::M('Field')->get_all();
         if ($field) {
-
             uasort($field, function($a, $b){
                 if($a['displayorder'] == $b['displayorder']){
                     return 0;
                 }
                 return($a['displayorder']<$b['displayorder']) ? -1 : 1;
             });
-
             $group = [];
             $mygroup = [];
             // 分组和合并字段筛选
@@ -221,6 +245,10 @@ class Field extends \Phpcmf\Common
             // 主字段
             foreach ($field as $t) {
 
+                if (isset($data[$t['fieldname']]) && $data[$t['fieldname']]) {
+                    // 重复了 删除记录
+                    \Phpcmf\Service::M()->table('field')->delete($t['id']);
+                }
                 if (isset($group['Merge'][$t['fieldname']])) {
                     $group_data['Merge'][$t['fieldname']] = $t;
                 } elseif (isset($group['Group'][$t['fieldname']])) {
@@ -231,7 +259,7 @@ class Field extends \Phpcmf\Common
                 } elseif ($t['fieldtype'] == 'Merge') {
                     $data[$t['fieldname']] = '';
                 } else {
-                    $data[] = $t;
+                    $data[$t['fieldname']] = $t;
                 }
 
             }
@@ -307,7 +335,8 @@ class Field extends \Phpcmf\Common
 		$page = max((int)\Phpcmf\Service::L('Input')->post('page'), 0);
 		$data['fieldtype'] = $data['setting']['option'] = '';
 		$data['setting']['validate']['required'] = $id = 0;
-		
+		$data['ismain'] = 1;
+
 		// 提交表单
 		if (IS_AJAX_POST) {
 			$data = \Phpcmf\Service::L('Input')->post('data');
@@ -323,10 +352,7 @@ class Field extends \Phpcmf\Common
 			} elseif (\Phpcmf\Service::M('Field')->exitsts($data['fieldname'])) {
 				$this->_json(0, dr_lang('字段已经存在'));
 			} else {
-				$rt = \Phpcmf\Service::M('Field')->add(
-					$data,
-					$field->create_sql($data['fieldname'], $data['setting']['option'], $data['name'])
-				);
+				$rt = \Phpcmf\Service::M('Field')->add($data, $field);
 				!$rt['code'] && $this->_json(0, dr_lang($rt['msg']));
 				\Phpcmf\Service::L('Input')->system_log('添加'.$this->name.'【'.$data['fieldname'].'】'.$data['name']); // 记录日志
 				$this->_json(1, dr_lang('操作成功'));
@@ -389,7 +415,7 @@ class Field extends \Phpcmf\Common
 				$value = $data['disabled'] == 1 ? 0 : 1;
 				\Phpcmf\Service::M()->table('field')->save($id, 'disabled', $value);
 				\Phpcmf\Service::L('Input')->system_log(($value ? '禁用' : '启用').$this->name.'【'.$data['fieldname'].'】'); // 记录日志
-				exit($this->_json(1, dr_lang('操作成功'), ['value' => $value]));
+				exit($this->_json(1, dr_lang(($value ? '禁用' : '启用').'成功'), ['value' => $value]));
 				break;
 			case 'xss':
 				$data['setting'] = dr_string2array($data['setting']);
@@ -414,6 +440,7 @@ class Field extends \Phpcmf\Common
 		exit($this->_json(0, dr_lang('未知操作')));
 	}
 
+	// 删除字段
 	public function del() {
 
 		$ids = \Phpcmf\Service::L('Input')->get_post_ids();
@@ -426,6 +453,6 @@ class Field extends \Phpcmf\Common
 
 		exit($this->_json(1, dr_lang('操作成功'), ['ids' => $ids]));
 	}
-	
+
 
 }

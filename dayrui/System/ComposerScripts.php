@@ -1,4 +1,4 @@
-<?php namespace CodeIgniter;
+<?php
 
 /**
  * CodeIgniter
@@ -32,9 +32,13 @@
  * @copyright  2014-2019 British Columbia Institute of Technology (https://bcit.ca/)
  * @license    https://opensource.org/licenses/MIT	MIT License
  * @link       https://codeigniter.com
- * @since      Version 3.0.0
+ * @since      Version 4.0.0
  * @filesource
  */
+
+namespace CodeIgniter;
+
+use ReflectionClass;
 
 /**
  * ComposerScripts
@@ -49,12 +53,19 @@
  */
 class ComposerScripts
 {
+	/**
+	 * Base path to use.
+	 *
+	 * @var type
+	 */
 	protected static $basePath = 'ThirdParty/';
 
 	/**
 	 * After composer install/update, this is called to move
 	 * the bare-minimum required files for our dependencies
 	 * to appropriate locations.
+	 *
+	 * @throws \ReflectionException
 	 */
 	public static function postUpdate()
 	{
@@ -72,7 +83,7 @@ class ComposerScripts
 	 *
 	 * @return boolean
 	 */
-	protected static function moveFile(string $source, string $destination)
+	protected static function moveFile(string $source, string $destination): bool
 	{
 		$source = realpath($source);
 
@@ -97,10 +108,11 @@ class ComposerScripts
 	 * @param string $class
 	 *
 	 * @return string
+	 * @throws \ReflectionException
 	 */
 	protected static function getClassFilePath(string $class)
 	{
-		$reflector = new \ReflectionClass($class);
+		$reflector = new ReflectionClass($class);
 
 		return $reflector->getFileName();
 	}
@@ -139,6 +151,8 @@ class ComposerScripts
 	/**
 	 * Moves the Zend Escaper files into our base repo so that it's
 	 * available for packaged releases where the users don't user Composer.
+	 *
+	 * @throws \ReflectionException
 	 */
 	public static function moveEscaper()
 	{

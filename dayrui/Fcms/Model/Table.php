@@ -1,5 +1,28 @@
 <?php namespace Phpcmf\Model;
 
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 // 数据表
 class Table extends \Phpcmf\Model
 {
@@ -35,10 +58,10 @@ class Table extends \Phpcmf\Model
                     // 模块附表
                     $table = $prefix.'_data_0';
                     $this->db->tableExists($table) && $cache[$table] = $this->db->getFieldNames($table);
-                    // 栏目附加主表
+                    // 栏目模型主表
                     $table = $prefix.'_category_data';
                     $this->db->tableExists($table) && $cache[$table] = $this->db->getFieldNames($table);
-                    // 栏目附加附表
+                    // 栏目模型附表
                     $table = $prefix.'_category_data_0';
                     $this->db->tableExists($table) && $cache[$table] = $this->db->getFieldNames($table);
                     // 模块点击量表
@@ -155,6 +178,7 @@ class Table extends \Phpcmf\Model
                 foreach($queries as $query) {
                     $ret.= $query[0] == '#' || $query[0].$query[1] == '--' ? '' : $query;
                 }
+                $ret = trim($ret);
                 if (!$ret) {
                     continue;
                 }

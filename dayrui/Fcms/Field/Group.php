@@ -1,5 +1,26 @@
 <?php namespace Phpcmf\Field;
 
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 class Group extends \Phpcmf\Library\A_Field {
 	
 	/**
@@ -54,7 +75,7 @@ class Group extends \Phpcmf\Library\A_Field {
                     <label class="col-md-2 control-label">'.dr_lang('分组规则').'</label>
                     <div class="col-md-9">
                     <textarea name="data[setting][option][value]" id="fvalue" style="height:120px;" class="form-control">'.$option['value'].'</textarea>
-					<span class="help-block">'.dr_lang('分组规则支持html标签，注意每个字段只能存在于一个分组中，否则会出错').'</span>
+					<span class="help-block">'.dr_lang('分组规则支持html标签，注意每个字段只能存在于一个分组中，否则会出错；此字段只能用于模块中').'</span>
                     </div>
                 </div>
 				<script type="text/javascript">
@@ -91,6 +112,13 @@ class Group extends \Phpcmf\Library\A_Field {
 	public function drop_sql($name) {
 		
 	}
+
+    /**
+     * test
+     */
+    public function test_sql($tables, $field) {
+        return 0;
+    }
 	
 	/**
 	 * 字段入库值

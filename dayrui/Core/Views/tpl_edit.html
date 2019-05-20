@@ -34,21 +34,20 @@
                 dataType: "json",
                 url: url,
                 data: {cname:$("#cname").val(), code: myCodeMirror.getValue(), {csrf_token()}: "{csrf_hash()}"},
-            success: function(json) {
-                layer.close(loading);
-                if (json.code == 1) {
-                    dr_tips(1, json.msg);
-                    setTimeout("window.location.reload(true)", 2000)
-                } else {
-                    dr_tips(0, '{dr_lang('模板语法解析错误')}');
-                    $("#html_result").html('<div class="alert alert-danger">'+json.msg+'</div>');
+                success: function(json) {
+                    layer.close(loading);
+                    if (json.code == 1) {
+                        dr_tips(1, json.msg);
+                        setTimeout("window.location.reload(true)", 2000)
+                    } else {
+                        dr_tips(0, '{dr_lang('模板语法解析错误')}');
+                        $("#html_result").html('<div class="alert alert-danger">'+json.msg+'</div>');
+                    }
+                },
+                error: function(HttpRequest, ajaxOptions, thrownError) {
+                    dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError);
                 }
-            },
-            error: function(HttpRequest, ajaxOptions, thrownError) {
-                layer.closeAll('loading');
-                alert(HttpRequest.responseText);
-            }
-        });
+            });
         });
     });
 

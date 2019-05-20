@@ -1,5 +1,26 @@
 <?php namespace Phpcmf\Field;
 
+/* *
+ *
+ * Copyright [2018] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 class Diy extends \Phpcmf\Library\A_Field {
 	
 	/**
@@ -25,6 +46,8 @@ class Diy extends \Phpcmf\Library\A_Field {
 
         $str = '<select class="form-control" name="data[setting][option][file]"><option value=""> -- </option>';
         $files = dr_file_map(ROOTPATH.'config/myfield/', 1);
+        $files2 = dr_file_map(dr_get_app_dir(APP_DIR).'Config/myfield/', 1);
+        $files2 && $files = dr_array22array($files2, $files);
         if ($files) {
             foreach ($files as $t) {
                 $t && strpos($t, '.php') !== 0 && $str.= '<option value="'.$t.'" '.($option['file'] == $t ? 'selected' : '').'> '.$t.' </option>';
@@ -88,10 +111,14 @@ class Diy extends \Phpcmf\Library\A_Field {
 		$value = @strlen($value) ? $value : $this->get_default_value($field['setting']['option']['value']);
 
         // 文件类型
-        $file = WEBPATH.'config/myfield/'.$field['setting']['option']['file'];
+        $file = ROOTPATH.'config/myfield/'.$field['setting']['option']['file'];
+        $file2 = dr_get_app_dir(APP_DIR).'Config/myfield/'.$field['setting']['option']['file'];
         if (is_file($file)) {
             $name = $field['fieldname'];
             require_once $file;
+        } elseif (is_file($file2)) {
+            $name = $field['fieldname'];
+            require_once $file2;
         } elseif (!$field['setting']['option']['file']) {
             $code = '<font color=red>没有选择文件，在字段属性中选择</font>';
         } else {

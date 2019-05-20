@@ -1,5 +1,28 @@
 <?php namespace Phpcmf\Library;
 
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 // 表单验证类
 class Form
 {
@@ -157,10 +180,10 @@ class Form
                 if ($field['fieldtype'] != 'Group' && $validate['required']) {
                     if ($value == '') {
                         // 验证值为空
-                        return [[], ['name' => $name, 'error' => dr_lang('%s不能为空', $field['name'])]];
+                        return [[], ['name' => $name, 'error' => $validate['errortips'] ? $validate['errortips'] : dr_lang('%s不能为空', $field['name'])]];
                     } elseif ($field['fieldtype'] == 'Linkage' && !$value) {
                         // 当类别为联动时判定0值
-                        return [[], ['name' => $name, 'error' => dr_lang('%s不能为空', $field['name'])]];
+                        return [[], ['name' => $name, 'error' => $validate['errortips'] ? $validate['errortips'] : dr_lang('%s不能为空', $field['name'])]];
                     }
                     // 正则验证
                     if (!is_array($value) && $validate['pattern'] && !preg_match($validate['pattern'], $value)) {
@@ -174,20 +197,13 @@ class Form
                 // 函数/方法校验
                 if ($validate['check']) {
                     if (strpos($validate['check'], '_') === 0) {
-                        // 方法格式：_方法名称[:现存数据字段,参数2...]
-                        list($method, $_param) = explode(':', $validate['check']);
-                        $method = substr($method, 1);
+                        // 方法格式
+                        $method = substr($validate['check'], 1);
                         if (method_exists($this, $method)) {
-                            $param['value'] = $value;
                             if ('check_member' == $method && $value == 'guest') {
                                 // 游客不验证
                             } else {
-                                if ($_param && $_value = explode(',', $_param)) {
-                                    foreach ($_value as $t) {
-                                        $param[$t] = isset($post[$t]) ? $post[$t] : $t;
-                                    }
-                                }
-                                $rt = call_user_func_array(array($this, $method), $param);
+                                $rt = call_user_func_array(array($this, $method), [$value, $data, $old]);
                                 if (!$rt['code']) {
                                     return [[], ['name' => $name, 'error' => $rt['msg']]];
                                 }
@@ -196,16 +212,10 @@ class Form
                             log_message('error', "校验方法 $method 不存在".FC_NOW_URL);
                         }
                     } else {
-                        // 函数格式：函数名称[:现存数据字段,参数2...]
-                        list($func, $_param) = explode(':', $validate['check']);
+                        // 函数格式
+                        $func = $validate['check'];
                         if (function_exists($func)) {
-                            $param['value'] = $value;
-                            if ($_param && $_value = explode(',', $_param)) {
-                                foreach ($_value as $t) {
-                                    $param[$t] = isset($post[$t]) ? $post[$t] : $t;
-                                }
-                            }
-                            $rt = call_user_func_array($func, $param);
+                            $rt = call_user_func_array($func, [$value, $data, $old]);
                             if (!$rt['code']) {
                                 return [[], ['name' => $name, 'error' => $rt['msg']]];
                             }
@@ -214,36 +224,23 @@ class Form
                         }
                     }
                 }
-                // 过滤函数
+                // 过滤函数/方法
                 if ($validate['filter']) {
                     if (strpos($validate['filter'], '_') === 0) {
-                        // 方法格式：_方法名称[:现存数据字段,参数2...]
-                        list($method, $_param) = explode(':', $validate['filter']);
-                        $method = substr($method, 1);
-                        if (method_exists($this->dfilter, $method)) {
-                            $param['value'] = $value;
-                            if ($_param && $_value = explode(',', $_param)) {
-                                foreach ($_value as $t) {
-                                    $param[$t] = isset($post[$t]) ? $post[$t] : $t;
-                                }
-                            }
+                        // 方法格式
+                        $method = substr($validate['filter'], 1);
+                        if (method_exists($this, $method)) {
                             // 开始过滤
-                            $post[$name] = call_user_func_array(array($this, $method), $param);
+                            $post[$name] = call_user_func_array(array($this, $method), [$value, $data, $old]);
                         } else {
                             log_message('error', "过滤方法 $method 不存在！".FC_NOW_URL);
                         }
                     } else {
-                        // 函数格式：函数名称[:现存数据字段,参数2...]
-                        list($func, $_param) = explode(':', str_replace('::', ':', $validate['filter']));
+                        // 函数格式
+                        $func = $validate['filter'];
                         if (function_exists($func)) {
-                            $param['value'] = $value;
-                            if ($_param && $_value = explode(',', $_param)) {
-                                foreach ($_value as $t) {
-                                    $param[$t] = isset($post[$t]) ? $post[$t] : $t;
-                                }
-                            }
                             // 开始过滤
-                            $post[$name] = call_user_func_array($func, $param);
+                            $post[$name] = call_user_func_array($func, [$value, $data, $old]);
                         } else {
                             log_message('error', "过滤函数 $func 不存在！".FC_NOW_URL);
                         }

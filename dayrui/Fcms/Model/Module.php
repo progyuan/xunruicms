@@ -1,5 +1,28 @@
 <?php namespace Phpcmf\Model;
 
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 class Module extends \Phpcmf\Model
 {
 
@@ -207,7 +230,7 @@ class Module extends \Phpcmf\Model
                 }
                 $this->db->query('DROP TABLE IF EXISTS '.$table.'_data_'.$i);
             }
-            // 删除栏目附加子表
+            // 删除栏目模型子表
             for ($i = 0; $i < 200; $i ++) {
                 if (!$this->db->query("SHOW TABLES LIKE '".$table.'_category_data_'.$i."'")->getRowArray()) {
                     break;
@@ -268,7 +291,18 @@ class Module extends \Phpcmf\Model
                 );
             }
 
-            // 删除栏目附加字段
+            // 执行站点sql语句
+            if (is_file($mpath.'Config/Uninstall_site.sql')) {
+                $sql = file_get_contents($mpath.'Config/Uninstall_site.sql');
+                foreach ($this->site as $siteid) {
+                    $rt = $this->query_all(str_replace('{dbprefix}',  $this->dbprefix($siteid.'_'), $sql));
+                    if ($rt) {
+                        return dr_return_data(0, $rt);
+                    }
+                }
+            }
+
+            // 删除栏目模型字段
             $this->db->table('field')->where('relatedname', $dir.'-'.SITE_ID)->delete();
             unset($site[SITE_ID]);
         }
@@ -401,6 +435,15 @@ class Module extends \Phpcmf\Model
                 $this->db->simpleQuery(str_replace('{tablename}', $table.$name, trim($sql)));
             }
         }
+        // 创建相关栏目表字段
+        if (isset($config['scategory']) && $config['scategory']) {
+            if (!\Phpcmf\Service::M()->db->fieldExists('tid', $table.'_category')) {
+                \Phpcmf\Service::M()->query('ALTER TABLE `'.$table.'_category` ADD `tid` tinyint(1) NOT NULL COMMENT \'栏目类型，0单页，1模块，2外链\'');
+            }
+            if (!\Phpcmf\Service::M()->db->fieldExists('content', $table.'_category')) {
+                \Phpcmf\Service::M()->query('ALTER TABLE `'.$table.'_category` ADD `content` mediumtext NOT NULL COMMENT \'单页内容\'');
+            }
+        }
         // 第一次安装模块
         // system = 2 2菜单不出现在内容下，由开发者自定义
         if ($config['system'] == 2 && dr_count($site) == 1 && $is_app == 0 && is_file($mpath.'Config/Menu.php')) {
@@ -491,6 +534,11 @@ class Module extends \Phpcmf\Model
             require $mpath.'Config/Install.php';
         }
 
+        // 不选择安装数据时不执行sql文件
+        if (isset($_GET['is_install_db']) && $_GET['is_install_db'] == 0) {
+            return dr_return_data(1, dr_lang('安装成功'), $module);
+        }
+
         // 执行自定义sql
         if (is_file($mpath.'Config/Install.sql')) {
             $sql = file_get_contents($mpath.'Config/Install.sql');
@@ -513,6 +561,17 @@ class Module extends \Phpcmf\Model
                     ],
                 ]
             );
+        }
+
+        // 执行站点sql语句
+        if (is_file($mpath.'Config/Install_site.sql')) {
+            $sql = file_get_contents($mpath.'Config/Install_site.sql');
+            foreach ($this->site as $siteid) {
+                $rt = $this->query_all(str_replace('{dbprefix}',  $this->dbprefix($siteid.'_'), $sql));
+                if ($rt) {
+                    return dr_return_data(0, $rt);
+                }
+            }
         }
 
         return dr_return_data(1, dr_lang('安装成功'), $module);
@@ -610,10 +669,9 @@ class Module extends \Phpcmf\Model
             $cdir = $cache['dirname'];
             $category = $this->db->table($siteid.'_'.$cdir.'_category')->orderBy('displayorder ASC, id ASC')->get()->getResultArray();
         }
-
+		// 栏目开始
+		$CAT = $CAT_DIR = $fenzhan = $level = [];
         if ($category) {
-            // 栏目开始
-            $CAT = $CAT_DIR = $fenzhan = $level = [];
             foreach ($category as $c) {
                 $pid = explode(',', $c['pids']);
                 $level[] = substr_count($c['pids'], ',');
@@ -631,7 +689,9 @@ class Module extends \Phpcmf\Model
                 } else {
                     // 独立模块栏目
                     //以站点为准
-                    $c['tid'] = $c['setting']['linkurl'] ? 2 : 1; // 判断栏目类型 2表示外链
+                    if (!isset($c['tid'])) {
+                        $c['tid'] = $c['setting']['linkurl'] ? 2 : 1; // 判断栏目类型 2表示外链
+                    }
                     $c['setting']['html'] = intval($cache['html']);
                     $c['setting']['urlrule'] = intval($cache['site'][$siteid]['urlrule']);
                 }
@@ -639,7 +699,7 @@ class Module extends \Phpcmf\Model
                 $c['permission'] = $c['child'] && !$cache['setting']['pcatpost'] ? '' : dr_string2array($c['permission']);
                 // 获取栏目url
                 $c['url'] = $c['setting']['linkurl'] ? $c['setting']['linkurl'] : \Phpcmf\Service::L('router')->category_url($cache, $c);
-                $c['furl'] = $c['setting']['linkurl'] ? $c['setting']['linkurl'] : \Phpcmf\Service::L('router')->category_url($cache, $c, 0, '{fid}');
+                //$c['furl'] = $c['setting']['linkurl'] ? $c['setting']['linkurl'] : \Phpcmf\Service::L('router')->category_url($cache, $c, 0, '{fid}');
                 // 按分站生成url
                 // 统计栏目文章数量
                 $c['total'] = ($c['child'] || !$c['mid'] || !$this->db->tableExists($this->dbprefix($siteid.'_'.$c['mid'].'_index'))) ? 0 : $this->db->table($siteid.'_'.$c['mid'].'_index')->where('status', 9)->where('catid', intval($c['id']))->countAllResults();
@@ -665,7 +725,7 @@ class Module extends \Phpcmf\Model
                 }
             }
 
-            // 自定义栏目附加字段，把父级栏目的字段合并至当前栏目
+            // 自定义栏目模型字段，把父级栏目的字段合并至当前栏目
             $field = $this->db->table('field')->where('disabled', 0)->where('relatedname', $cdir.'-'.$siteid)->orderBy('displayorder ASC, id ASC')->get()->getResultArray();
             if ($field) {
                 foreach ($field as $f) {
@@ -682,7 +742,7 @@ class Module extends \Phpcmf\Model
 
             // 栏目结束
             if (!$cache['share']) {
-                // 此变量说明本模块存在栏目附加字段
+                // 此变量说明本模块存在栏目模型字段
                 $cache['category_data_field'] = $field ? 1 : 0;
                 $cache['category'] = $CAT;
             } else {
@@ -713,6 +773,9 @@ class Module extends \Phpcmf\Model
                 'dirname' => 'share',
                 'category' => $CAT,
                 'category_dir' => $CAT_DIR,
+                'category_field' => $cache['category_field'],
+                'category_level' => $cache['category_level'],
+                'category_data_field' => $cache['category_data_field'],
             ]);
             $this->cat_share_lock[$siteid] = 0;
         }
@@ -859,6 +922,7 @@ class Module extends \Phpcmf\Model
                     'system' => $config['system'],
                     'hlist' => (int)$config['hlist'],
                     'hcategory' => (int)$config['hcategory'],
+                    'scategory' => (int)$config['scategory'],
                     'search' => $cache['setting']['search']['close'] ? 0 : 1,
                     'dirname' => $mdir,
                     'comment' => $cache['comment'] ? 1 : 0,

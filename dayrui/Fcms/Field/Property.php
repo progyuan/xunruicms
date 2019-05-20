@@ -1,5 +1,26 @@
 <?php namespace Phpcmf\Field;
 
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 class Property extends \Phpcmf\Library\A_Field {
 	
 	/**
@@ -41,17 +62,17 @@ class Property extends \Phpcmf\Library\A_Field {
 		</div>';
         unset($option['name_value']);
         unset($option['value_value']);
-		if ($option) {
-			foreach ($option as $i => $t) {
+		if ($option['default_value']) {
+			foreach ($option['default_value'] as $i => $t) {
 				$str.= '<div class="form-group dr_option" id="dr_option_'.$i.'" >';
 				$str.= '<label class="col-md-2 control-label"><a href="javascript:;" onclick="dr_add_option()" style="color:blue">[+]</a>&nbsp;'.dr_lang('属性名称').'</label>';
-				$str.= '<div class="col-md-9"><label><input type="text" name="data[setting][option]['.$i.'][name]" value="'.$t['name'].'" class="form-control" /></label>';
-				$str.= '<label>&nbsp;&nbsp;'.dr_lang('类型').'：</label><label><select class="form-control" name="data[setting][option]['.$i.'][type]">';
+				$str.= '<div class="col-md-9"><label><input type="text" name="data[setting][option][default_value]['.$i.'][name]" value="'.$t['name'].'" class="form-control" /></label>';
+				$str.= '<label>&nbsp;&nbsp;'.dr_lang('类型').'：</label><label><select class="form-control" name="data[setting][option][default_value]['.$i.'][type]">';
 				$str.= '<option value="1" '.($t['type'] == 1 ? "selected" : "").'> - '.dr_lang('文本框').' - </option>';
 				$str.= '<option value="2" '.($t['type'] == 2 ? "selected" : "").'> - '.dr_lang('选择框').' - </option>';
 				$str.= '<option value="3" '.($t['type'] == 3 ? "selected" : "").'> - '.dr_lang('复选框').' - </option>';
 				$str.= '</select></label>';
-				$str.= '<label>&nbsp;&nbsp;'.dr_lang('默认值/选项值').'：</label><label><input type="text" name="data[setting][option]['.$i.'][value]" value="'.$t['value'].'" class="form-control"></label> <label><a onclick="$(\'#dr_option_'.$i.'\').remove()" href="javascript:;">'.dr_lang('删除').'</a></label>';
+				$str.= '<label>&nbsp;&nbsp;'.dr_lang('默认值/选项值').'：</label><label><input type="text" name="data[setting][option][default_value]['.$i.'][value]" value="'.$t['value'].'" class="form-control input-xlarge"></label> <label><a onclick="$(\'#dr_option_'.$i.'\').remove()" href="javascript:;">'.dr_lang('删除').'</a></label>';
 				$str.= '</div></div>';
 			}
 		}
@@ -64,13 +85,13 @@ class Property extends \Phpcmf\Library\A_Field {
 			html+= "<div class=\"form-group dr_option\" id=\"dr_option_"+id+"\" >";
 			html+= "<label class=\"col-md-2 control-label\"><a href=\"javascript:;\" onclick=\"dr_add_option()\" style=\"color:blue\">[+]</a>&nbsp;'.dr_lang('属性名称').'</label>";
 			html+= "<div class=\"col-md-9\">";
-			html+= "<label><input type=\"text\" name=\"data[setting][option]["+id+"][name]\" value=\"\" class=\"form-control\" /></label>";
-			html+= "<label>&nbsp;&nbsp;'.dr_lang('类型').'：</label><label><select class=\"form-control\" name=\"data[setting][option]["+id+"][type]\">";
+			html+= "<label><input type=\"text\" name=\"data[setting][option][default_value]["+id+"][name]\" value=\"\" class=\"form-control\" /></label>";
+			html+= "<label>&nbsp;&nbsp;'.dr_lang('类型').'：</label><label><select class=\"form-control\" name=\"data[setting][option][default_value]["+id+"][type]\">";
 			html+= "<option value=\"1\"> - '.dr_lang('文本框').' - </option>";
 			html+= "<option value=\"2\"> - '.dr_lang('选择框').' - </option>";
 			html+= "<option value=\"3\"> - '.dr_lang('复选框').' - </option>";
 			html+= "</select></label>";
-			html+= "<label>&nbsp;&nbsp;'.dr_lang('默认值/选项值').'：</label><label><input type=\"text\" name=\"data[setting][option]["+id+"][value]\" class=\"form-control\"></label><label><a onclick=\"$(\'#dr_option_"+id+"\').remove()\" href=\"javascript:;\">'.dr_lang('删除').'</a></label>";
+			html+= "<label>&nbsp;&nbsp;'.dr_lang('默认值/选项值').'：</label><label><input type=\"text\" name=\"data[setting][option][default_value]["+id+"][value]\" class=\"form-control input-xlarge\"></label>&nbsp;<label><a onclick=\"$(\'#dr_option_"+id+"\').remove()\" href=\"javascript:;\">'.dr_lang('删除').'</a></label>";
 			html+= "</div>";
 			html+= "</div>";
 			$("#dr_option").append(html);
@@ -140,10 +161,10 @@ class Property extends \Phpcmf\Library\A_Field {
 
         unset($field['setting']['width']);
         // 默认属性选项
-		if (isset($field['setting']['option']) && $field['setting']['option']) {
+		if (isset($field['setting']['option']['default_value']) && $field['setting']['option']['default_value']) {
             $i = 1;
-			foreach ($field['setting']['option'] as $t) {
-			    if (!isset($t['name']) || $t['name']) {
+			foreach ($field['setting']['option']['default_value'] as $t) {
+			    if (!isset($t['name']) && $t['name']) {
 			        continue;
                 }
 				$str.= '<tr id="dr_items_'.$name.'_'.$i.'">';

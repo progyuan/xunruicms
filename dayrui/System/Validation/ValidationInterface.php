@@ -1,4 +1,4 @@
-<?php namespace CodeIgniter\Validation;
+<?php
 
 /**
  * CodeIgniter
@@ -32,17 +32,22 @@
  * @copyright  2014-2019 British Columbia Institute of Technology (https://bcit.ca/)
  * @license    https://opensource.org/licenses/MIT	MIT License
  * @link       https://codeigniter.com
- * @since      Version 3.0.0
+ * @since      Version 4.0.0
  * @filesource
  */
 
+namespace CodeIgniter\Validation;
+
 use CodeIgniter\HTTP\RequestInterface;
 
+/**
+ * Expected behavior of a validator
+ */
 interface ValidationInterface
 {
 
 	/**
-	 * Runs the validation process, returning true/false determing whether
+	 * Runs the validation process, returning true/false determining whether
 	 * or not validation was successful.
 	 *
 	 * @param array  $data  The array of data to validate.
@@ -50,7 +55,7 @@ interface ValidationInterface
 	 *
 	 * @return boolean
 	 */
-	public function run(array $data, string $group = null): bool;
+	public function run(array $data = null, string $group = null): bool;
 
 	//--------------------------------------------------------------------
 
@@ -86,10 +91,11 @@ interface ValidationInterface
 	 * Stores the rules that should be used to validate the items.
 	 *
 	 * @param array $rules
+	 * @param array $messages
 	 *
 	 * @return \CodeIgniter\Validation\ValidationInterface
 	 */
-	public function setRules(array $rules): ValidationInterface;
+	public function setRules(array $rules, array $messages = []): ValidationInterface;
 
 	//--------------------------------------------------------------------
 
@@ -120,7 +126,7 @@ interface ValidationInterface
 
 	/**
 	 * Returns the array of errors that were encountered during
-	 * a run() call. The array should be in the followig format:
+	 * a run() call. The array should be in the following format:
 	 *
 	 *    [
 	 *        'field1' => 'error message',
@@ -151,7 +157,7 @@ interface ValidationInterface
 	 * Resets the class to a blank slate. Should be called whenever
 	 * you need to process more than one array.
 	 *
-	 * @return mixed
+	 * @return \CodeIgniter\Validation\ValidationInterface
 	 */
 	public function reset(): ValidationInterface;
 

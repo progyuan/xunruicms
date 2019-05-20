@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-cn">
 <head>
 	<meta charset="utf-8">
-	<title>404 Page Not Found</title>
+	<title>页面不存在</title>
 
 	<style>
 	div.logo {
@@ -70,14 +70,10 @@
 </head>
 <body>
 	<div class="wrap">
-		<h1>404 - File Not Found</h1>
+		<h1>404 - 页面不存在</h1>
 
 		<p>
-			<?php if (! empty($message) && $message != '(null)') : ?>
-				<?= esc($message) ?>
-			<?php else : ?>
-				Sorry! Cannot seem to find the page you were looking for.
-			<?php endif ?>
+            <?= FC_NOW_URL ?>
 		</p>
 	</div>
 </body>

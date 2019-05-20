@@ -36,7 +36,9 @@
                 }
                 dr_layer_tips(json.msg);
             },
-            error: function(HttpRequest, ajaxOptions, thrownError) {}
+            error: function(HttpRequest, ajaxOptions, thrownError) {
+                dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError);
+            }
         });
     }
     function dr_delete(gid) {
@@ -56,7 +58,9 @@
                 }
                 dr_layer_tips(json.msg);
             },
-            error: function(HttpRequest, ajaxOptions, thrownError) {}
+            error: function(HttpRequest, ajaxOptions, thrownError) {
+                dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError);
+            }
         });
     }
 </script>

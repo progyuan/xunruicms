@@ -1,5 +1,28 @@
 <?php namespace Phpcmf\Model;
 
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 // 模块搜索类
 class Search extends \Phpcmf\Model {
 
@@ -19,7 +42,7 @@ class Search extends \Phpcmf\Model {
         // 模块表名称
         $table = $this->dbprefix($this->mytable);
 
-        // 栏目附加表
+        // 栏目模型表
         $table_more = $this->dbprefix($this->mytable.'_category_data');
 
         // 排序查询参数
@@ -85,7 +108,14 @@ class Search extends \Phpcmf\Model {
                 }
                 isset($get[$name]) && strlen($get[$name]) && $where[] = $this->_where($table, $name, $get[$name], $field);
                 // 地图坐标排序，这里不用它，默认id
-                isset($_order_by[$name]) && $order_by[] = isset($field['fieldtype']) && $field['fieldtype'] == 'Baidumap' ? '`id` desc ' : '`'.$table.'`.`'.$name.'` '.$_order_by[$name];
+                /*
+                if (isset($_order_by[$name])) {
+                    if (isset($field['fieldtype']) && $field['fieldtype'] == 'Baidumap') {
+                        $order_by[] =   '`id` desc ';
+                    } else {
+                        $order_by[] = '`'.$table.'`.`'.$name.'` '.$_order_by[$name];
+                    }
+                }*/
             }
 
             // 栏目的字段
@@ -180,15 +210,18 @@ class Search extends \Phpcmf\Model {
     // 获取搜索参数
     public function get_param($module) {
 
-        $get = $_GET;
+        $get =  $_GET;
         $get = isset($get['rewrite']) ? dr_search_rewrite_decode($get['rewrite'], $module['setting']['search']) : $get;
         $get && $get = \Phpcmf\Service::L('input')->xss_clean($get);
 
-        $_GET['page'] = $get['page'];
-        $get['keyword'] = dr_get_keyword($get['keyword']);
-
         $get['s'] = $get['c'] = $get['m'] = $get['id'] = null;
         unset($get['s'], $get['c'], $get['m'], $get['id']);
+      	if (!$get && IS_API_HTTP) {
+        	$get = $_POST;
+        }
+
+        $_GET['page'] = $get['page'];
+        $get['keyword'] = dr_get_keyword($get['keyword']);
 
         $catid = isset($get['catdir']) && $get['catdir'] ? (int)$module['category_dir'][$get['catdir']] : (int)$get['catid'];
         isset($get['catid']) && $get['catid'] = $catid;

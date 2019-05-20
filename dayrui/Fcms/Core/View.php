@@ -1,5 +1,30 @@
 <?php namespace Phpcmf;
 
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
+
+
 /**
  * CMS模板标签解析
  */
@@ -143,18 +168,15 @@ class View {
 
         if (IS_API_HTTP) {
             // 如果是来自api就不解析模板，直接输出变量
-            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                \Phpcmf\Service::C()->_json(0, 'POST表单内容为空');
-            } else {
-                if (isset($_GET['api_call_function']) && $_GET['api_call_function']) {
-                    $call = dr_safe_replace($_GET['api_call_function']);
-                    if (method_exists(\Phpcmf\Service::L('http'), $call)) {
-                        \Phpcmf\Service::C()->_json(1, 'view', \Phpcmf\Service::L('http')->$call($this->_options));
-                    }
-                    \Phpcmf\Service::C()->_json(0, '回调方法('.$call.')未定义');
+            $call = \Phpcmf\Service::L('Input')->request('api_call_function');
+            if ($call) {
+                $call = dr_safe_replace($call);
+                if (method_exists(\Phpcmf\Service::L('http'), $call)) {
+                    \Phpcmf\Service::C()->_json(1, 'view', \Phpcmf\Service::L('http')->$call($this->_options));
                 }
-                \Phpcmf\Service::C()->_json(1, 'view', $this->_options);
+                \Phpcmf\Service::C()->_json(0, '回调方法('.$call.')未定义');
             }
+            \Phpcmf\Service::C()->_json(1, 'view', $this->_options);
         }
 
         extract($this->_options, EXTR_PREFIX_SAME, 'data');
@@ -515,10 +537,12 @@ class View {
             '$ci->',
             'IS_PC',
             'IS_MOBILE',
+            'IS_MOBILE2',
         ], [
             '\Phpcmf\Service::C()->',
             '\Phpcmf\Service::IS_PC()',
             '\Phpcmf\Service::IS_MOBILE()',
+            '\Phpcmf\Service::IS_MOBILE2()',
         ], $view_content);
 
         return $view_content;
@@ -563,7 +587,7 @@ class View {
             'page' => '', // 是否分页
             'site' => '', // 站点id
             'flag' => '', // 推荐位id
-            'more' => '', // 是否显示栏目附加表
+            'more' => '', // 是否显示栏目模型表
             'catid' => '', // 栏目id，支持多id
             'field' => '', // 显示字段
             'order' => '', // 排序
@@ -791,7 +815,7 @@ class View {
                 if (!$module) {
                     return $this->_return($system['return'], "模块({$dirname})未安装");
                 } elseif (dr_count($module['category'][$catid]['field']) == 0) {
-                    return $this->_return($system['return'], '模块未安装或者此栏目无附加字段');
+                    return $this->_return($system['return'], '模块未安装或者此栏目无模型字段');
                 }
 
                 $return = [];
@@ -1558,16 +1582,19 @@ class View {
                     $table_more = $table.'_hits'; // hits表
                     $system['field'] = $this->_set_select_field_prefix($system['field'], $tableinfo[$table_more], $table_more); // 给显示字段加上表前缀
                     $_order[$table_more] = $tableinfo[$table_more];
+                    if (!$system['field']) {
+                        $system['field'] = '`'.$table.'`.*,`'.$table.'_hits`.`hits`,`'.$table.'_hits`.`day_hits`,`'.$table.'_hits`.`week_hits`,`'.$table.'_hits`.`month_hits`,`'.$table.'_hits`.`year_hits`';
+                    }
                 } else {
                     $sql_from = '`'.$table.'`';
                 }
 
-                // 关联栏目附加表
+                // 关联栏目模型表
                 if ($system['more']) {
                     $_catid = (int)$system['catid'];
                     if (isset($module['category'][$_catid]['field']) && $module['category'][$_catid]['field']) {
                         $fields = array_merge($fields, $module['category'][$_catid]['field']);
-                        $table_more = $table.'_category_data'; // 栏目附加表
+                        $table_more = $table.'_category_data'; // 栏目模型表
                         $where = $this->_set_where_field_prefix($where, $tableinfo[$table_more], $table_more, $fields); // 给条件字段加上表前缀
                         $system['field'] = $this->_set_select_field_prefix($system['field'], $tableinfo[$table_more], $table_more); // 给显示字段加上表前缀
                         $_order[$table_more] = $tableinfo[$table_more];
@@ -1614,8 +1641,8 @@ class View {
 
                 if ($system['page']) {
                     $page = max(1, (int)$_GET['page']);
-                    if (!$system['sbpage'] && $system['catid'] && is_numeric($system['catid'])) {
-                        $system['urlrule'] = \Phpcmf\Service::L('router')->category_url($module, $module['category'][$system['catid']], '{page}');
+                    if ($system['catid'] && is_numeric($system['catid'])) {
+                        !$system['urlrule'] && $system['urlrule'] = \Phpcmf\Service::L('router')->category_url($module, $module['category'][$system['catid']], '{page}');
                         if ($this->_is_mobile) {
                             $system['pagesize'] = (int)$module['category'][$system['catid']]['setting']['template']['mpagesize'];
                         } else {
@@ -1725,6 +1752,8 @@ class View {
         if ($this->_page_config) {
             $config = dr_array22array($config, $this->_page_config);
         }
+
+        !$url && $url = '此标签没有设置urlrule参数';
 
         $config['base_url'] = str_replace(['[page]', '%7Bpage%7D', '%5Bpage%5D', '%7bpage%7d', '%5bpage%5d'], '{page}', $url);
         $config['per_page'] = $pagesize;
@@ -2045,6 +2074,11 @@ class View {
 
     // 模板中的全部变量
     public function get_data() {
+        return $this->_options;
+    }
+
+    // 模板中的全部变量
+    public function getData() {
         return $this->_options;
     }
 

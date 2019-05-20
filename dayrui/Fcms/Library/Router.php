@@ -1,5 +1,28 @@
 <?php namespace Phpcmf\Library;
 
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 // 路由及url处理类
 
 class Router
@@ -86,6 +109,8 @@ class Router
         } elseif (IS_ADMIN) {
             return; // 排除后台
         } elseif (\Phpcmf\Service::IS_MOBILE()) {
+            return; // 排除移动端
+        } elseif (\Phpcmf\Service::_is_mobile()) {
             return; // 排除移动端
         } elseif (defined('SC_HTML_FILE')) {
             return; // 排除生成
@@ -382,6 +407,10 @@ class Router
     // 缓存读取url
     function get_tag_url($name, $mid = '') {
 
+        if (!$name) {
+            return '/#无name参数';
+        }
+
         // 读缓存
         $file = WRITEPATH.'tags/'.md5(SITE_ID.'-'.$name);
         if ($file) {
@@ -392,7 +421,7 @@ class Router
         }
 
         if ($mid) {
-            \Phpcmf\Service::L('router')->search_url([], 'keyword', $name, $mid);
+            return $this->search_url([], 'keyword', $name, $mid);
         }
 
         return '/';
@@ -470,7 +499,10 @@ class Router
             $fid && $data['fid'] = $fid;
             $data['modname'] = $mod['dirname'];
             $data['param'] = dr_search_rewrite_encode($params, $mod['setting']['search']);
-            $url = ltrim($params ? $rule['search_page'] : $rule['search'], '/');
+            if ($params && !$data['param']) {
+                log_message('error', '模块['.$mod['dirname'].']无法通过[搜索参数字符串规则]获得参数');
+            }
+            $url = ltrim($data['param'] ? $rule['search_page'] : $rule['search'], '/');
             $rep = new \php5replace($data);
             $url = preg_replace_callback("#{([a-z_0-9]+)}#Ui", array($rep, 'php55_replace_data'), $url);
             $url = preg_replace_callback('#{([a-z_0-9]+)\((.*)\)}#Ui', array($rep, 'php55_replace_function'), $url);

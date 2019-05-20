@@ -23,7 +23,7 @@
                 <div class="portlet-body form fc-search-param">
                     <div class="form-body">
                         <div class="form-group row">
-                            <label class="col-md-2 control-label">栏目分类</label>
+                            <label class="col-md-12">栏目分类</label>
                             <div class="col-md-9">
                                 <label><a class="label {if !$cat || $cat.child}label-success{else}label-default{/if}" href="{Router::search_url($params, 'catdir', NULL)}">不限</a></label>
                                 <!--调用栏目分类，这种用法只能用于模块列表与搜索页面-->
@@ -36,7 +36,7 @@
                         <!--category_search_field是调用当前栏目下的附加字段是否具有搜索字段功能，这种用法只能用于模块列表与搜索页面-->
                         {category_search_field module=MOD_DIR catid=$catid}
                         <div class="form-group row">
-                            <label class="col-md-2 control-label">{$t.name}</label>
+                            <label class="col-md-12">{$t.name}</label>
                             <div class="col-md-9">
                                 <label><a class="label {if !$params[$t.field]}label-success{else}label-default{/if}" href="{Router::search_url($params, $t.field, NULL)}">不限</a></label>
                                 {loop $t.data $v}
@@ -48,7 +48,7 @@
 
                         <!--按关键字搜索-->
                         <div class="form-group row">
-                            <label class="col-md-2 control-label" style="padding-top:5px">内容搜索</label>
+                            <label class="col-md-12" style="padding-top:5px">内容搜索</label>
                             <div class="col-md-6">
                                 <div class="input-group">
                                     <input type="text" class="form-control" onkeypress="if(event.keyCode==13) {dr_module_search('search_keyword');return false;}" name='keyword' value='{$keyword}' id='search_keyword'>
@@ -85,7 +85,7 @@
                     <div class="actions">
                         <div class="btn-group">
                             <a href="{Router::search_url($params, 'order', null)}" class="btn btn-default {if !$params.order || $param.order=='updatetime'}active{/if}"> <i class="fa fa-clock-o"></i> 时间排序 </a>
-                            <a href="{Router::search_url($params, 'order', 'hits')}" class="btn btn-default {if $params.order=='hits'}active{/if}"> <i class="icon-fire"></i> 点击排序 </a>
+                            <a href="{Router::search_url($params, 'order', 'hits')}" class="btn btn-default {if $params.order=='hits'}active{/if}"> <i class="fa fa-fire"></i> 点击排序 </a>
                             <a href="{Router::search_url($params, 'order', 'comments')}" class="btn btn-default {if $params.order=='comments'}active{/if}"> <i class="fa fa-comments-o"></i> 评论排序 </a>
                             <a href="{Router::search_url($params, 'order', 'avgsort')}" class="btn btn-default {if $params.order=='avgsort'}active{/if}"> <i class="fa fa-diamond"></i> 评分排序 </a>
                             <a href="{Router::search_url($params, 'order', 'support')}" class="btn btn-default {if $params.order=='support'}active{/if}"> <i class="fa fa-digg"></i> 支持量排序 </a>
@@ -112,21 +112,21 @@
                                         {loop $kw $a}
                                         {if $a}
                                         <li class="uppercase">
-                                            <a href="{Router::tag_url($a)}" target="_blank">{$a}</a>
+                                            <a href="{dr_get_tag_url($a, MOD_DIR)}" target="_blank">{$a}</a>
                                         </li>
                                         {/if}
                                         {/loop}
                                     </ul>
                                     <div class="search-post-meta">
-                                        <i class="icon-calendar font-blue"></i>
+                                        <i class="fa fa-calendar font-blue"></i>
                                         <a href="javascript:;">{$t.updatetime}</a>
                                     </div>
                                     <div class="search-post-meta">
-                                        <i class="icon-fire font-blue"></i>
+                                        <i class="fa fa-fire font-blue"></i>
                                         <a href="javascript:;">{$t.hits}</a>
                                     </div>
                                     <div class="search-post-meta">
-                                        <i class="icon-bubble font-blue"></i>
+                                        <i class="fa fa-bubble font-blue"></i>
                                         <a href="javascript:;">{$t.comments}</a>
                                     </div>
                                 </div>
@@ -137,7 +137,7 @@
                     {if !$count}
                     <div class="row fc-search-null">
                         <div class="col-md-12 text-center">
-                            <i class="icon-close fc-search-null-icon"></i>
+                            <i class="fa fa-close fc-search-null-icon"></i>
                             <label class="fc-search-null-txt">没有找到相关内容...</label>
                         </div>
 

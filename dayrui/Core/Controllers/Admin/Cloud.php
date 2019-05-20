@@ -1,5 +1,28 @@
 <?php namespace Phpcmf\Controllers\Admin;
 
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 // 云服务
 class Cloud extends \Phpcmf\Common
 {
@@ -15,12 +38,13 @@ class Cloud extends \Phpcmf\Common
         $this->version = require MYPATH.'Config/Version.php';
         $this->cmf_version = require CMSPATH.'Config/Version.php';
         if (!is_file(MYPATH.'Config/License.php')) {
-            exit('安装识别文件不存在，请重新下载程序');
+            exit('授权识别文件不存在，请在官网重新下载程序');
         }
         $this->license_sn = require MYPATH.'Config/License.php';
         \Phpcmf\Service::V()->assign([
-            'cms_version' => $this->version['version'],
-            'cmf_version' => $this->cmf_version['version'],
+            'license_sn' => $this->license_sn,
+            'cms_version' => $this->version,
+            'cmf_version' => $this->cmf_version,
         ]);
         list($this->admin_url) = explode('?', FC_NOW_URL);
         $this->service_url = 'http://www.tianruiyun.com/cloud.php?domain='.dr_get_domain_name(ROOT_URL).'&admin='.urlencode($this->admin_url).'&cms='.$this->version['id'].'&license='.$this->license_sn;
@@ -91,29 +115,9 @@ class Cloud extends \Phpcmf\Common
         \Phpcmf\Service::V()->display('cloud_online.html');exit;
     }
 
-    // 更新授权信息
+    //
     public function update_sn() {
 
-        $surl = $this->service_url.'&action=update_sn&get_http=1';
-        $json = dr_catcher_data($surl);
-        if (!$json) {
-            $this->_json(0, '没有从服务端获取到数据');
-        }
-
-        $data = dr_string2array($json);
-        if (!$data) {
-            $this->_json(0, '服务端数据异常，稍后再试');
-        } elseif (!$data['code']) {
-            $this->_json(0, $data['msg']);
-        }
-
-        $size = file_put_contents(MYPATH.'Config/License.php', $data['msg']);
-        if (!$size) {
-            $this->_json(0, dr_lang('%s无写入权限', MYPATH.'Config/License.php'));
-        }
-
-        $this->_json(1, dr_lang('更新成功'));
-        exit;
     }
 
 
@@ -148,6 +152,7 @@ class Cloud extends \Phpcmf\Common
             'menu' => \Phpcmf\Service::M('auth')->_admin_menu(
                 [
                     '本地插件' => [\Phpcmf\Service::L('Router')->class.'/'.\Phpcmf\Service::L('Router')->method, 'fa fa-puzzle-piece'],
+                    'help' => [574],
                 ]
             ),
         ]);
@@ -164,7 +169,7 @@ class Cloud extends \Phpcmf\Common
         $rt = \Phpcmf\Service::M('App')->install($dir);
         !$rt['code'] && $this->_json(0, $rt['msg']);
 
-        $this->_json(1, dr_lang('安装成功'));
+        $this->_json(1, dr_lang('安装成功，请更新缓存生效'));
     }
 
     // 卸载程序
@@ -271,6 +276,11 @@ class Cloud extends \Phpcmf\Common
             }
             $this->_json($page + 1, $html);
         }
+		
+        $cmspath = WRITEPATH.'temp/'.$cid.'/';
+		if (is_file($cmspath.'APPSPATH/'.ucfirst($cache['dir']).'/install.lock')) {
+			unlink($cmspath.'APPSPATH/'.ucfirst($cache['dir']).'/install.lock');
+		}
 
         $this->_json(100, '');
     }
@@ -284,12 +294,19 @@ class Cloud extends \Phpcmf\Common
         !$cache['dir'] && $this->_json(0, '缺少程序安装目录名称');
         $cmspath = WRITEPATH.'temp/'.$cid.'/';
         !is_dir($cmspath) && $this->_json(0, '程序未下载成功');
+		
+		if (is_file($cmspath.'APPSPATH/'.ucfirst($cache['dir']).'/install.lock')) {
+			unlink($cmspath.'APPSPATH/'.ucfirst($cache['dir']).'/install.lock');
+		}
 
         // 复制文件到程序
         if (is_dir($cmspath.'APPSPATH')) {
             $this->_copy_dir($cmspath.'APPSPATH', APPSPATH);
         }
         if (is_dir($cmspath.'WEBPATH')) {
+            $this->_copy_dir($cmspath.'WEBPATH', ROOTPATH);
+        }
+        if (is_dir($cmspath.'ROOTPATH')) {
             $this->_copy_dir($cmspath.'ROOTPATH', ROOTPATH);
         }
         if (is_dir($cmspath.'CSSPATH')) {
@@ -304,8 +321,14 @@ class Cloud extends \Phpcmf\Common
         if (is_dir($cmspath.'FCPATH')) {
             $this->_copy_dir($cmspath.'FCPATH', FCPATH);
         }
+        if (is_dir($cmspath.'MYPATH')) {
+            $this->_copy_dir($cmspath.'MYPATH', MYPATH);
+        }
+        if (is_dir($cmspath.'COREPATH')) {
+            $this->_copy_dir($cmspath.'COREPATH', COREPATH);
+        }
 
-        $this->_json(1, '程序导入完成<br>1、如果本程序是插件：请到【插件】-【本地插件】中手动安装本程序<br>2、如果本程序是组件：请按本程序使用教程来操作；<br>3、如果本程序是模板：请按本程序使用教程来操作');
+        $this->_json(1, '程序导入完成<br>1、如果本程序是插件：请到【插件】-【本地插件】中手动安装本程序<br>2、如果本程序是组件：请按本组件的使用教程来操作；<br>3、如果本程序是模板：请按本模板使用教程来操作');
     }
 
 
@@ -317,14 +340,14 @@ class Cloud extends \Phpcmf\Common
         if (is_file(CMSPATH.'Config/Version.php')) {
             $data['phpcmf'] = require CMSPATH.'Config/Version.php';
             $data['phpcmf']['id'] = 'cms-'.$data['phpcmf']['id'];
-            $data['phpcmf']['tname'] = '<a href="http://help.phpcmf.net/538.html" target="_blank">框架</a>';
+            $data['phpcmf']['tname'] = '<a href="javascript:dr_help(538);">框架</a>';
         }
 
         if (is_file(MYPATH.'Init.php')) {
             $data['my'] = require MYPATH.'Config/Version.php';
             $cms_id = $data['my']['id'];
             $data['my']['id'] = 'cms-'.$cms_id;
-            $data['my']['tname'] = '<a href="http://help.phpcmf.net/539.html" target="_blank">系统</a>';
+            $data['my']['tname'] = '<a href="javascript:dr_help(539);">系统</a>';
         }
 
         $local = dr_dir_map(APPSPATH, 1);
@@ -338,7 +361,7 @@ class Cloud extends \Phpcmf\Common
                         'id' => $cfg['type'].'-'.$vsn['id'],
                         'name' => $cfg['name'],
                         'type' => $cfg['type'],
-                        'tname' => '<a href="http://help.phpcmf.net/540.html" target="_blank">插件</a>',
+                        'tname' => '<a href="javascript:dr_help(540);">插件</a>',
                         'version' => $vsn['version'],
                         'license' => $vsn['license'],
                         'updatetime' => $vsn['updatetime'],
@@ -352,7 +375,8 @@ class Cloud extends \Phpcmf\Common
             'menu' => \Phpcmf\Service::M('auth')->_admin_menu(
                 [
                     '版本升级' => [\Phpcmf\Service::L('Router')->class.'/'.\Phpcmf\Service::L('Router')->method, 'fa fa-refresh'],
-                    'help' => [537],
+                    '文件对比' => [\Phpcmf\Service::L('Router')->class.'/bf', 'fa fa-code'],
+                    'help' => [379],
                 ]
             ),
             'cms_id' => $cms_id,
@@ -614,6 +638,80 @@ class Cloud extends \Phpcmf\Common
         $this->_json(100, '');
     }
 
+    // 文件对比
+    public function bf() {
+
+        \Phpcmf\Service::V()->assign([
+            'menu' => \Phpcmf\Service::M('auth')->_admin_menu(
+                [
+                    '文件对比' => [\Phpcmf\Service::L('Router')->class.'/'.\Phpcmf\Service::L('Router')->method, 'fa fa-code'],
+                    'help' => [608],
+                ]
+            ),
+        ]);
+        \Phpcmf\Service::V()->display('cloud_bf.html');exit;
+    }
+
+    public function bf_count() {
+
+        $surl = 'http://www.tianruiyun.com/version.php?action=bf_count';
+        $json = dr_catcher_data($surl);
+        if (!$json) {
+            $this->_json(0, '没有从服务端获取到数据');
+        }
+
+        $data = dr_string2array($json);
+        if (!$data) {
+            $this->_json(0, '服务端数据异常，请重新再试');
+        } elseif (!$data['code']) {
+            $this->_json(0, $data['msg']);
+        }
+
+        \Phpcmf\Service::L('cache')->init()->save('cloud-bf', $data['data'], 3600);
+
+        $this->_json(dr_count($data['data']), 'ok');
+    }
+
+    public function bf_check() {
+
+        $page = max(1, intval($_GET['page']));
+        $cache = \Phpcmf\Service::L('cache')->init()->get('cloud-bf');
+        !$cache && $this->_json(0, '数据缓存不存在');
+
+        $data = $cache[$page];
+        if ($data) {
+            $html = '';
+            foreach ($data as $filename => $value) {
+                if (strpos($filename, '/dayrui') === 0) {
+                    $cname = 'FCPATH'.substr($filename, 7);
+                    $ofile = FCPATH.substr($filename, 8);
+                } else {
+                    $cname = 'WEBPATH'.$filename;
+                    $ofile = WEBPATH.substr($filename, 1);
+                }
+                $class = '';
+                if (!is_file($ofile)) {
+                    $ok = "<span class='error'>不存在</span>";
+                    $class = 'p_error';
+                } elseif (md5_file($ofile) != $value) {
+                    $ok = "<span class='error'>有变化</span>";
+                    $class = 'p_error';
+                } else {
+                    $ok = "<span class='ok'>正常</span>";
+                }
+                $html.= '<p class="'.$class.'"><label class="rleft">'.$cname.'</label><label class="rright">'.$ok.'</label></p>';
+                if ($class) {
+                    $html.= '<p class="rbf" style="display: none"><label class="rleft">'.$ofile.'</label><label class="rright">'.$ok.'</label></p>';
+                }
+            }
+            $this->_json($page + 1, $html);
+        }
+
+        // 完成
+        \Phpcmf\Service::L('cache')->clear('cloud-bf');
+        $this->_json(100, '');
+    }
+
 
     // 复制目录
     private function _copy_dir($src, $dst) {
@@ -635,7 +733,13 @@ class Cloud extends \Phpcmf\Common
                 } else {
                     dr_mkdirs(dirname($dst . '/' . $file));
                     $rt = copy($src . '/' . $file, $dst . '/' . $file);
-                    !$rt && $this->_error_msg($dst . '/' . $file, '移动失败');
+                    if (!$rt) {
+                        // 验证目标是不是空文件
+                        if (filesize($src . '/' . $file) > 1) {
+                            $this->_error_msg($dst . '/' . $file, '移动失败');
+                        }
+
+                    }
                 }
             }
         }

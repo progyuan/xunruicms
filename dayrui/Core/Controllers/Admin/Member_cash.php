@@ -1,10 +1,28 @@
 <?php namespace Phpcmf\Controllers\Admin;
 
-/**
- * PHPCMF框架文件
- * 二次开发时请勿修改本文件
- * 成都天睿信息技术有限公司 www.phpcmf.net
- */
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 
 // 提现申请
 class Member_cash extends \Phpcmf\Table
@@ -41,7 +59,7 @@ class Member_cash extends \Phpcmf\Table
             ),
         );
         // 表单显示名称
-        $this->name = dr_lang('提醒申请');
+        $this->name = dr_lang('提现申请');
         // 初始化数据表
         $this->_init([
             'table' => 'member_cashlog',
@@ -54,8 +72,9 @@ class Member_cash extends \Phpcmf\Table
         \Phpcmf\Service::V()->assign([
             'menu' => \Phpcmf\Service::M('auth')->_admin_menu(
                 [
-                    '提醒申请' => [ \Phpcmf\Service::L('Router')->class.'/index', 'fa fa-credit-card'],
+                    '提现申请' => [ \Phpcmf\Service::L('Router')->class.'/index', 'fa fa-credit-card'],
                     '详情' => ['hide:'.\Phpcmf\Service::L('Router')->class.'/edit', 'fa fa-edit'],
+                    'help' => [ 598 ],
                 ]
             ),
             'field' => $this->my_field,

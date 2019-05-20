@@ -1,5 +1,4 @@
 <?php
-namespace CodeIgniter\Test;
 
 /**
  * CodeIgniter
@@ -33,9 +32,11 @@ namespace CodeIgniter\Test;
  * @copyright  2014-2019 British Columbia Institute of Technology (https://bcit.ca/)
  * @license    https://opensource.org/licenses/MIT	MIT License
  * @link       https://codeigniter.com
- * @since      Version 3.0.0
+ * @since      Version 4.0.0
  * @filesource
  */
+
+namespace CodeIgniter\Test;
 
 use Config\Paths;
 use CodeIgniter\Events\Events;
@@ -74,6 +75,7 @@ class CIUnitTestCase extends TestCase
 	 * @param string $level
 	 * @param null   $expectedMessage
 	 *
+	 * @return boolean
 	 * @throws \Exception
 	 */
 	public function assertLogged(string $level, $expectedMessage = null)
@@ -199,6 +201,7 @@ class CIUnitTestCase extends TestCase
 	 * @param string  $message
 	 * @param integer $tolerance
 	 *
+	 * @return boolean
 	 * @throws \Exception
 	 */
 	public function assertCloseEnoughString($expected, $actual, string $message = '', int $tolerance = 1)

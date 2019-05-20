@@ -1,10 +1,35 @@
 <?php namespace Phpcmf\Admin;
 
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
+
 // 模块栏目操作类 基于 Ftable
 class Category extends \Phpcmf\Table
 {
     public $module; // 模块信息
-    
+    public $is_scategory; // 选择栏目类型
+
     public function __construct(...$params) {
         parent::__construct(...$params);
         // 初始化模块
@@ -18,7 +43,8 @@ class Category extends \Phpcmf\Table
         $this->tpl_name = 'category_content';
         // 模块显示名称
         $this->name = dr_lang('内容模块[%s]', $dir);
-        if ($this->module['share']) {
+        $this->is_scategory = $this->module['share'] || (isset($this->module['config']['scategory']) && $this->module['config']['scategory']);
+        if ($this->is_scategory) {
             // 共享栏目时显示单页内容字段
             $this->module['category_field']['content'] = [
                 'name' => dr_lang('栏目内容'),
@@ -33,7 +59,7 @@ class Category extends \Phpcmf\Table
                     )
                 ),
             ];
-            $dir != 'share' && $this->_admin_msg(0, dr_lang('共享模块【%s】无权限使用栏目', $dir));
+            //$dir != 'share' && $this->_admin_msg(0, dr_lang('共享模块【%s】无权限使用栏目', $dir));
         } else {
             // 独立模块
             if (isset($this->module['config']['hcategory']) && $this->module['config']['hcategory']) {
@@ -56,6 +82,7 @@ class Category extends \Phpcmf\Table
             'post_url' => \Phpcmf\Service::L('Router')->url(APP_DIR.'/category/add'),
             'field_url' => \Phpcmf\Service::L('router')->url('field/index', ['rname' => 'category-'.$this->module['dirname']]),
             'post_all_url' => \Phpcmf\Service::L('Router')->url(APP_DIR.'/category/all_add'),
+            'is_scategory' => $this->is_scategory,
         ]);
     }
 
@@ -66,22 +93,24 @@ class Category extends \Phpcmf\Table
 
         $tree = [];
         foreach($data as $t) {
+            !$t['mid'] && $t['mid'] = APP_DIR;
             $t['name'] = dr_strcut($t['name'], 30);
             $t['child'] = $t['pcatpost'] ? 0 : $t['child'];
             $t['setting'] = dr_string2array($t['setting']);
             $option = '';
             if ($this->_is_admin_auth()) {
                 if ($this->module['share']) {
-                    $t['tid'] == 1 && $option.= '<a class="btn btn-xs dark" href='.\Phpcmf\Service::L('Router')->url('field/index', ['rname' => ('share').'-'.SITE_ID, 'rid' => $t['id']]).'> <i class="fa fa-code"></i> '.dr_lang('附加字段').'('.dr_count($this->module['category'][$t['id']]['field']).')</a>';
+                    $t['tid'] == 1 && $option.= '<a class="btn btn-xs dark" href='.\Phpcmf\Service::L('Router')->url('field/index', ['rname' => ('share').'-'.SITE_ID, 'rid' => $t['id']]).'> <i class="fa fa-code"></i> '.dr_lang('模型字段').'('.dr_count($this->module['category'][$t['id']]['field']).')</a>';
                 } else {
-                    $option.= '<a class="btn btn-xs dark" href='.\Phpcmf\Service::L('Router')->url('field/index', ['rname' => (APP_DIR).'-'.SITE_ID, 'rid' => $t['id']]).'> <i class="fa fa-code"></i> '.dr_lang('附加字段').'('.dr_count($this->module['category'][$t['id']]['field']).')</a>';
+                    $option.= '<a class="btn btn-xs dark" href='.\Phpcmf\Service::L('Router')->url('field/index', ['rname' => (APP_DIR).'-'.SITE_ID, 'rid' => $t['id']]).'> <i class="fa fa-code"></i> '.dr_lang('模型字段').'('.dr_count($this->module['category'][$t['id']]['field']).')</a>';
                 }
             }
+            $t['tid'] = isset($t['tid']) ? $t['tid'] : 1;
             $t['tid'] != 2 && $this->_is_admin_auth('add') && $option.= '<a class="btn btn-xs blue" href='.\Phpcmf\Service::L('Router')->url(APP_DIR.'/category/add', array('pid' => $t['id'])).'> <i class="fa fa-plus"></i> '.dr_lang('子类').'</a>';
             $this->_is_admin_auth('edit') && $option.= '<a class="btn btn-xs green" href='.\Phpcmf\Service::L('Router')->url(APP_DIR.'/category/edit', array('id' => $t['id'])).'> <i class="fa fa-edit"></i> '.dr_lang('修改').'</a>';
-            $this->_is_admin_auth('add') && ($t['tid'] == 1 && !$t['child']) && $option.= '<a class="btn btn-xs dark" href='.\Phpcmf\Service::L('Router')->url($t['mid'].'/home/add', array('catid' => $t['id'])).'> <i class="fa fa-plus"></i> '.dr_lang('发布').'</a>';
-            $this->_is_admin_auth('edit') && ($t['tid'] == 0 && $this->module['share']) && $option.= '<a class="btn btn-xs dark" href="javascript:dr_page_content('.$t['id'].');"> <i class="fa fa-edit"></i> '.dr_lang('编辑内容').'</a>';
-            $this->_is_admin_auth('edit') && ($t['tid'] == 2 && $this->module['share']) && $option.= '<a class="btn btn-xs dark" href="javascript:dr_link_url('.$t['id'].');"> <i class="fa fa-edit"></i> '.dr_lang('编辑地址').'</a>';
+            $this->_is_admin_auth('add') && ($t['tid'] == 1 && !$t['child'] && $t['mid']) && $option.= '<a class="btn btn-xs dark" href='.\Phpcmf\Service::L('Router')->url($t['mid'].'/home/add', array('catid' => $t['id'])).'> <i class="fa fa-plus"></i> '.dr_lang('发布').'</a>';
+            $this->_is_admin_auth('edit') && ($t['tid'] == 0 && $this->is_scategory) && $option.= '<a class="btn btn-xs dark" href="javascript:dr_page_content('.$t['id'].');"> <i class="fa fa-edit"></i> '.dr_lang('编辑内容').'</a>';
+            $this->_is_admin_auth('edit') && ($t['tid'] == 2 && $this->is_scategory) && $option.= '<a class="btn btn-xs dark" href="javascript:dr_link_url('.$t['id'].');"> <i class="fa fa-edit"></i> '.dr_lang('编辑地址').'</a>';
 
             $t['option'] = $option;
             // 判断显示和隐藏开关
@@ -96,7 +125,7 @@ class Category extends \Phpcmf\Table
             if ($this->module['category'][$t['id']]) {
                 $t['url'] = dr_url_prefix($this->module['category'][$t['id']]['url'], APP_DIR);
                 // 共享模块显示栏类别
-                if ($this->module['share']) {
+                if ($this->is_scategory) {
                     // 栏目类型
                     $t['type_html'] = '<span class="badge badge-info"> '.dr_lang('单页').' </span>';
                     if ($t['tid'] == 1) {
@@ -131,8 +160,12 @@ class Category extends \Phpcmf\Table
         $str.= "<td style='text-align:center'>\$is_show_html</td>";
         $str.= "<td style='text-align:center'>\$id</td>";
         $str.= "<td>\$spacer<a target='_blank' href='\$url'>\$name</a> \$parent</td>";
-        $this->module['share'] && $str.= "<td style='text-align:center'>\$type_html</td>";
-        $this->module['share'] && $str.= "<td style='text-align:center'>\$mid</td>";
+        if ($this->is_scategory) {
+            $str.= "<td style='text-align:center'>\$type_html</td>";
+        }
+        if ($this->module['share']) {
+            $str.= "<td style='text-align:center'>\$mid</td>";
+        }
         $str.= "<td style='text-align:center'>\$total</td>";
         $str.= "<td style='text-align:center'>\$is_page_html</td>";
         $str.= "<td>\$option</td>";
@@ -157,7 +190,7 @@ class Category extends \Phpcmf\Table
                 $category,
                 0,
                 'name="catid"',
-                '--',
+                dr_lang('顶级栏目'),
                 0, 0
             ),
         ]);
@@ -191,14 +224,19 @@ class Category extends \Phpcmf\Table
                 ],
             ]
         ];
-        
-        $pid && !$this->module['category'][$pid] && $this->_admin_msg(0, dr_lang('栏目【%s】缓存不存在', $pid));
+
+        if ($pid) {
+            !$this->module['category'][$pid] && $this->_admin_msg(0, dr_lang('栏目【%s】缓存不存在', $pid));
+            $value['setting'] = $this->module['category'][$pid]['setting'];
+        }
+
         $value['mid'] = $this->module['category'][$pid]['mid'];
         
         list($tpl) = $this->_Post($id, $value, 1);
 
         \Phpcmf\Service::V()->assign([
             'page' => $page,
+            'data' => $value,
             'form' =>  dr_form_hidden(['page' => $page]),
             'select' => \Phpcmf\Service::L('Tree')->select_category($this->module['category'], $pid, 'name=\'data[pid]\'', dr_lang('顶级栏目')),
             'list_url' =>\Phpcmf\Service::L('Router')->url(APP_DIR.'/category/index'),
@@ -276,7 +314,7 @@ class Category extends \Phpcmf\Table
                         $pmid && $pmid != $data['mid'] && $this->_json(0, dr_lang('必须选择与上级栏目相同的内容模块（%s）', $pmid));
                     }
                 }
-                $data['setting'] = dr_array2string([
+                $data['setting'] = dr_array2string(isset($this->module['category'][$pid]['setting']) ? $this->module['category'][$pid]['setting'] : [
                     'edit' => 1,
                     'template' => [
                         'list' => 'list.html',
@@ -429,22 +467,22 @@ class Category extends \Phpcmf\Table
         $ids = \Phpcmf\Service::L('input')->get_post_ids();
         !$ids && $this->_json(0, dr_lang('所选栏目不存在'));
 
-        // 重新获取数据
-        $category = \Phpcmf\Service::M('Category')->data_for_move();
+        $topid = (int)\Phpcmf\Service::L('input')->post('catid');
 
-        $cid = (int)\Phpcmf\Service::L('input')->post('catid');
-        !$category[$cid] && $this->_json(0, dr_lang('所选移动栏目不存在'));
-
-        $mid = $category[$cid]['mid'];
-
-        $catid = [];
-        foreach ($ids as $id) {
-            $catid = dr_array2array($catid, explode(',', $category[$id]['childids']));
-        }
-
+        /*
+        $mid = $topid ? '' : $category[$topid]['mid'];
         // 判断mid
-        $mmid = '';
-        foreach ($catid as $id) {
+        $mmid = '';*/
+        if ($topid) {
+            // 重新获取数据
+            $category = \Phpcmf\Service::M('Category')->data_for_move();
+            if (!$category[$topid]) {
+                $this->_json(0, dr_lang('目标栏目不存在'));
+            } elseif ($this->is_scategory && $category[$topid]['child'] == 0 && $category[$topid]['tid'] == 1) {
+                $this->_json(0, dr_lang('目标栏目【%s】存在内容数据，无法作为父栏目', $category[$topid]['name']));
+            }
+            /*
+        foreach ($ids as $id) {
             if ($mid) {
                 // 本身有模块属性的栏目
                 if ($category[$id]['mid'] && $category[$id]['mid'] != $mid) {
@@ -458,12 +496,14 @@ class Category extends \Phpcmf\Table
                 }
             }
             // 批量更新内容栏目
-            $this->content_model->_init($mid)->update_catids($id, $cid);
+            if ($mid) {
+                //$this->content_model->_init($mid)->update_catids($id, $cid);
+            }
+            }*/
         }
 
-
         // 批量更换栏目
-        \Phpcmf\Service::M()->db->table($this->init['table'])->whereIn('id', $catid)->update(['pid' => $cid]);
+        \Phpcmf\Service::M()->db->table($this->init['table'])->whereIn('id', $ids)->update(['pid' => $topid]);
 
         $this->_json(1, dr_lang('操作成功'));
     }
@@ -518,7 +558,63 @@ class Category extends \Phpcmf\Table
         }
     }
 
+    // 编辑单页内容
+    public function content_edit() {
 
+        $id = intval(\Phpcmf\Service::L('input')->get('id'));
+        $row = \Phpcmf\Service::M('Category')->init($this->init)->get($id);
+        !$row && $this->_json(0, dr_lang('栏目数据不存在'));
+
+        if (IS_POST) {
+            $post = \Phpcmf\Service::L('input')->post('data');
+            \Phpcmf\Service::M('Category')->init($this->init)->update($id, ['content' => ($post['content'])]);
+            \Phpcmf\Service::L('input')->system_log('修改栏目内容: '. $row['name'] . '['. $id.']');
+            $this->_json(1, dr_lang('操作成功'));
+            exit;
+        }
+
+        $field = [
+            'name' => dr_lang('栏目内容'),
+            'ismain' => 1,
+            'fieldtype' => 'Ueditor',
+            'fieldname' => 'content',
+            'setting' => array(
+                'option' => array(
+                    'mode' => 1,
+                    'height' => 300,
+                    'width' => '100%'
+                )
+            ),
+        ];
+
+        \Phpcmf\Service::V()->assign([
+            'myfield' => dr_fieldform($field, $row['content']),
+        ]);
+        \Phpcmf\Service::V()->display('share_category_content.html');exit;
+
+    }
+
+    // 编辑外链
+    public function link_edit() {
+
+        $id = intval(\Phpcmf\Service::L('input')->get('id'));
+        $row = \Phpcmf\Service::M('Category')->init($this->init)->get($id);
+        !$row && $this->_json(0, dr_lang('栏目数据不存在'));
+        $row['setting'] = dr_string2array($row['setting']);
+        if (IS_POST) {
+            $row['setting']['linkurl'] = \Phpcmf\Service::L('input')->post('url');
+            \Phpcmf\Service::M('Category')->init($this->init)->update($id, ['setting' => dr_array2string($row['setting'])]);
+            \Phpcmf\Service::L('input')->system_log('修改栏目外链地址: '. $row['name'] . '['. $id.']');
+            $this->_json(1, dr_lang('操作成功'));
+            exit;
+        }
+
+        \Phpcmf\Service::V()->assign([
+            'myurl' => $row['setting']['linkurl'],
+        ]);
+        \Phpcmf\Service::V()->display('share_category_linkurl.html');exit;
+
+    }
 
 
     // ===========================
@@ -548,7 +644,7 @@ class Category extends \Phpcmf\Table
     protected function _Save($id = 0, $data = [], $old = [], $func = null, $func2 = null) {
 
         return parent::_Save($id, $data, $old,
-            function ($id, $data){
+            function ($id, $data, $old){
                 // 保存之前的判断
                 $save = \Phpcmf\Service::L('input')->post('data');
                 if (!$save['name']) {
@@ -595,6 +691,15 @@ class Category extends \Phpcmf\Table
 
                 if ($save['pid'] && $id && $save['pid'] == $id) {
                     return dr_return_data(0, dr_lang('栏目上级不能为本身'));
+                }
+
+                // 变更栏目时
+                if ($old && $save['pid'] && $save['pid'] != $old['pid']) {
+                    if (!$this->module['category'][$save['pid']]) {
+                        $this->_json(0, dr_lang('父栏目不存在'));
+                    } elseif ($this->is_scategory && $this->module['category'][$save['pid']]['child'] == 0 && $this->module['category'][$save['pid']]['tid'] == 1) {
+                        $this->_json(0, dr_lang('目标栏目【%s】存在内容数据，无法作为父栏目', $this->module['category'][$save['pid']]['name']));
+                    }
                 }
 
                 // 数组json化

@@ -1,5 +1,28 @@
 <?php namespace Phpcmf\Model;
 
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 class Member extends \Phpcmf\Model
 {
 
@@ -298,76 +321,109 @@ class Member extends \Phpcmf\Model
                 $this->db->table('member_group_index')->where('uid', $uid)->where('gid', $group['gid'])->update(['lid' => 0]);
                 $group['lid'] = 0;
             }
+            $group_info = \Phpcmf\Service::C()->member_cache['group'][$group['gid']];
             // 判断过期
-            $price = floatval(\Phpcmf\Service::C()->member_cache['group'][$group['gid']]['price']);
-            if ($price > 0 && $group['etime'] && $group['etime'] - SYS_TIME < 0) {
-                // 过期自动续费price
-                $name = \Phpcmf\Service::C()->member_cache['group'][$group['gid']]['unit'] ? 'score' : 'money';
-                if ($name == 'money') {
-                    // 余额
-                    if ($member[$name] - $price < 0) {
-                        // 余额不足 删除
-                        $this->db->table('member_group_index')->where('uid', $uid)->where('gid', $group['gid'])->delete();
-                        // 提醒通知
-                        $this->notice($uid, 2, dr_lang('您的用户组（%s）已过期，自动续费失败，账户%s不足', \Phpcmf\Service::C()->member_cache['group'][$group['gid']]['name'], dr_lang('余额')));
-                        continue;
+            $price = floatval($group_info['price']);
+            if ($group['etime'] && $group['etime'] - SYS_TIME < 0) {
+                // 过期了
+                if ($group_info['setting']['timeout']) {
+                    // 过期自动续费price
+                    $name = $group_info['unit'] ? 'score' : 'money';
+                    if ($name == 'money') {
+                        // 余额
+                        if ($price > 0) {
+                            // 收费组情况下
+                            if ($member[$name] - $price < 0) {
+                                // 余额不足 删除
+                                $this->db->table('member_group_index')->where('uid', $uid)->where('gid', $group['gid'])->delete();
+                                // 提醒通知
+                                $this->notice($uid, 2, dr_lang('您的用户组（%s）已过期，自动续费失败，账户%s不足', $group_info['name'], dr_lang('余额')));
+                                continue;
+                            }
+                            $group['etime'] = dr_member_group_etime($group_info['days']);
+                            // 自动续费
+                            $rt = $this->add_money($uid, -$price);
+                            if (!$rt['code']) {
+                                continue;
+                            }
+                            // 增加到交易流水
+                            $rt = \Phpcmf\Service::M('Pay')->add_paylog([
+                                'uid' => $member['id'],
+                                'username' => $member['username'],
+                                'touid' => 0,
+                                'tousername' => '',
+                                'mid' => 'system',
+                                'title' => dr_lang('用户组（%s）续费', $group_info['name']),
+                                'value' => -$price,
+                                'type' => 'finecms',
+                                'status' => 1,
+                                'result' => dr_lang('有效期至%s', $group['etime'] ? dr_date($group['etime']) : dr_lang('永久')),
+                                'paytime' => SYS_TIME,
+                                'inputtime' => SYS_TIME,
+                            ]);
+                            // 提醒通知
+                            $this->notice(
+                                $uid,
+                                2,
+                                dr_lang('您的用户组（%s）已过期，自动续费成功', $group_info['name']),
+                                \Phpcmf\Service::L('router')->member_url('paylog/show', ['id'=>$rt['code']])
+                            );
+                        } else {
+                            // 免费组自己续费
+                            // 提醒通知
+                            $this->notice(
+                                $uid,
+                                2,
+                                dr_lang('您的用户组（%s）已过期，自动免费续期成功', $group_info['name'])
+                            );
+                        }
+                        // 更新时间
+                        $this->db->table('member_group_index')->where('uid', $uid)->where('gid', $group['gid'])->update(['etime' => $group['etime']]);
+                    } else {
+                        // 金币
+                        $price = (int)$price;
+
+                        if ($price > 0) {
+                            // 收费组情况下
+                            if ($member[$name] - $price < 0) {
+                                // 金币不足 删除
+                                $this->db->table('member_group_index')->where('uid', $uid)->where('gid', $group['gid'])->delete();
+                                // 提醒通知
+                                $this->notice($uid, 2, dr_lang('您的用户组（%s）已过期，自动续费失败，账户%s不足', $group_info['name'], SITE_SCORE));
+                                continue;
+                            }
+                            // 自动续费
+                            $group['etime'] = dr_member_group_etime($group_info['days']);
+                            // 自动续费
+                            $rt = $this->add_score($uid, -$price, dr_lang('您的用户组（%s）自动续费', $group_info['name']));
+                            if (!$rt['code']) {
+                                continue;
+                            }
+                            // 提醒通知
+                            $this->notice(
+                                $uid,
+                                2,
+                                dr_lang('您的用户组（%s）已过期，自动续费成功', $group_info['name'])
+                            );
+                        } else {
+                            // 免费组自己续费
+                            // 提醒通知
+                            $this->notice(
+                                $uid,
+                                2,
+                                dr_lang('您的用户组（%s）已过期，自动免费续期成功', $group_info['name'])
+                            );
+                        }
+                        // 更新时间
+                        $this->db->table('member_group_index')->where('uid', $uid)->where('gid', $group['gid'])->update(['etime' => $group['etime']]);
                     }
-                    $group['etime'] = dr_member_group_etime(\Phpcmf\Service::C()->member_cache['group'][$group['gid']]['days']);
-                    // 自动续费
-                    $rt = $this->add_money($uid, -$price);
-                    if (!$rt['code']) {
-                        continue;
-                    }
-                    // 增加到交易流水
-                    $rt = \Phpcmf\Service::M('Pay')->add_paylog([
-                        'uid' => $member['id'],
-                        'username' => $member['username'],
-                        'touid' => 0,
-                        'tousername' => '',
-                        'mid' => 'system',
-                        'title' => dr_lang('用户组（%s）续费', \Phpcmf\Service::C()->member_cache['group'][$group['gid']]['name']),
-                        'value' => -$price,
-                        'type' => 'finecms',
-                        'status' => 1,
-                        'result' => dr_lang('有效期至%s', $group['etime'] ? dr_date($group['etime']) : dr_lang('永久')),
-                        'paytime' => SYS_TIME,
-                        'inputtime' => SYS_TIME,
-                    ]);
-                    // 提醒通知
-                    $this->notice(
-                        $uid,
-                        2,
-                        dr_lang('您的用户组（%s）已过期，自动续费成功', \Phpcmf\Service::C()->member_cache['group'][$group['gid']]['name']),
-                        \Phpcmf\Service::L('router')->member_url('paylog/show', ['id'=>$rt['code']])
-                    );
-                    // 更新时间
-                    $this->db->table('member_group_index')->where('uid', $uid)->where('gid', $group['gid'])->update(['etime' => $group['etime']]);
                 } else {
-                    // 金币
-                    $price = (int)$price;
-                    if ($member[$name] - $price < 0) {
-                        // 金币不足 删除
-                        $this->db->table('member_group_index')->where('uid', $uid)->where('gid', $group['gid'])->delete();
-                        // 提醒通知
-                        $this->notice($uid, 2, dr_lang('您的用户组（%s）已过期，自动续费失败，账户%s不足', \Phpcmf\Service::C()->member_cache['group'][$group['gid']]['name'], SITE_SCORE));
-                        continue;
-                    }
-                    // 自动续费
-                    $group['etime'] = dr_member_group_etime(\Phpcmf\Service::C()->member_cache['group'][$group['gid']]['days']);
-                    // 自动续费
-                    $rt = $this->add_score($uid, -$price, dr_lang('您的用户组（%s）自动续费', \Phpcmf\Service::C()->member_cache['group'][$group['gid']]['name']));
-                    if (!$rt['code']) {
-                        continue;
-                    }
+                    // 未开通自动续费直接删除
+                    $this->db->table('member_group_index')->where('uid', $uid)->where('gid', $group['gid'])->delete();
                     // 提醒通知
-                    $this->notice(
-                        $uid,
-                        2,
-                        dr_lang('您的用户组（%s）已过期，自动续费成功', \Phpcmf\Service::C()->member_cache['group'][$group['gid']]['name'])
-                    );
-                    // 更新时间
-                    $this->db->table('member_group_index')->where('uid', $uid)->where('gid', $group['gid'])->update(['etime' => $group['etime']]);
+                    $this->notice($uid, 2, dr_lang('您的用户组（%s）已过期，系统权限已关闭', $group_info['name']));
                 }
+
             }
             // 开启自动升级时需要判断等级
             if ($levels
@@ -491,7 +547,7 @@ class Member extends \Phpcmf\Model
         $this->db->table('admin_notice')->insert([
             'site' => (int)$site,
             'type' => $type,
-            'msg' => $msg,
+            'msg' => dr_strcut(dr_clearhtml($msg), 100),
             'uri' => $uri,
             'to_rid' => intval($to['to_rid']),
             'to_uid' => intval($to['to_uid']),
@@ -920,6 +976,14 @@ class Member extends \Phpcmf\Model
             return dr_return_data(0, dr_lang('邮箱%s已经注册', $member['email']), ['field' => 'email']);
         } elseif ($member['phone'] && $this->db->table('member')->where('phone', $member['phone'])->countAllResults()) {
             return dr_return_data(0, dr_lang('手机号码%s已经注册', $member['phone']), ['field' => 'phone']);
+        }
+
+        if (!IS_ADMIN && \Phpcmf\Service::C()->member_cache['register']['notallow']) {
+            foreach (\Phpcmf\Service::C()->member_cache['register']['notallow'] as $mt) {
+                if ($mt && stripos($member['username'], $mt) !== false) {
+                    return dr_return_data(0, dr_lang('账号%s禁止包含关键字[%s]', $member['username'], $mt), ['field' => 'username']);
+                }
+            }
         }
 
         $ucsso_id = 0;

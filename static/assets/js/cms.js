@@ -123,6 +123,9 @@ function dr_tips(code, msg, time) {
 
     layer.msg(tip+'&nbsp;&nbsp;'+msg);
 }
+function dr_cmf_tips(code, msg, time) {
+    dr_tips(code, msg, time);
+}
 
 //
 function dr_iframe(type, url, width, height, nogo) {
@@ -190,8 +193,7 @@ function dr_iframe(type, url, width, height, nogo) {
                     return false;
                 },
                 error: function(HttpRequest, ajaxOptions, thrownError) {
-                    layer.closeAll('loading');
-                    dr_tips(0, lang['error']);
+                    dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError)
                 }
             });
             return false;
@@ -245,11 +247,11 @@ function dr_iframe_show(type, url, width, height) {
         area: [width, height],
         success: function(layero, index){
             // 主要用于后台权限验证
-            var body = layero.getChildFrame('body', index);
+            var body = layer.getChildFrame('body', index);
             var json = $(body).html();
             if (json.indexOf('"code":0') > 0 && json.length < 150){
                 var obj = JSON.parse(json);
-                layero.close(index);
+                layer.close(index);
                 dr_tips(0, obj.msg);
             }
         },
@@ -309,8 +311,7 @@ function dr_ajax_confirm_url(url, msg, tourl) {
                     dr_tips(json.code, json.msg);
                 },
                 error: function(HttpRequest, ajaxOptions, thrownError) {
-                    layer.closeAll('loading');
-                    dr_tips(0, lang['error']);
+                    dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError)
                 }
             });
         });
@@ -334,8 +335,7 @@ function dr_ajax_url(url) {
             }
         },
         error: function(HttpRequest, ajaxOptions, thrownError) {
-            layer.closeAll('loading');
-            dr_tips(0, lang['error']);
+            dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError)
         }
     });
 }
@@ -358,8 +358,7 @@ function dr_ajaxp_url(url) {
             }
         },
         error: function(HttpRequest, ajaxOptions, thrownError) {
-            layer.closeAll('loading');
-            dr_tips(0, lang['error']);
+            dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError)
         }
     });
 }
@@ -415,8 +414,7 @@ function dr_ajax_option(url, msg, remove) {
                     dr_tips(json.code, json.msg);
                 },
                 error: function(HttpRequest, ajaxOptions, thrownError) {
-                    layer.closeAll('loading');
-                    dr_tips(0, lang['error']);
+                    dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError)
                 }
             });
         });
@@ -454,8 +452,7 @@ function dr_ajax_option_url(url, msg, tourl) {
                     dr_tips(json.code, json.msg);
                 },
                 error: function(HttpRequest, ajaxOptions, thrownError) {
-                    layer.closeAll('loading');
-                    dr_tips(0, lang['error']);
+                    dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError)
                 }
             });
         });
@@ -521,8 +518,7 @@ function dr_ajax_submit(url, form, time, go) {
             }
         },
         error: function(HttpRequest, ajaxOptions, thrownError) {
-            layer.closeAll('loading');
-            dr_tips(0, lang['error']);
+            dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError)
         }
     });
 }
@@ -545,8 +541,7 @@ function dr_loginout(msg) {
             setTimeout('window.location.href="'+json.data.url+'"', 2000);
         },
         error: function(HttpRequest, ajaxOptions, thrownError) {
-            layer.closeAll('loading');
-            dr_tips(0, lang['error']);
+            dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError)
         }
     });
 }
@@ -595,8 +590,7 @@ function dr_ajax_member(url, form) {
             }
         },
         error: function(HttpRequest, ajaxOptions, thrownError) {
-            layer.closeAll('loading');
-            dr_tips(0, lang['error']);
+            dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError)
         }
     });
 }
@@ -635,8 +629,7 @@ function dr_pc_or_mobile(url) {
             }
         },
         error: function(HttpRequest, ajaxOptions, thrownError) {
-            layer.closeAll('loading');
-            dr_tips(0, lang['error']);
+            dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError)
         }
     });
 }
@@ -718,51 +711,6 @@ function dr_module_digg(dir, id, value) {
             $('#module_digg_'+id+'_'+value).html(data.data);
         }
     }, 'json');
-}
-
-// 加入购物车
-function dr_add_cart(fid, id, thumb, url) {
-    $.get("/index.php?is_ajax=1&s=cart&c=api&m=add&id="+id+'&fid='+fid+'&thumb='+thumb+'&url='+url, function(data){
-        dr_tips(data.code, data.msg);
-        if (data.code) {
-            $('#dr_cart_nums').html(data.data);
-        }
-    }, 'json');
-}
-
-// 显示购物车数量
-function dr_cart_nums() {
-    $.ajax({
-        type: "GET",
-        url: '/index.php?s=cart&c=api&m=nums',
-        dataType: "jsonp",
-        success: function (json) {
-            if (json.code) {
-                $('#dr_cart_nums').html(json.data);
-            }
-        },
-        error: function(HttpRequest, ajaxOptions, thrownError) {
-            //alert(HttpRequest.responseText);
-        }
-    });
-}
-// 删除购物车
-function dr_cart_del(id) {
-    $.ajax({
-        type: "GET",
-        url: '/index.php?s=cart&c=api&m=del&id='+id,
-        dataType: "jsonp",
-        success: function (json) {
-            dr_tips(json.code, json.msg);
-            if (json.code) {
-                $('#dr_row_'+id).remove();
-                $('#dr_cart_nums').html(json.data);
-            }
-        },
-        error: function(HttpRequest, ajaxOptions, thrownError) {
-            dr_tips(0, lang['error']);
-        }
-    });
 }
 
 // 选中支付方式
@@ -876,3 +824,25 @@ function d_isdomain(name) {
     }
 };
 
+function dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError) {
+    layer.closeAll('loading');
+    if (typeof is_admin != "undefined" && is_admin == 1) {
+        var msg = HttpRequest.responseText;
+        if (!msg) {
+            dr_tips(0, lang['error']);
+        } else {
+            layer.open({
+                type: 1,
+                title: lang['error'],
+                fix:true,
+                shadeClose: true,
+                shade: 0,
+                area: ['50%', '50%'],
+                content: "<div style=\"padding:10px;\">"+msg+"</div>"
+            });
+        }
+    } else {
+        dr_tips(0, lang['error']);
+    }
+
+}

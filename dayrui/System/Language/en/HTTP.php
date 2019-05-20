@@ -8,7 +8,7 @@
  * @copyright  2014-2019 British Columbia Institute of Technology (https://bcit.ca/)
  * @license    https://opensource.org/licenses/MIT	MIT License
  * @link       https://codeigniter.com
- * @since      Version 3.0.0
+ * @since      Version 4.0.0
  * @filesource
  *
  * @codeCoverageIgnore
@@ -64,14 +64,14 @@ return [
    'alreadyMoved'               => 'The uploaded file has already been moved.',
    'invalidFile'                => 'The original file is not a valid file.',
    'moveFailed'                 => 'Could not move file {0} to {1} ({2})',
-	
-   'uploadErrOk'		=> 'The file uploaded with success.',
-   'uploadErrIniSize'		=> 'The file "%s" exceeds your upload_max_filesize ini directive.',
-   'uploadErrFormSize'		=> 'The file "%s" exceeds the upload limit defined in your form.',
-   'uploadErrPartial'		=> 'The file "%s" was only partially uploaded.',
-   'uploadErrNoFile'		=> 'No file was uploaded.',
-   'uploadErrCantWrite'		=> 'The file "%s" could not be written on disk.',
-   'uploadErrNoTmpDir'		=> 'File could not be uploaded: missing temporary directory.',
-   'uploadErrExtension' 	=> 'File upload was stopped by a PHP extension.',
-   'uploadErrUnknown'		=> 'The file "%s" was not uploaded due to an unknown error.'
+
+   'uploadErrOk'                => 'The file uploaded with success.',
+   'uploadErrIniSize'           => 'The file "%s" exceeds your upload_max_filesize ini directive.',
+   'uploadErrFormSize'          => 'The file "%s" exceeds the upload limit defined in your form.',
+   'uploadErrPartial'           => 'The file "%s" was only partially uploaded.',
+   'uploadErrNoFile'            => 'No file was uploaded.',
+   'uploadErrCantWrite'         => 'The file "%s" could not be written on disk.',
+   'uploadErrNoTmpDir'          => 'File could not be uploaded: missing temporary directory.',
+   'uploadErrExtension'         => 'File upload was stopped by a PHP extension.',
+   'uploadErrUnknown'           => 'The file "%s" was not uploaded due to an unknown error.',
 ];

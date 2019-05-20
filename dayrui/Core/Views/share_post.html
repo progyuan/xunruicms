@@ -37,6 +37,9 @@
                             dr_tips(json.code, json.msg);
                         }
                         return false;
+                    },
+                    error: function(HttpRequest, ajaxOptions, thrownError) {
+                        dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError);
                     }
                 });
                 return false;
@@ -95,8 +98,7 @@
                         }
                     },
                     error: function(HttpRequest, ajaxOptions, thrownError) {
-                        layer.closeAll('loading');
-                        alert(HttpRequest.responseText);
+                        dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError);
                     }
                 });
 
@@ -107,6 +109,11 @@
     }
 
 </script>
+{/if}
+{if $post_notice_msg}
+<div class="note note-danger">
+    <p>{$post_notice_msg}</p>
+</div>
 {/if}
 <form action="" class="form-horizontal" method="post" name="myform" id="myform">
     {$form}

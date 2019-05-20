@@ -39,6 +39,7 @@
                 {if !$cg.dev}<label><a href="/index.php?s=form&c={$t.table}&m=post" target="_blank" class="btn btn-xs yellow"> <i class="fa fa-send"></i> {dr_lang('预览')} </a></label>{/if}
                 {if $ci->_is_admin_auth('edit')}<label><a href="{dr_url('form/edit', ['id'=>$t.id])}" class="btn btn-xs green"> <i class="fa fa-edit"></i> {dr_lang('修改')} </a></label>{/if}
                 {if $ci->_is_admin_auth()}<label><a href="{dr_url('field/index', ['rname'=>'form-'.SITE_ID, 'rid'=>$t.id])}" class="btn btn-xs dark"> <i class="fa fa-code"></i> {dr_lang('自定义字段')} </a></label>{/if}
+                {if $ci->_is_admin_auth()}<label><a href="{dr_url('field/test', ['rname'=>'form-'.SITE_ID, 'rid'=>$t.id])}" class="btn btn-xs dark"> <i class="fa fa-code"></i> 开发中 </a></label>{/if}
                 {if $ci->_is_admin_auth()}<label><a href="javascript:dr_iframe_show('{dr_lang('导出')}', '{dr_url('form/export', ['id'=>$t.id])}');" class="btn btn-xs red"> <i class="fa fa-sign-out"></i> {dr_lang('导出')} </a></label>{/if}
             </td>
         </tr>

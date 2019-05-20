@@ -62,24 +62,11 @@
                                         <span></span>
                                     </label>
                                 </div>
+                                <span class="help-block"> {dr_lang('自定义模式时本表单不会自动生成到菜单之中，需要开发者手动写入菜单')} </span>
                             </div>
                         </div>
 
-                        <div class="form-group dev">
-                            <label class="col-md-2 control-label">{dr_lang('邮件通知')}</label>
-                            <div class="col-md-9">
-                                <label><input type="text" class="form-control input-xlarge" name="data[setting][send]" value="{$data['setting']['send']}"></label>
-                                <span class="help-block"> {dr_lang('前端提交后将会把提交信息发送到这个邮箱中')} </span>
-                            </div>
-                        </div>
-                        <div class="form-group dev">
-                            <label class="col-md-2 control-label">{dr_lang('邮件模板')}</label>
-                            <div class="col-md-9">
-                                <textarea name="data[setting][template]" class="form-control" style="height:120px">{$data['setting']['template']}</textarea>
-                                <span class="help-block"> {dr_lang('字段调用标签：[字段名称]')} </span>
-                            </div>
-                        </div>
-                        <div class="form-group dev">
+                        <div class="form-group ">
                             <label class="col-md-2 control-label">{dr_lang('提交成功跳转URL')}</label>
                             <div class="col-md-9">
                                 <input type="text" class="form-control input-xlarge" name="data[setting][rt_url]" value="{$data['setting']['rt_url']}" >

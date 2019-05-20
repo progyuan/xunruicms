@@ -66,6 +66,24 @@
                         <input type="text" name="data[db_prefix]" value="dr_" class="form-control" placeholder="">
                     </div>
                 </div>
+                {if DR_CMS == 10}
+                <div class="form-group">
+                    <label class="control-label col-md-3">安装测试数据</label>
+                    <div class="col-md-7">
+                        <div class="mt-radio-inline">
+                            <label class="mt-radio">
+                                <input type="radio" name="is_install_db" value="1" checked=""> 安装
+                                <span></span>
+                            </label>
+                            <label class="mt-radio">
+                                <input type="radio" name="is_install_db" value="0"> 不安装
+                                <span></span>
+                            </label>
+                        </div>
+                        <p class="help-block"> 新手建议选择安装测试数据，方便快速入门 </p>
+                    </div>
+                </div>
+                {/if}
             </div>
 
         </form>

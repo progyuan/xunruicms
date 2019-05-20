@@ -13,6 +13,9 @@
                 <li class="{if $page==1}active{/if}">
                     <a href="#tab_1" data-toggle="tab" onclick="$('#dr_page').val('1')"> <i class="fa fa-expeditedssl"></i> {dr_lang('安全设置')} </a>
                 </li>
+                <li class="{if $page==2}active{/if}">
+                    <a href="#tab_2" data-toggle="tab" onclick="$('#dr_page').val('2')"> <i class="fa fa-code"></i> {dr_lang('API工具')} </a>
+                </li>
             </ul>
         </div>
         <div class="portlet-body">
@@ -67,7 +70,7 @@
                         <div class="form-group">
                             <label class="col-md-2 control-label">{dr_lang('系统通知邮箱')}</label>
                             <div class="col-md-5">
-                                <input class="form-control" type="text" name="data[SYS_EMAIL]" value="{$data['SYS_EMAIL']}" >
+                                <input class="form-control input-large" type="text" name="data[SYS_EMAIL]" value="{$data['SYS_EMAIL']}" >
                                 <span class="help-block">{dr_lang('用于系统管理员接收消息的邮箱')}</span>
                             </div>
                         </div>
@@ -92,15 +95,29 @@
                         <div class="form-group">
                             <label class="col-md-2 control-label">{dr_lang('安全密钥')}</label>
                             <div class="col-md-9">
-                                <label><input class="form-control input-large" type="text" name="data[SYS_KEY]" id="sys_key" value="{if $data['SYS_KEY']}***{/if}"  ></label>
+                                <label><input class="form-control input-large" type="text" name="data[SYS_KEY]" id="sys_key" value="{if $data['SYS_KEY']}************{/if}"  ></label>
                                 <label><button class="btn btn-sm blue" type="button" name="button" onclick="dr_to_key()"> {dr_lang('重新生成')} </button></label>
-                                <span class="help-block">{dr_lang('密钥建议定期更换')}</span>
+                                <span class="help-block">{dr_lang('密钥建议定期更换，更换密钥之后本次登录将会自动退出')}</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
 
+                <div class="tab-pane  {if $page==2}active{/if}" id="tab_2">
+                    <div class="form-body">
+
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">{dr_lang('百度地图Api（AK）')}</label>
+                            <div class="col-md-5">
+                                <label><input class="form-control input-large" type="text" name="data[SYS_BDMAP_API]" value="{$data['SYS_BDMAP_API']}"  ></label>
+                                <label><a class="btn btn-sm blue" href="javascript:dr_help(584);"> {dr_lang('立即申请')} </a></label>
+                                <span class="help-block">{dr_lang('用于百度地图调用')}</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
 
             </div>
         </div>

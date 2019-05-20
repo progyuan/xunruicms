@@ -1,4 +1,4 @@
-<?php namespace CodeIgniter\Filters;
+<?php
 
 /**
  * CodeIgniter
@@ -32,15 +32,19 @@
  * @copyright  2014-2019 British Columbia Institute of Technology (https://bcit.ca/)
  * @license    https://opensource.org/licenses/MIT	MIT License
  * @link       https://codeigniter.com
- * @since      Version 3.0.0
+ * @since      Version 4.0.0
  * @filesource
  */
 
-use CodeIgniter\Filters\FilterInterface;
+namespace CodeIgniter\Filters;
+
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Config\Services;
 
+/**
+ * Debug toolbar filter
+ */
 class DebugToolbar implements FilterInterface
 {
 	/**
@@ -48,7 +52,7 @@ class DebugToolbar implements FilterInterface
 	 *
 	 * @param RequestInterface|\CodeIgniter\HTTP\IncomingRequest $request
 	 *
-	 * @return mixed
+	 * @return void
 	 */
 	public function before(RequestInterface $request)
 	{
@@ -63,7 +67,7 @@ class DebugToolbar implements FilterInterface
 	 * @param RequestInterface|\CodeIgniter\HTTP\IncomingRequest $request
 	 * @param ResponseInterface|\CodeIgniter\HTTP\Response       $response
 	 *
-	 * @return mixed
+	 * @return void
 	 */
 	public function after(RequestInterface $request, ResponseInterface $response)
 	{

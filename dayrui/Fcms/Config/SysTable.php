@@ -90,7 +90,7 @@ return [
       PRIMARY KEY (`id`),
       KEY `uid` (`uid`),
       KEY `catid` (`catid`)
-    ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='栏目附加表';",
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='栏目模型表';",
 
     '_category_data_0' => "CREATE TABLE IF NOT EXISTS `{tablename}` (
       `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -99,7 +99,7 @@ return [
       PRIMARY KEY (`id`),
       KEY `uid` (`uid`),
       KEY `catid` (`catid`)
-    ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='栏目附加表的附表';",
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='栏目模型表的附表';",
     
     '_flag' => "CREATE TABLE IF NOT EXISTS `{tablename}` (
       `flag` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT '文档标记id',

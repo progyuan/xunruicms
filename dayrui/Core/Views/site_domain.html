@@ -157,6 +157,9 @@
             data: $("#myform").serialize(),
             success: function(html) {
                 $("#dr_domain").html(html);
+            },
+            error: function(HttpRequest, ajaxOptions, thrownError) {
+                dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError);
             }
         });
     }

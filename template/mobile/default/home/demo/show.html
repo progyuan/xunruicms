@@ -1,32 +1,17 @@
 {template "header.html"}
-
+<header class="hui-header">
+    <div id="hui-back"></div>
+    <h1>这里是演示数据模块单独的内容页</h1>
+</header>
+<div class="hui-header-line"></div>
 <div class="page-wrapper-row full-height">
     <div class="page-wrapper-middle">
-        <div class="page-head">
-            <div class="container">
-                <div class="page-title" style="color:red">
-                    这里是演示数据模块单独的内容页，以下有各个常用字段输出的写法
-                </div>
-            </div>
-        </div>
+        
         <div class="page-content">
 
             <div class="container">
 
-                <ul class="page-breadcrumb breadcrumb">
-                    <li>
-                        <a href="{SITE_URL}">网站首页</a>
-                        <i class="fa fa-circle"></i>
-                    </li>
-                    <li>
-                        <a href="{MODULE_URL}">{MODULE_NAME}</a>
-                        <i class="fa fa-circle"></i>
-                    </li>
-                    {dr_catpos($catid, '', true, '<li> <a href="[url]">[name]</a> <i class="fa fa-circle"></i> </li>')}
-                    <li>
-                        <span>{$title}</span>
-                    </li>
-                </ul>
+                
 
                 <div class="search-page search-content-2">
                     <div class="portlet light">
@@ -40,19 +25,19 @@
                         </div>
                         <div class="search-post-foot fc-content-tool">
                             <div class="search-post-meta">
-                                <i class="icon-user font-blue"></i>
+                                <i class="fa fa-user font-blue"></i>
                                 <a href="javascript:;">{$author}</a>
                             </div>
                             <div class="search-post-meta">
-                                <i class="icon-calendar font-blue"></i>
+                                <i class="fa fa-calendar font-blue"></i>
                                 <a href="javascript:;">{$updatetime}</a>
                             </div>
                             <div class="search-post-meta">
-                                <i class="icon-fire font-blue"></i>
+                                <i class="fa fa-fire font-blue"></i>
                                 <a href="javascript:;">{dr_show_hits($id)}次</a>
                             </div>
                             <div class="search-post-meta">
-                                <i class="icon-bubble font-blue"></i>
+                                <i class="fa fa-bubble font-blue"></i>
                                 <a href="{Router::comment_url($id)}">{$comments}</a>
                             </div>
                         </div>

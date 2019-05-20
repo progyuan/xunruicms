@@ -1,5 +1,5 @@
 <?php
-namespace CodeIgniter\CLI;
+
 
 /**
  * CodeIgniter
@@ -33,13 +33,18 @@ namespace CodeIgniter\CLI;
  * @copyright  2014-2019 British Columbia Institute of Technology (https://bcit.ca/)
  * @license    https://opensource.org/licenses/MIT	MIT License
  * @link       https://codeigniter.com
- * @since      Version 3.0.0
+ * @since      Version 4.0.0
  * @filesource
  */
+
+namespace CodeIgniter\CLI;
 
 use CodeIgniter\Config\Services;
 use CodeIgniter\Controller;
 
+/**
+ * Command runner
+ */
 class CommandRunner extends Controller
 {
 
@@ -51,6 +56,8 @@ class CommandRunner extends Controller
 	protected $commands = [];
 
 	/**
+	 * Message logger.
+	 *
 	 * @var \CodeIgniter\Log\Logger
 	 */
 	protected $logger;
@@ -63,6 +70,8 @@ class CommandRunner extends Controller
 	 *
 	 * @param string $method
 	 * @param array  ...$params
+	 *
+	 * @throws \ReflectionException
 	 */
 	public function _remap($method, ...$params)
 	{
@@ -78,9 +87,12 @@ class CommandRunner extends Controller
 	//--------------------------------------------------------------------
 
 	/**
+	 * Default command.
+	 *
 	 * @param array $params
 	 *
 	 * @return mixed
+	 * @throws \ReflectionException
 	 */
 	public function index(array $params)
 	{
@@ -128,6 +140,8 @@ class CommandRunner extends Controller
 	/**
 	 * Scans all Commands directories and prepares a list
 	 * of each command with it's group and file.
+	 *
+	 * @throws \ReflectionException
 	 */
 	protected function createCommandList()
 	{
@@ -187,7 +201,7 @@ class CommandRunner extends Controller
 	 *
 	 * @return array
 	 */
-	public function getCommands()
+	public function getCommands(): array
 	{
 		return $this->commands;
 	}

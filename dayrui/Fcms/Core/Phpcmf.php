@@ -1,5 +1,30 @@
 <?php namespace Phpcmf;
 
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
+
+
 // 公共类
 abstract class Common extends \CodeIgniter\Controller
 {
@@ -23,6 +48,8 @@ abstract class Common extends \CodeIgniter\Controller
     public $session; // 网站session对象
     public $is_mobile; // 是否移动端
     public $temp; // 临时数据存储
+
+    private $is_module_init; // 防止模块重复初始化
 
 
     /**
@@ -51,7 +78,7 @@ abstract class Common extends \CodeIgniter\Controller
                 $this->site_info[$id]['SITE_IS_MOBILE'] = $t['SITE_MOBILE'] ? 1 : 0;
             }
         } else {
-            !defined('IS_NOT_301') && define('IS_NOT_301', 1);
+            //!defined('IS_NOT_301') && define('IS_NOT_301', 1);
             $this->site_info[1] = [
                 'SITE_ID' => 1,
                 'SITE_URL' => dr_http_prefix(DOMAIN_NAME.'/'),
@@ -80,19 +107,33 @@ abstract class Common extends \CodeIgniter\Controller
         }
 
         // 开启自动跳转手机端(api、admin、member不跳转)
-        if (!IS_API
-            && !IS_ADMIN
-            && !IS_MEMBER
-            && !defined('IS_NOT_301')
-            && $client
-            && $this->site_info[SITE_ID]['SITE_MOBILE']
-            && !in_array(DOMAIN_NAME, $client)
-            && $this->site_info[SITE_ID]['SITE_AUTO'] && $this->_is_mobile()) {
-            if (isset($_COOKIE['is_mobile']) && $_COOKIE['is_mobile'] ) {
+        if (!IS_API // api不跳转
+            && !IS_ADMIN // 后台不跳转
+            && !IS_MEMBER // 会员中心不跳
+            && !defined('IS_NOT_301') // 定义禁止301不跳
+            && $client // 没有客户端不跳
+            && $this->site_info[SITE_ID]['SITE_MOBILE'] // 没有绑定移动端域名不跳
+            //&& !in_array(DOMAIN_NAME, $client) // 当前域名不存在于客户端中时
+            && $this->site_info[SITE_ID]['SITE_AUTO'] // 开启自动识别跳转
+        ) {
+
+            if (isset($_COOKIE['is_mobile'])) {
                 // 表示来自切换,不跳转
                 $is_mobile = false;
             } else {
-                dr_domain_301($client[DOMAIN_NAME] ? dr_http_prefix($client[DOMAIN_NAME].'/') : $this->site_info[SITE_ID]['SITE_MURL']);
+                if ($this->_is_mobile()) {
+                    // 这是移动端
+                    if (isset($client[DOMAIN_NAME])) {
+                        // 表示这个域名属于电脑端,需要跳转到移动端
+                        dr_domain_301(dr_http_prefix($client[DOMAIN_NAME].'/'));
+                    }
+                } else {
+                    // 这是电脑端
+                    if (in_array(DOMAIN_NAME, $client)) {
+                        // 表示这个域名属于移动端,需要跳转到pc
+                        dr_domain_301($this->site_info[SITE_ID]['SITE_URL']);
+                    }
+                }
             }
         }
 
@@ -118,8 +159,8 @@ abstract class Common extends \CodeIgniter\Controller
         // 全局URL
         define('ROOT_URL', $this->site_info[1]['SITE_URL']); // 主站URL
         define('LANG_PATH', ROOT_URL.'config/language/'.SITE_LANGUAGE.'/'); // 语言包
-        define('THEME_PATH', '/static/'); // 站点风格
-        define('ROOT_THEME_PATH', ROOT_URL.'static/'); // 站点风格
+        define('THEME_PATH', ROOT_URL.'static/'); // 站点风格
+        define('ROOT_THEME_PATH', THEME_PATH); // 站点风格别名
         define('MOBILE_THEME_PATH', SITE_MURL.'static/'.SITE_THEME.'/'); // 移动端站点风格
         define('HOME_THEME_PATH', SITE_URL.'static/'.SITE_THEME.'/'); // 站点风格
 
@@ -179,15 +220,16 @@ abstract class Common extends \CodeIgniter\Controller
         // 默认登录时间
         define('SITE_LOGIN_TIME', $this->member_cache['config']['logintime'] ? max(intval($this->member_cache['config']['logintime']), 500) : 36000);
         // 定义交易变量
-        define('SITE_SCORE', dr_lang($this->member_cache['score'] ? $this->member_cache['score'] : '金币'));
-        define('SITE_EXPERIENCE', dr_lang($this->member_cache['experience'] ? $this->member_cache['experience'] : '经验'));
+        define('SITE_SCORE', dr_lang($this->member_cache['pay']['score'] ? $this->member_cache['pay']['score'] : '金币'));
+        define('SITE_EXPERIENCE', dr_lang($this->member_cache['pay']['experience'] ? $this->member_cache['pay']['experience'] : '经验'));
 
         // 验证api提交认证
-        if (isset($_GET['appid']) && isset($_GET['appsecret'])) {
+        if (\Phpcmf\Service::L('input')->request('appid')
+            && \Phpcmf\Service::L('input')->request('appsecret')) {
             define('IS_API_HTTP', 1);
             $this->_api_auth();
             // 获取当前的登录记录
-            $auth = \Phpcmf\Service::L('input')->get('api_auth_code');
+            $auth = \Phpcmf\Service::L('input')->request('api_auth_code');
             if ($auth) {
                 // 通过接口的post认证
                 $this->uid = (int)\Phpcmf\Service::L('Input')->get('api_auth_uid');
@@ -267,7 +309,7 @@ abstract class Common extends \CodeIgniter\Controller
             // 开启session
             $this->session();
             // 登录状态验证
-            if (!$this->member && !in_array(\Phpcmf\Service::L('Router')->class, ['register', 'login', 'api'])) {
+            if (!$this->member && !in_array(\Phpcmf\Service::L('Router')->class, ['register', 'login', 'api', 'pay'])) {
                 IS_API_HTTP && $this->_json(0, dr_lang('无法获取到登录用户信息'));
                 // 会话超时，请重新登录
                 \Phpcmf\Service::L('Router')->go_member_login(dr_now_url());
@@ -275,7 +317,7 @@ abstract class Common extends \CodeIgniter\Controller
             }
             // 判断用户状态
             if ($this->member && !in_array(\Phpcmf\Service::L('Router')->class, ['register', 'login', 'api'])) {
-               $this->_member_option(0);
+                $this->_member_option(0);
             }
 
             \Phpcmf\Service::V()->assign(\Phpcmf\Service::L('Seo')->member(\Phpcmf\Service::L('cache')->get('menu-member')));
@@ -359,6 +401,13 @@ abstract class Common extends \CodeIgniter\Controller
     public function _module_init($dirname = '', $siteid = SITE_ID) {
 
         !$dirname && $dirname = APP_DIR;
+
+        if ($this->is_module_init == $dirname.'-'.$siteid) {
+            // 防止模块重复初始化
+            return;
+        }
+
+        $this->is_module_init = $dirname.'-'.$siteid;
 
         // 判断模块是否安装在站点中
         $cache = \Phpcmf\Service::L('cache')->get('module-'.$siteid);
@@ -688,7 +737,7 @@ abstract class Common extends \CodeIgniter\Controller
             return 0;
         }
 
-        $this->_member_value($authid, $value);
+        return $this->_member_value($authid, $value);
     }
 
     /**
@@ -789,13 +838,17 @@ abstract class Common extends \CodeIgniter\Controller
      */
     protected function _api_auth() {
 
-        $appid = (int)\Phpcmf\Service::L('Input')->get('appid');
-        $appsecret = (string)\Phpcmf\Service::L('Input')->get('appsecret');
+        $appid = (int)\Phpcmf\Service::L('Input')->request('appid');
+        $appsecret = (string)\Phpcmf\Service::L('Input')->request('appsecret');
 
         // 格式验证
-        (!$appid || !$appsecret) && $this->_json(0, 'AppID和AppSecret值为空');
-
-        strtoupper($this->get_cache('api_auth', $appid)) != strtoupper($appsecret) && $this->_json(0, 'AppID和AppSecret值不匹配');
+        if (!dr_is_app('httpapi')) {
+            $this->_json(0, '没有安装[API接口]插件');
+        } elseif (!$appid || !$appsecret) {
+            $this->_json(0, 'AppID和AppSecret值为空');
+        } elseif (strtoupper($this->get_cache('api_auth', $appid)) != strtoupper($appsecret)) {
+            $this->_json(0, 'AppID和AppSecret值不匹配');
+        }
 
     }
 

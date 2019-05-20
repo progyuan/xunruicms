@@ -39,8 +39,11 @@
     </div>
     <div class="row fc-list-footer table-checkable ">
         <div class="col-md-12">
-            <label><button type="button" onclick="dr_beifen_cms('{dr_url('backup/add')}', '{dr_lang('你确定要备份全站文件吗？')}', 1)" class="btn green btn-sm"> <i class="fa fa-copy"></i> {dr_lang('备份全站')}</button></label>
+            {if dr_is_app('beifen')}
+            <label><button type="button" onclick="dr_beifen_cms('{dr_url('beifen/home/add')}', '{dr_lang('你确定要备份全站文件吗？')}', 1)" class="btn green btn-sm"> <i class="fa fa-copy"></i> {dr_lang('备份全站')}</button></label>
+            {/if}
             <label><button type="button" onclick="dr_update_cms('{dr_url('cloud/todo_update')}', '{dr_lang('升级前请务必做好数据备份，你确定要升级所选程序吗？')}', 1)" class="btn red btn-sm"> <i class="fa fa-cloud-upload"></i> {dr_lang('在线升级程序')}</button></label>
+            <label><a href="javascript:dr_help('610');" class="btn blue btn-sm"> <i class="fa fa-book"></i> {dr_lang('离线升级程序')}</a></label>
 
 
         </div>
@@ -86,7 +89,7 @@
                     var login_url = '{dr_url("cloud/login")}';
                     layer.open({
                         type: 2,
-                        title: '验证授权',
+                        title: '登录天睿云账号',
                         fix:true,
                         scrollbar: false,
                         shadeClose: true,
@@ -134,8 +137,7 @@
                                     return false;
                                 },
                                 error: function(HttpRequest, ajaxOptions, thrownError) {
-                                    layer.closeAll('loading');
-                                    alert(HttpRequest.responseText);
+                                    dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError)
                                 }
                             });
                             return false;

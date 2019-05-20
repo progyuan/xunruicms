@@ -7,9 +7,7 @@
         dr_set_type({intval($type)});
     });
     function dr_set_type(id) {
-        {loop $ci->type $i $n}
-        $('.dr_type_{$i}').hide();
-        {/loop}
+        $('.dr_type').hide();
         $('.dr_type_'+id).show();
     }
 </script>
@@ -47,7 +45,7 @@
                 </div>
 
                 <!--单页URL-->
-                <div class="form-group dr_type_0">
+                <div class="form-group dr_type_0 dr_type">
                     <label class="col-md-2 control-label">{dr_lang('自定义页面')}</label>
                     <div class="col-md-7">
                         <div class="input-group">
@@ -58,7 +56,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group dr_type_0">
+                <div class="form-group dr_type_0 dr_type">
                     <label class="col-md-2 control-label">{dr_lang('自定义页面分页')}</label>
                     <div class="col-md-7">
                         <div class="input-group">
@@ -71,8 +69,8 @@
                 </div>
 
                 <!--站点URL-->
-                <div class="form-group dr_type_4">
-                    <label class="col-md-2 control-label">{dr_lang('Tag')}</label>
+                <div class="form-group dr_type_4 dr_type">
+                    <label class="col-md-2 control-label">{dr_lang('Tag插件')}</label>
                     <div class="col-md-7">
                         <div class="input-group">
                             <input type="text" name="value[4][tag]" value="{$value.tag}" class="form-control">
@@ -82,22 +80,10 @@
                         </div>
                     </div>
                 </div>
-                {if defined('IS_PLUS_FENZHAN')}
-                <div class="form-group dr_type_4">
-                    <label class="col-md-2 control-label">{dr_lang('分站首页')}</label>
-                    <div class="col-md-7">
-                        <div class="input-group">
-                            <input type="text" name="value[4][findex]" value="{$value.findex}" class="form-control">
-                            <span class="input-group-btn">
-                                <button class="btn blue" onclick="dr_url_fanzhan()" type="button"><i class="fa fa-code"></i> {dr_lang('提示')}</button>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                {/if}
+
                 <!--共享模块-->
 
-                <div class="form-group dr_type_2">
+                <div class="form-group dr_type_2 dr_type">
                     <label class="col-md-2 control-label">{dr_lang('搜索页')}</label>
                     <div class="col-md-7">
                         <div class="input-group">
@@ -108,7 +94,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group dr_type_2">
+                <div class="form-group dr_type_2 dr_type">
                     <label class="col-md-2 control-label">{dr_lang('搜索分页')}</label>
                     <div class="col-md-7">
                         <div class="input-group">
@@ -121,7 +107,7 @@
                 </div>
 
                 <!--独立模块-->
-                <div class="form-group dr_type_1">
+                <div class="form-group dr_type_1 dr_type">
                     <label class="col-md-2 control-label">{dr_lang('模块首页')}</label>
                     <div class="col-md-7">
                         <div class="input-group">
@@ -132,7 +118,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group dr_type_1">
+                <div class="form-group dr_type_1 dr_type">
                     <label class="col-md-2 control-label">{dr_lang('栏目页')}</label>
                     <div class="col-md-7">
                         <div class="input-group">
@@ -143,7 +129,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group dr_type_1">
+                <div class="form-group dr_type_1 dr_type">
                     <label class="col-md-2 control-label">{dr_lang('栏目分页')}</label>
                     <div class="col-md-7">
                         <div class="input-group">
@@ -154,7 +140,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group dr_type_1">
+                <div class="form-group dr_type_1 dr_type">
                     <label class="col-md-2 control-label">{dr_lang('内容页')}</label>
                     <div class="col-md-7">
                         <div class="input-group">
@@ -165,7 +151,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group dr_type_1">
+                <div class="form-group dr_type_1 dr_type">
                     <label class="col-md-2 control-label">{dr_lang('内容分页')}</label>
                     <div class="col-md-7">
                         <div class="input-group">
@@ -176,7 +162,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group dr_type_1">
+                <div class="form-group dr_type_1 dr_type">
                     <label class="col-md-2 control-label">{dr_lang('搜索页')}</label>
                     <div class="col-md-7">
                         <div class="input-group">
@@ -187,7 +173,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group dr_type_1">
+                <div class="form-group dr_type_1 dr_type">
                     <label class="col-md-2 control-label">{dr_lang('搜索分页')}</label>
                     <div class="col-md-7">
                         <div class="input-group">
@@ -200,7 +186,7 @@
                 </div>
 
                 <!--共享模块-->
-                <div class="form-group dr_type_3">
+                <div class="form-group dr_type_3 dr_type">
                     <label class="col-md-2 control-label">{dr_lang('栏目页')}</label>
                     <div class="col-md-7">
                         <div class="input-group">
@@ -211,7 +197,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group dr_type_3">
+                <div class="form-group dr_type_3 dr_type">
                     <label class="col-md-2 control-label">{dr_lang('栏目分页')}</label>
                     <div class="col-md-7">
                         <div class="input-group">
@@ -222,7 +208,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group dr_type_3">
+                <div class="form-group dr_type_3 dr_type">
                     <label class="col-md-2 control-label">{dr_lang('内容页')}</label>
                     <div class="col-md-7">
                         <div class="input-group">
@@ -233,7 +219,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group dr_type_3">
+                <div class="form-group dr_type_3 dr_type">
                     <label class="col-md-2 control-label">{dr_lang('内容分页')}</label>
                     <div class="col-md-7">
                         <div class="input-group">

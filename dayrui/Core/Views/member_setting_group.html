@@ -27,7 +27,7 @@
             <tr class="dr_cat_{$i} fc-cat-user" style="display: none">
                 <td></td>
                 <td colspan="2">
-                    <div class="form-body" style="padding-top:20px">
+                    <div class="table-scrollable" style="padding-top:20px">
 
                         {if $i != 0}
                         <div class="form-group">
@@ -75,13 +75,13 @@
                                 <label>
                                     <div class="input-group">
                                         <input type="text" name="data[{$i}][login_score]" value="{$data[auth][$i]['login_score']}" class="form-control">
-                                        <span class="input-group-btn"><button class="btn default" type="button">{SITE_SCORE}</button></span>
+                                        <span class="input-group-btn"><button class="btn default" type="button">+{SITE_SCORE}</button></span>
                                     </div>
                                 </label>
                                 <label>
                                     <div class="input-group">
                                         <input type="text" name="data[{$i}][login_exp]" value="{$data[auth][$i]['login_exp']}" class="form-control">
-                                        <span class="input-group-btn"> <button class="btn default" type="button">{SITE_EXPERIENCE}</button></span>
+                                        <span class="input-group-btn"> <button class="btn default" type="button">+{SITE_EXPERIENCE}</button></span>
                                     </div>
                                 </label>
                             </div>
@@ -92,13 +92,13 @@
                                 <label>
                                     <div class="input-group">
                                         <input type="text" name="data[{$i}][avatar_score]" value="{$data[auth][$i]['avatar_score']}" class="form-control">
-                                        <span class="input-group-btn"><button class="btn default" type="button">{SITE_SCORE}</button></span>
+                                        <span class="input-group-btn"><button class="btn default" type="button">+{SITE_SCORE}</button></span>
                                     </div>
                                 </label>
                                 <label>
                                     <div class="input-group">
                                         <input type="text" name="data[{$i}][avatar_exp]" value="{$data[auth][$i]['avatar_exp']}" class="form-control">
-                                        <span class="input-group-btn"> <button class="btn default" type="button">{SITE_EXPERIENCE}</button></span>
+                                        <span class="input-group-btn"> <button class="btn default" type="button">+{SITE_EXPERIENCE}</button></span>
                                     </div>
                                 </label>
                             </div>

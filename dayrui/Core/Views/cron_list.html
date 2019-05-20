@@ -63,8 +63,8 @@
                     </label>
                 </th>
                 <th width="110" class="{dr_sorting('type')}" name="type">{dr_lang('类型')}</th>
-                <th class="{dr_sorting('inputtime')}" name="inputtime" width="160">{dr_lang('录入时间')}</th>
-                <th class="{dr_sorting('updatetime')}" name="updatetime" width="160">{dr_lang('执行时间')}</th>
+                <th class="{dr_sorting('inputtime')}" name="inputtime" width="170">{dr_lang('录入时间')}</th>
+                <th class="{dr_sorting('updatetime')}" name="updatetime" width="170">{dr_lang('执行时间')}</th>
                 <th style="text-align:center" width="100" class="{dr_sorting('status')}" name="status">{dr_lang('状态')}</th>
                 <th></th>
             </tr>
@@ -78,11 +78,11 @@
                         <span></span>
                     </label>
                 </td>
-                <td><a href="javascript:;" onclick="dr_show_info('{$t.value}')">{$type[$t.type]}</a></td>
+                <td>{$type[$t.type]}</td>
                 <td>{dr_date($t.inputtime, null, 'red')}</td>
                 <td>{dr_date($t.updatetime, null, 'red')}</td>
                 <td style="text-align:center">
-                    <label>{if $t.status}<span class="label label-sm label-danger">{dr_lang('已失败')}</span>{else}<span class="label label-sm label-warning">{dr_lang('待执行')}</span>{/if}</label>
+                    <label>{if $t.status}<a href="javascript:;" onclick="dr_show_info('{$t.error}')" class="label label-sm label-danger">{dr_lang('查看错误')}</a>{else}<span class="label label-sm label-warning">{dr_lang('待执行')}</span>{/if}</label>
                 </td>
                 <td>
                     <label><a href="javascript:;" class="btn green btn-xs" onclick="dr_show_info('{$t.value}')">{dr_lang('查看参数')}</a></label>

@@ -198,8 +198,7 @@ table.dataTable thead th, table.dataTable thead td {
     overflow: hidden !important;
 }
 .files_row .preview img {
-    width:50px;
-    height:50px;
+    max-height:50px;
     overflow: hidden;
 }
 .used_preview img {

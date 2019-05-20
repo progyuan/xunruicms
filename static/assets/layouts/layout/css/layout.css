@@ -1310,7 +1310,6 @@ Page content
     clear: both; }
   .page-bar .page-breadcrumb {
     display: inline-block;
-    float: left;
     padding: 8px;
     margin: 0;
     list-style: none; }
@@ -2378,6 +2377,16 @@ td>.mt-table.mt-checkbox-single,th>.mt-table.mt-checkbox-single {
 .page-404 .details .alert_btnleft {
   margin: 10px 0;
 }
+@media (max-width: 480px) {
+  .page-404  .number i {
+    font-size: 80+px;
+  }
+  .page-404 .details, .page-404 .number, .page-500 .details, .page-500 .number {
+    width: 100%;
+    letter-spacing: 0;
+  }
+}
+
 .my-left-content {
   margin: 0;
   padding: 0;

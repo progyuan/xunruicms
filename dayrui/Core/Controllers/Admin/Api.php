@@ -1,13 +1,60 @@
 <?php namespace Phpcmf\Controllers\Admin;
 
-/**
- * PHPCMF框架文件
- * 二次开发时请勿修改本文件
- * 成都天睿信息技术有限公司 www.phpcmf.net
- */
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 
 class Api extends \Phpcmf\Common
 {
+
+    // 跳转首页
+    public function gohome() {
+        dr_redirect('index.php');
+    }
+
+
+    // 测试字段回调方法
+    public function field_call() {
+
+        $call = dr_safe_replace(\Phpcmf\Service::L('Input')->get('name'));
+        if (!$call) {
+            $this->_json(0, dr_lang('没有填写函数方法'));
+        }
+
+        if (strpos($call, '_') === 0) {
+            if (method_exists(\Phpcmf\Service::L('form'), $call)) {
+                $this->_json(1, dr_lang('定义成功'));
+            } else {
+                $this->_json(0, 'form类方法【'.$call.'】未定义');
+            }
+        } else {
+            if (function_exists($call)) {
+                $this->_json(1, dr_lang('定义成功'));
+            } else {
+                $this->_json(0, '函数【'.$call.'】未定义');
+            }
+        }
+    }
 
     // 通知跳转
     public function notice() {

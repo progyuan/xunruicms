@@ -1,10 +1,28 @@
 <?php namespace Phpcmf\Controllers\Admin;
 
-/**
- * PHPCMF框架文件
- * 二次开发时请勿修改本文件
- * 成都天睿信息技术有限公司 www.phpcmf.net
- */
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 
 class Category extends \Phpcmf\Admin\Category
 {
@@ -57,61 +75,5 @@ class Category extends \Phpcmf\Admin\Category
         $this->_Admin_Del();
     }
 
-    // 编辑单页内容
-    public function content_edit() {
 
-        $id = intval(\Phpcmf\Service::L('input')->get('id'));
-        $row = \Phpcmf\Service::M('Category')->init($this->init)->get($id);
-        !$row && $this->_json(0, dr_lang('栏目数据不存在'));
-
-        if (IS_POST) {
-            $post = \Phpcmf\Service::L('input')->post('data');
-            \Phpcmf\Service::M('Category')->init($this->init)->update($id, ['content' => ($post['content'])]);
-            \Phpcmf\Service::L('input')->system_log('修改栏目内容: '. $row['name'] . '['. $id.']');
-            $this->_json(1, dr_lang('操作成功'));
-            exit;
-        }
-
-        $field = [
-            'name' => dr_lang('栏目内容'),
-            'ismain' => 1,
-            'fieldtype' => 'Ueditor',
-            'fieldname' => 'content',
-            'setting' => array(
-                'option' => array(
-                    'mode' => 1,
-                    'height' => 300,
-                    'width' => '100%'
-                )
-            ),
-        ];
-
-        \Phpcmf\Service::V()->assign([
-            'myfield' => dr_fieldform($field, $row['content']),
-        ]);
-        \Phpcmf\Service::V()->display('share_category_content.html');exit;
-
-    }
-
-    // 编辑外链
-    public function link_edit() {
-
-        $id = intval(\Phpcmf\Service::L('input')->get('id'));
-        $row = \Phpcmf\Service::M('Category')->init($this->init)->get($id);
-        !$row && $this->_json(0, dr_lang('栏目数据不存在'));
-        $row['setting'] = dr_string2array($row['setting']);
-        if (IS_POST) {
-            $row['setting']['linkurl'] = \Phpcmf\Service::L('input')->post('url');
-            \Phpcmf\Service::M('Category')->init($this->init)->update($id, ['setting' => dr_array2string($row['setting'])]);
-            \Phpcmf\Service::L('input')->system_log('修改栏目外链地址: '. $row['name'] . '['. $id.']');
-            $this->_json(1, dr_lang('操作成功'));
-            exit;
-        }
-
-        \Phpcmf\Service::V()->assign([
-            'myurl' => $row['setting']['linkurl'],
-        ]);
-        \Phpcmf\Service::V()->display('share_category_linkurl.html');exit;
-
-    }
 }

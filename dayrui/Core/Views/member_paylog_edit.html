@@ -61,7 +61,7 @@
                 <div class="form-group">
                     <label class="col-md-2 control-label">{dr_lang('交易账号')}</label>
                     <div class="col-md-9">
-                        <p class="form-control-static"> {Function_list::uid($data.uid)} </p>
+                        <p class="form-control-static"> {if $data.uid}{Function_list::uid($data.uid)}{else} {dr_lang('游客')}{/if}</p>
                     </div>
                 </div>
                 <div class="form-group">

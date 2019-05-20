@@ -34,14 +34,14 @@
                                         {loop $kw $a}
                                         {if $a}
                                         <li class="uppercase">
-                                            <a href="{Router::tag_url($a)}" target="_blank">{$a}</a>
+                                            <a href="{dr_get_tag_url($a, MOD_DIR)}" target="_blank">{$a}</a>
                                         </li>
                                         {/if}
                                         {/loop}
                                     </ul>
                                     {/if}
                                     <div class="search-post-meta">
-                                        <i class="icon-calendar font-blue"></i>
+                                        <i class="fa fa-calendar font-blue"></i>
                                         <a href="javascript:;">{$t.updatetime}</a>
                                     </div>
                                 </div>

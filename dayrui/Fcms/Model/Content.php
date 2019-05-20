@@ -1,5 +1,28 @@
 <?php namespace Phpcmf\Model;
 
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 // 模型类
 // 文档状态
 // 1 ~ 8 审核流程
@@ -25,6 +48,9 @@ class Content extends \Phpcmf\Model {
 
     // 保存内容
     public function save($id, $data, $old = []) {
+
+
+        $data[1]['keywords'] = str_replace('"', '', $data[1]['keywords']);
 
         // 二次开发函数
         $data = $this->_content_post_before($id, $data, $old);
@@ -125,7 +151,7 @@ class Content extends \Phpcmf\Model {
 
         $cdata = [];
 
-        // 筛选出来栏目附加字段
+        // 筛选出来栏目模型字段
         if (!$this->is_hcategory && $catfield = \Phpcmf\Service::C()->module['category'][$data[1]['catid']]['field']) {
             foreach ($data as $main => $value) {
                 foreach ($value as $i => $t) {
@@ -160,16 +186,6 @@ class Content extends \Phpcmf\Model {
             // 新增数据
             $main['hits'] = 0;
             $main['tableid'] = 0;
-            if (dr_is_app('shang')) {
-                $main['donation'] = 0;
-            }
-            if (dr_is_app('favorite')) {
-                $main['favorites'] = 0;
-            }
-            if (dr_is_app('zan')) {
-                $main['support'] = 0;
-                $main['oppose'] = 0;
-            }
             $main['comments'] = 0;
             $main['avgsort'] = 0;
             $main['displayorder'] = 0;
@@ -267,6 +283,16 @@ class Content extends \Phpcmf\Model {
             // 增减经验
             $exp = \Phpcmf\Service::C()->_module_member_value($data[1]['catid'], $this->dirname, 'exp', \Phpcmf\Service::M('member')->authid($data[1]['uid']));
             $exp && \Phpcmf\Service::M('member')->add_experience($data[1]['uid'], $exp, dr_lang('%s内容发布', MODULE_NAME), $data[1]['url']);
+        } else {
+            // 修改内容
+            if ($data[1]['catid'] != $old['catid']) {
+                // 变更栏目的一些联动操作
+                $this->_edit_category_id($data[1], $data[1]['catid']);
+            }
+            if ($data[1]['uid'] != $old['uid']) {
+                // 变更作者的一些联动操作
+                $this->_edit_author_id($data[1]);
+            }
         }
 
         // 挂钩点 模块内容发布或修改完成之后
@@ -420,7 +446,6 @@ class Content extends \Phpcmf\Model {
         $row = $this->table($this->siteid .'_tag')->get($data['pid']);
 
         return trim($row['code'].'/'.$data['code'], '/');
-
     }
 
 
@@ -551,67 +576,6 @@ class Content extends \Phpcmf\Model {
         return $url;
     }
 
-    // 更新其他表的栏目id号
-    public function update_catid($id, $value) {
-
-        if (!$id) {
-            return;
-        }
-
-        // 更新评论表
-        $this->table($this->mytable.'_comment')->update($id, [
-            'catid' => $value,
-        ]);
-        $this->table($this->mytable.'_comment_index')->update($id, [
-            'catid' => $value,
-        ]);
-        /*
-        $this->table($this->mytable.'_comment_my')->update($id, [
-            'catid' => $value,
-        ]);*/
-
-        // 更新模块表单
-        $form = \Phpcmf\Service::L('cache')->get('module-'.$this->siteid.'-'.$this->dirname, 'form');
-        if ($form) {
-            foreach ($form as $t) {
-                $t['table'] && $this->table($this->mytable.'_form_'.$t['table'])->update($id, [
-                    'catid' => $value,
-                ]);
-            }
-        }
-    }
-
-    // 批量更新其他表的栏目id号
-    public function update_catids($id, $value) {
-
-        if (!$id) {
-            return;
-        }
-
-        // 主表
-        $this->db->table($this->mytable)->where('catid', $id)->update([
-            'catid' => $value,
-        ]);
-
-        // 更新评论表
-        $this->db->table($this->mytable.'_comment')->where('catid', $id)->update([
-            'catid' => $value,
-        ]);
-        $this->db->table($this->mytable.'_comment_index')->where('catid', $id)->update([
-            'catid' => $value,
-        ]);
-
-        // 更新模块表单
-        $form = \Phpcmf\Service::L('cache')->get('module-'.$this->siteid.'-'.$this->dirname, 'form');
-        if ($form) {
-            foreach ($form as $t) {
-                $t['table'] && $this->db->table($this->mytable.'_form_'.$t['table'])->where('catid', $id)->update([
-                    'catid' => $value,
-                ]);
-            }
-        }
-    }
-
     // 获取草稿列表
     public function get_draft_list($where) {
 
@@ -698,39 +662,51 @@ class Content extends \Phpcmf\Model {
         return $id;
     }
 
+    // 按自定义字段获取内容
+    public function find_row($field, $value) {
+        return $this->db->table($this->mytable)->where($field, dr_safe_replace($value))->get()->getRowArray();
+    }
+
     // 获取内容
-    public function get_data($id, $is_table = 0) {
+    public function get_data($id, $is_table = 0, $param = []) {
 
-        if (!$id) {
-            return [];
-        }
-
-        $tables = $row = [];
-
+        $cdata = $tables = $row = [];
+		
         // 主表
         $tables[] = $table = $this->mytable;
-        $row = $this->table($table)->get($id);
+		
+        if (!$id) {
+            if (!$param) {
+				return [];
+			}
+			$row = $this->find_row($param['field'], $param['value']);
+        } else {
+			$row = $this->table($table)->get($id);
+		}
+
         if (!$row) {
             return [];
         }
+		
+        $cdata[$table] = $row;
 
         // 附表id
         $tableid = intval($row['tableid']);
 
         // 副表
         $tables[] = $table = $this->mytable.'_data_'.$tableid;
-        $data = $this->table($table)->get($id);
+        $cdata[$table] = $data = $this->table($table)->get($id);
         $data && $row = $row + $data;
 
-        // 栏目附加数据
+        // 栏目模型数据
         if (!$this->is_hcategory) {
             $tables[] = $table = $this->mytable.'_category_data';
-            $data = $this->table($table)->get($id);
-            // 栏目附加数据副表
+            $cdata[$table] = $data = $this->table($table)->get($id);
+            // 栏目模型数据副表
             if ($data) {
                 $row = $row + $data;
                 $tables[] = $table = $this->mytable.'_category_data_'.$tableid;
-                $data = $this->table($table)->get($id);
+                $cdata[$table] = $data = $this->table($table)->get($id);
                 $data && $row = $row + $data;
             }
         }
@@ -739,7 +715,7 @@ class Content extends \Phpcmf\Model {
         $row = $this->_format_content_data($row);
 
         if ($is_table) {
-            return [$row, $tables];
+            return [$row, $tables, $cdata];
         }
 
         return $row;
@@ -855,6 +831,8 @@ class Content extends \Phpcmf\Model {
             $tables[$this->mytable] = $row = $this->table($this->mytable)->get($id);
             if (!$row) {
                 return dr_return_data(0, dr_lang('内容不存在: '.$id));
+            } elseif (dr_is_app('cqx') && \Phpcmf\Service::M('content', 'cqx')->is_edit($row['catid'], $row['uid'])) {
+                return dr_return_data(0, dr_lang('当前角色无权限管理此栏目'));
             }
 
             $row['url'] = dr_url_prefix($row['url'], MOD_DIR, SITE_ID, 0);
@@ -872,11 +850,11 @@ class Content extends \Phpcmf\Model {
             $tables[$table]  = $this->table($table)->get($id);
 
             if (!$this->is_hcategory) {
-                // 栏目附加数据
+                // 栏目模型数据
                 $table = $this->mytable.'_category_data';
                 $tables[$table] = $this->table($table)->get($id);
 
-                // 栏目附加数据副表
+                // 栏目模型数据副表
                 if ($tables[$table]) {
                     $table = $this->mytable.'_category_data_'.$tableid;
                     $tables[$table] = $this->table($table)->get($id);
@@ -973,10 +951,16 @@ class Content extends \Phpcmf\Model {
         }
         // 删除草稿表
         $this->db->table($this->mytable.'_draft')->where('cid', $cid)->delete();
-        $this->db->table($this->mytable.'_favorite')->where('cid', $cid)->delete();
-        $this->db->table($this->mytable.'_support')->where('cid', $cid)->delete();
-        $this->db->table($this->mytable.'_oppose')->where('cid', $cid)->delete();
-        $this->db->table($this->mytable.'_donation')->where('cid', $cid)->delete();
+        if (dr_is_app('favorite')) {
+            $this->db->table($this->mytable.'_favorite')->where('cid', $cid)->delete();
+        }
+        if (dr_is_app('zan')) {
+            $this->db->table($this->mytable.'_support')->where('cid', $cid)->delete();
+            $this->db->table($this->mytable.'_oppose')->where('cid', $cid)->delete();
+        }
+        if (dr_is_app('shang')) {
+            $this->db->table($this->mytable.'_donation')->where('cid', $cid)->delete();
+        }
 
         // 删除内容
         $tid = $this->_table_id($cid);
@@ -1047,16 +1031,107 @@ class Content extends \Phpcmf\Model {
     // 移动栏目
     public function move_category($ids, $catid) {
 
-        foreach ($ids as $id) {
+        if (!$catid) {
+            return dr_return_data(0, dr_lang('目标栏目不存在'));
+        }
 
-            $id = intval($id);
+        $all = $this->table($this->mytable)->where_in('id', $ids)->getAll();
+        if ($all) {
+            foreach ($all as $t) {
 
-            $this->table($this->mytable)->update($id, ['catid' => $catid]);
-            $this->table($this->mytable.'_index')->update($id, ['catid' => $catid]);
+                $id = intval($t['id']);
+                $this->table($this->mytable)->update($id, ['catid' => $catid]);
+                $this->table($this->mytable.'_index')->update($id, ['catid' => $catid]);
+                $this->db->table($this->mytable.'_data_'.intval($t['tableid']))->where('id', $id)->update(['catid' => $catid]);
+                $this->db->table($this->mytable.'_category_data')->where('id', $id)->update(['catid' => $catid]);
+                $this->db->table($this->mytable.'_category_data_'.intval($t['tableid']))->where('id', $id)->update(['catid' => $catid]);
 
+                // 变更栏目的一些联动操作
+                $this->_edit_category_id($t, $catid);
+            }
         }
 
         return dr_return_data(1);
+    }
+
+    // 批量更新其他表的栏目id号
+    public function update_catids($oid, $catid) {
+
+        if (!$catid) {
+            return;
+        } elseif (!$oid) {
+            return;
+        }
+
+        $all = $this->table($this->mytable)->where('catid', $oid)->getAll();
+        if ($all) {
+            foreach ($all as $t) {
+
+                $id = intval($t['id']);
+                $this->table($this->mytable)->update($id, ['catid' => $catid]);
+                $this->table($this->mytable.'_index')->update($id, ['catid' => $catid]);
+                $this->db->table($this->mytable.'_data_'.intval($t['tableid']))->where('id', $id)->update(['catid' => $catid]);
+                $this->db->table($this->mytable.'_category_data')->where('id', $id)->update(['catid' => $catid]);
+                $this->db->table($this->mytable.'_category_data_'.intval($t['tableid']))->where('id', $id)->update(['catid' => $catid]);
+
+                // 变更栏目的一些联动操作
+                $this->_edit_category_id($t, $catid);
+            }
+        }
+
+
+    }
+
+    // 变更栏目的一些联动操作
+    private function _edit_category_id($t, $catid) {
+
+
+        $id = intval($t['id']);
+        $this->db->table($this->mytable.'_comment')->where('cid', $id)->update(['catid' => $catid]);
+        $this->db->table($this->mytable.'_comment_index')->where('cid', $id)->update(['catid' => $catid]);
+        $this->db->table($this->mytable.'_time')->where('id', $id)->update(['catid' => $catid]);
+        $this->db->table($this->mytable.'_verify')->where('id', $id)->update(['catid' => $catid]);
+        // 同步移动相关表单表
+        $form = \Phpcmf\Service::L('cache')->get('module-'.$this->siteid.'-'.$this->dirname, 'form');
+        if ($form) {
+            foreach ($form as $r) {
+                $table = $this->mytable.'_form_'.$r['table'];
+                $this->db->table($table)->where('cid', $id)->update(['catid' => $catid]);
+                for ($i = 0; $i < 200; $i ++) {
+                    if (!$this->db->query("SHOW TABLES LIKE '".$table.'_data_'.$i."'")->getRowArray()) {
+                        break;
+                    }
+                    $this->db->table($table.'_data_'.$i)->where('cid', $id)->update(['catid' => $catid]);
+                }
+            }
+        }
+
+        // 同步自定义接口
+        $this->_edit_category_row($t, $catid);
+    }
+
+    // 移动栏目时的联动继承类
+    protected function _edit_category_row($row, $catid) {
+
+    }
+
+    // 变更作者的一些联动操作
+    private function _edit_author_id($t) {
+
+
+        $id = intval($t['id']);
+        $uid = intval($t['uid']);
+
+        $this->db->table($this->mytable.'_time')->where('id', $id)->update(['uid' => $uid]);
+        $this->db->table($this->mytable.'_verify')->where('id', $id)->update(['uid' => $uid]);
+
+        // 同步自定义接口
+        $this->_edit_author_row($t);
+    }
+
+    // 作者时的联动继承类
+    protected function _edit_author_row($row) {
+
     }
 
 
@@ -1211,6 +1286,10 @@ class Content extends \Phpcmf\Model {
 
         // 执行通知
         \Phpcmf\Service::M('member')->todo_admin_notice($this->dirname.'/comment_verify/edit:cid/'.$row['cid'].'/id/'.$row['id'], $this->siteid);
+
+        // 获取文章标题
+        $index = $this->table($this->mytable)->get($row['cid']);
+        $row['title'] = $index['title'];
         \Phpcmf\Service::L('Notice')->send_notice('module_comment_verify_1', $row);
 
         // 挂钩点 评论完成之后
@@ -1490,6 +1569,9 @@ class Content extends \Phpcmf\Model {
     // 打赏成功之后
     public function _content_donation_after($id, $pay) { }
 
+    // 内复制成功之后
+    public function _content_copy_after($id, $save) { }
+
     // 格式化处理内容
     public function _format_content_data($data) {
         return $data;
@@ -1498,6 +1580,26 @@ class Content extends \Phpcmf\Model {
     // 格式化显示内容
     public function _call_show($data) {
         return $data;
+    }
+
+    // 格式化栏目seo信息
+    public function _format_category_seo($module, $data, $page) {
+        return \Phpcmf\Service::L('Seo')->category($module, $data, $page);
+    }
+
+    // 格式化首页seo信息
+    public function _format_home_seo($module) {
+        return \Phpcmf\Service::L('Seo')->module($module);
+    }
+
+    // 格式化内容页seo信息
+    public function _format_show_seo($module, $data, $page) {
+        return \Phpcmf\Service::L('Seo')->show($module, $data, $page);
+    }
+
+    // 格式化内容搜索seo信息
+    public function _format_search_seo($module, $catid, $params, $page) {
+        return \Phpcmf\Service::L('Seo')->search($module, $catid, $params, $page);
     }
 
 

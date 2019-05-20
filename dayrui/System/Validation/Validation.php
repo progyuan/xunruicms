@@ -1,4 +1,4 @@
-<?php namespace CodeIgniter\Validation;
+<?php
 
 /**
  * CodeIgniter
@@ -32,14 +32,19 @@
  * @copyright  2014-2019 British Columbia Institute of Technology (https://bcit.ca/)
  * @license    https://opensource.org/licenses/MIT	MIT License
  * @link       https://codeigniter.com
- * @since      Version 3.0.0
+ * @since      Version 4.0.0
  * @filesource
  */
+
+namespace CodeIgniter\Validation;
 
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\Validation\Exceptions\ValidationException;
 use CodeIgniter\View\RendererInterface;
 
+/**
+ * Validator
+ */
 class Validation implements ValidationInterface
 {
 
@@ -90,9 +95,16 @@ class Validation implements ValidationInterface
 	protected $customErrors = [];
 
 	/**
+	 * Our configuration.
+	 *
 	 * @var \Config\Validation
 	 */
 	protected $config;
+	/**
+	 * The view renderer used to render validation messages.
+	 *
+	 * @var RendererInterface
+	 */
 	protected $view;
 
 	//--------------------------------------------------------------------
@@ -116,10 +128,11 @@ class Validation implements ValidationInterface
 
 	/**
 	 * Runs the validation process, returning true/false determining whether
-	 * or not validation was successful.
+	 * validation was successful or not.
 	 *
-	 * @param array  $data  The array of data to validate.
-	 * @param string $group The pre-defined group of rules to apply.
+	 * @param array  $data     The array of data to validate.
+	 * @param string $group    The pre-defined group of rules to apply.
+	 * @param string $db_group The database group to use.
 	 *
 	 * @return boolean
 	 */
@@ -168,7 +181,7 @@ class Validation implements ValidationInterface
 
 	/**
 	 * Check; runs the validation process, returning true or false
-	 * determining whether or not validation was successful.
+	 * determining whether validation was successful or not.
 	 *
 	 * @param mixed    $value  Value to validation.
 	 * @param string   $rule   Rule.
@@ -202,7 +215,7 @@ class Validation implements ValidationInterface
 	 *
 	 * @return boolean
 	 */
-	protected function processRules(string $field, string $label = null, $value, $rules = null, array $data)
+	protected function processRules(string $field, string $label = null, $value, $rules = null, array $data): bool
 	{
 		// If the if_exist rule is defined...
 		if (in_array('if_exist', $rules))
@@ -399,7 +412,7 @@ class Validation implements ValidationInterface
 	 *
 	 * @return array
 	 */
-	public function getRules()
+	public function getRules(): array
 	{
 		return $this->rules;
 	}
@@ -615,7 +628,7 @@ class Validation implements ValidationInterface
 
 	/**
 	 * Returns the array of errors that were encountered during
-	 * a run() call. The array should be in the followig format:
+	 * a run() call. The array should be in the following format:
 	 *
 	 *    [
 	 *        'field1' => 'error message',
@@ -734,7 +747,7 @@ class Validation implements ValidationInterface
 	 * Resets the class to a blank slate. Should be called whenever
 	 * you need to process more than one array.
 	 *
-	 * @return mixed
+	 * @return \CodeIgniter\Validation\ValidationInterface
 	 */
 	public function reset(): ValidationInterface
 	{

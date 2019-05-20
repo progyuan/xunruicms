@@ -51,6 +51,16 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <label class="col-md-2 control-label">{dr_lang('过期自动续费')}</label>
+                            <div class="col-md-9">
+                                <div class="mt-radio-inline">
+                                    <label class="mt-radio mt-radio-outline"><input name="setting[timeout]" type="radio" value="1" {if $setting.timeout}checked{/if} /> {dr_lang('开启')} <span></span></label>
+                                    <label class="mt-radio mt-radio-outline"><input name="setting[timeout]" type="radio" value="0" {if !$setting.timeout}checked{/if} /> {dr_lang('关闭')} <span></span></label>
+                                </div>
+                                <span class="help-block"> {dr_lang('当用户组过期之后尝试自动扣款，扣款不成功时就关闭该组')} </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <label class="col-md-2 control-label">{dr_lang('允许注册')}</label>
                             <div class="col-md-9">
                                 <div class="mt-radio-inline">

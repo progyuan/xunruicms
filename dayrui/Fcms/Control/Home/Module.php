@@ -1,5 +1,30 @@
 <?php namespace Phpcmf\Home;
 
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
+
+
 // 用于前端模块内容显示
 class Module extends \Phpcmf\Common
 {
@@ -22,7 +47,7 @@ class Module extends \Phpcmf\Common
             'indexm' => 1,
             'markid' => 'module-'.$this->module['dirname'],
         ]);
-        \Phpcmf\Service::V()->assign(\Phpcmf\Service::L('Seo')->module($this->module));
+        \Phpcmf\Service::V()->assign($this->content_model->_format_home_seo($this->module));
 
         // 系统开启静态首页
         if (!defined('SC_HTML_FILE') && $this->module['setting']['module_index_html']) {
@@ -184,7 +209,7 @@ class Module extends \Phpcmf\Common
         }
 
         // 无权限访问栏目
-        if (IS_SHARE && $category['tid'] == 0) {
+        if ((IS_SHARE) && $category['tid'] == 0) {
             // 识别栏目单网页
             if (!dr_member_auth($this->member_authid, $this->member_cache['auth_module'][SITE_ID]['share']['category'][$catid]['show'])) {
                 $this->_msg(0, dr_lang('您的用户组无权限访问栏目'));
@@ -223,7 +248,7 @@ class Module extends \Phpcmf\Common
 
         $category = \Phpcmf\Service::L('Field')->format_value($this->module['category_field'], $category, $page);
 
-        \Phpcmf\Service::V()->assign(\Phpcmf\Service::L('Seo')->category($this->module, $catid, $page));
+        \Phpcmf\Service::V()->assign($this->content_model->_format_category_seo($this->module, $catid, $page));
         \Phpcmf\Service::V()->assign(array(
             'id' => $catid,
             'cat' => $category,
@@ -239,7 +264,7 @@ class Module extends \Phpcmf\Common
         ));
 
         // 识别栏目单网页模板
-        if (IS_SHARE && $category['tid'] == 0) {
+        if ((IS_SHARE || (isset($this->module['config']['scategory']) && $this->module['config']['scategory'])) && $category['tid'] == 0) {
             \Phpcmf\Service::V()->assign($category);
             \Phpcmf\Service::V()->assign(array(
                 'pageid' => $catid,
@@ -298,14 +323,13 @@ class Module extends \Phpcmf\Common
         $list = [];
         if (IS_API_HTTP && $data['id']) {
             // 移动端请求时
-            $pagesize = intval($_GET['pagesize']);
+            $pagesize = intval(\Phpcmf\Service::L('Input')->request('pagesize'));
             $tag = 'search module='.$this->module['dirname'].' id='.$data['id'].' total='.$sototal.' order='.$data['params']['order'].' catid='.$catid.' more=1 page=1 pagesize='.$pagesize.' urlrule=test';
-
             $rt = \Phpcmf\Service::V()->list_tag($tag);
             $list = $rt['return'];
         }
 
-        \Phpcmf\Service::V()->assign(\Phpcmf\Service::L('Seo')->search($this->module, $catid, $data['params'], $get['page']));
+        \Phpcmf\Service::V()->assign($this->content_model->_format_search_seo($this->module, $catid, $data['params'], $get['page']));
         \Phpcmf\Service::V()->assign(array(
             'cat' => $catid && $this->module['category'][$catid] ? $this->module['category'][$catid] : [],
             'top' => $catid && $this->module['category'][$catid]['topid'] ? $this->module['category'][$this->module['category'][$catid]['topid']] : $this->module['category'][$catid],
@@ -348,12 +372,16 @@ class Module extends \Phpcmf\Common
         }
 
         // 通过自定义字段查找id
-        !$id && isset($param['field']) && $this->module['field'][$param['field']]['ismain'] && $id = $this->content_model->find_id($param['field'], $param['value']);
+        $is_id = 1;
+        if (!$id && isset($param['field']) && $this->module['field'][$param['field']]['ismain']) {
+			$id = md5($param['field'].$param['value']);
+			$is_id = 0;
+		}
 
         $name = 'module_'.$this->module['dirname'].'_show_id_'.$id;
         $data = \Phpcmf\Service::L('cache')->init()->get($name);
         if (!$data) {
-            $data = $this->content_model->get_data($id);
+            $data = $this->content_model->get_data($is_id ? $id : 0, 0, $param);
             if (!$data) {
                 $this->goto_404_page(dr_lang('%s内容(#%s)不存在', $this->module['name'], $id));
                 return;
@@ -404,8 +432,14 @@ class Module extends \Phpcmf\Common
             // 模块的回调处理
             $data = $this->content_model->_call_show($data);
 
-            // 缓存结果
-            $data['uid'] != $this->uid && \Phpcmf\Service::L('cache')->init()->save($name, $data, SYS_CACHE_SHOW * 3600);
+            // 缓存结果 
+            if ($data['uid'] != $this->uid) {
+				\Phpcmf\Service::L('cache')->init()->save($name, $data, SYS_CACHE_SHOW * 3600);
+				if (!$is_id) {
+					// 表示自定义查询，再缓存一次ID
+					\Phpcmf\Service::L('cache')->init()->save(str_replace($id, $data['id'], $name), $data, SYS_CACHE_SHOW * 3600);
+				}
+			}
         }
 
         // 挂钩点 内容读取之后
@@ -452,7 +486,7 @@ class Module extends \Phpcmf\Common
         !$rt && \Phpcmf\Service::L('Router')->is_redirect_url(dr_url_prefix($data['url'], $this->module['dirname']));
 
         \Phpcmf\Service::V()->assign($data);
-        \Phpcmf\Service::V()->assign(\Phpcmf\Service::L('Seo')->show($this->module, $data, $page));
+        \Phpcmf\Service::V()->assign($this->content_model->_format_show_seo($this->module, $data, $page));
         \Phpcmf\Service::V()->assign([
             'cat' => $this->module['category'][$data['catid']],
             'page' => $page,
@@ -476,34 +510,48 @@ class Module extends \Phpcmf\Common
             case 'time':
                 $row = \Phpcmf\Service::M()->table(SITE_ID.'_'.$this->module['dirname'].'_time')->get($id);
                 $data = dr_string2array($row['content']);
-                !$data && $this->_msg(0, dr_lang('定时内容#%s不存在', $id));
-                ($this->uid != $data['uid'] || !$this->member['is_admin']) && $this->_msg(0, dr_lang('定时内容只能自己访问'));
+                if (!$data) {
+                    $this->_msg(0, dr_lang('定时内容#%s不存在', $id));
+                } elseif (($this->uid != $data['uid'] && !$this->member['is_admin'])) {
+                    $this->_msg(0, dr_lang('定时内容只能自己访问'));
+                }
                 break;
 
             case 'recycle':
                 $row = \Phpcmf\Service::M()->table(SITE_ID.'_'.$this->module['dirname'].'_recycle')->get($id);
                 $row = dr_string2array($row['content']);
-                !$row && $this->_msg(0, dr_lang('回收站内容#%s不存在', $id));
-                !$row[SITE_ID.'_'.$this->module['dirname']] && $this->_msg(0, dr_lang('回收站内容#%s格式不规范', $id));
-                !$this->member['is_admin'] && $this->_msg(0, dr_lang('无权限访问'));
+                if (!$row) {
+                    $this->_msg(0, dr_lang('回收站内容#%s不存在', $id));
+                } elseif (!$row[SITE_ID.'_'.$this->module['dirname']]) {
+                    $this->_msg(0, dr_lang('回收站内容#%s格式不规范', $id));
+                } elseif (!$this->member['is_admin']) {
+                    $this->_msg(0, dr_lang('无权限访问回收站的内容'));
+                }
                 $data = $row[SITE_ID.'_'.$this->module['dirname']];
-                isset($row[SITE_ID.'_'.$this->module['dirname'].'_data_'.intval($data['tableid'])])
-                && $row[SITE_ID.'_'.$this->module['dirname'].'_data_'.intval($data['tableid'])]
-                && $data = array_merge($data, $row[SITE_ID.'_'.$this->module['dirname'].'_data_'.intval($data['tableid'])]);
+                if (isset($row[SITE_ID.'_'.$this->module['dirname'].'_data_'.intval($data['tableid'])])
+                    && $row[SITE_ID.'_'.$this->module['dirname'].'_data_'.intval($data['tableid'])]) {
+                    $data = array_merge($data, $row[SITE_ID.'_'.$this->module['dirname'].'_data_'.intval($data['tableid'])]);
+                }
                 break;
 
             case 'verify':
                 $row = \Phpcmf\Service::M()->table(SITE_ID.'_'.$this->module['dirname'].'_verify')->get($id);
                 $data = dr_string2array($row['content']);
-                !$data && $this->_msg(0, dr_lang('审核内容#%s不存在', $id));
-                ($this->uid != $data['uid'] || !$this->member['is_admin']) && $this->_msg(0, dr_lang('无权限访问'));
+                if (!$data) {
+                    $this->_msg(0, dr_lang('审核内容#%s不存在', $id));
+                } elseif (($this->uid != $data['uid'] && !$this->member['is_admin'])) {
+                    $this->_msg(0, dr_lang('无权限访问审核中的内容'));
+                }
                 break;
 
             case 'draft':
                 $row = \Phpcmf\Service::M()->table(SITE_ID.'_'.$this->module['dirname'].'_draft')->get($id);
                 $data = dr_string2array($row['content']);
-                !$data && $this->_msg(0, dr_lang('草稿内容#%s不存在', $id));
-                ($this->uid != $data['uid'] || !$this->member['is_admin']) && $this->_msg(0, dr_lang('无权限访问'));
+                if (!$data) {
+                    $this->_msg(0, dr_lang('草稿内容#%s不存在', $id));
+                } elseif (($this->uid != $data['uid'] && !$this->member['is_admin'])) {
+                    $this->_msg(0, dr_lang('无权限访问草稿箱内容'));
+                }
                 break;
 
             default:
@@ -555,7 +603,7 @@ class Module extends \Phpcmf\Common
             'urlrule' =>\Phpcmf\Service::L('Router')->show_url($this->module, $data, '[page]'),
         ]);
         \Phpcmf\Service::V()->module($this->module['dirname']);
-        \Phpcmf\Service::V()->display(isset($data['template']) && strpos($data['template'], '.html') !== FALSE ? $data['template'] : ($this->module['category'][$data['catid']]['setting']['template']['show'] ? $this->module['category'][$data['catid']]['setting']['template']['show'] : 'show.html'));
+        \Phpcmf\Service::V()->display(is_file(dr_tpl_path().'show_'.$type.'.html') ? 'show_'.$type.'.html' : 'show.html');
         return $data;
     }
 

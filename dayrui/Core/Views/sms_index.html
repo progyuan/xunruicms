@@ -94,7 +94,7 @@
                 eval(json.msg);
             },
             error: function(HttpRequest, ajaxOptions, thrownError) {
-                alert('网络异常');
+                dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError);
             }
         });
         {/if}
@@ -119,8 +119,7 @@
                 dr_tips(json.code, json.msg);
             },
             error: function(HttpRequest, ajaxOptions, thrownError) {
-                layer.closeAll('loading');
-                alert(HttpRequest.responseText);
+                dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError);
             }
         });
     }

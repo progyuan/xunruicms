@@ -88,6 +88,9 @@
                 } else {
                     dr_tips(0, json.msg);
                 }
+            },
+            error: function(HttpRequest, ajaxOptions, thrownError) {
+                dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError);
             }
         });
     }

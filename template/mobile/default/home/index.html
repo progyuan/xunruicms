@@ -18,7 +18,7 @@
             </div>
             <div class="portlet-body">
 
-                <div class="" style="height: 100px">
+                <div class="">
 
                     <ul class="nav navbar-nav">
                         <li id="dr_nav_0" class="menu-dropdown classic-menu-dropdown {if $indexc}active{/if}">
@@ -107,16 +107,8 @@
                         dr_search_module_select('{php echo defined('MOD_DIR') ? MOD_DIR : $top_search.dirname}', '{php echo defined('MOD_DIR') ? MODULE_NAME : $top_search.name}');
                     </script>
                 </form>
-            </div>
-        </div>
-
-        <div class="portlet light  bordered">
-            <div class="portlet-title">
-                <div class="caption">
-                    <span class="caption-subject">最新10条news模块内容</span>
-                </div>
-            </div>
-            <div class="portlet-body">
+				
+          
                 <ul class="list-unstyled">
                     <!--最新10条-->
                     {module module=news order=updatetime num=10}

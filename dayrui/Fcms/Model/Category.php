@@ -1,5 +1,28 @@
 <?php namespace Phpcmf\Model;
 
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 // 栏目模型类
 
 class Category extends \Phpcmf\Model
@@ -272,7 +295,7 @@ class Category extends \Phpcmf\Model
             foreach ($cats as $t) {
                 $mod = \Phpcmf\Service::L('cache')->get('module-'.SITE_ID.'-'.$t['mid']);
                if ($mod) {
-                   // 删除栏目附加字段
+                   // 删除栏目模型字段
                    $this->db->table('field')->where('relatedid', $t['id'])
                        ->where('relatedname', 'share-'.SITE_ID)->delete();
                    // 删除内容
@@ -322,7 +345,7 @@ class Category extends \Phpcmf\Model
             $catids = [];
             foreach ($cats as $t) {
                 $catids[] = $t['id'];
-                // 删除栏目附加字段
+                // 删除栏目模型字段
                 $this->db->table('field')->where('relatedid', $t['id'])
                     ->where('relatedname', APP_DIR.'-'.SITE_ID)->delete();
             }

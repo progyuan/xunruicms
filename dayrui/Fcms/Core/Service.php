@@ -1,5 +1,30 @@
 <?php namespace Phpcmf;
 
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
+
+
 use \Phpcmf\View;
 
 class Service
@@ -28,6 +53,16 @@ class Service
     // 是否是移动端
     public static function IS_MOBILE() {
         return static::C()->is_mobile;
+    }
+
+    // 当前客户端是否是移动端访问
+    public static function _is_mobile() {
+        return static::C()->_is_mobile();
+    }
+
+    // 当前客户端是否是移动端访问
+    public static function IS_MOBILE2() {
+        return static::C()->_is_mobile();
     }
 
     /**

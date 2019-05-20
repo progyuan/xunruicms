@@ -51,6 +51,9 @@
                 } else {
                     dr_ajax2ajax(1);
                 }
+            },
+            error: function(HttpRequest, ajaxOptions, thrownError) {
+                dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError)
             }
         });
     }
@@ -79,6 +82,9 @@
                         dr_ajax2ajax(json.code);
                     }
                 }
+            },
+            error: function(HttpRequest, ajaxOptions, thrownError) {
+                dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError)
             }
         });
     }
@@ -106,6 +112,9 @@
                     $('#dr_check_button_ing').removeClass('green-meadow');
                     $('#dr_check_button').append('<button type="button" id="dr_check_install" onclick="dr_install()" class="btn blue"> <i class="fa fa-cog"></i> 导入程序 </button>');
                 }
+            },
+            error: function(HttpRequest, ajaxOptions, thrownError) {
+                dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError)
             }
         });
     }

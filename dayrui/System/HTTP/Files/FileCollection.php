@@ -1,5 +1,5 @@
 <?php
-namespace CodeIgniter\HTTP\Files;
+
 
 /**
  * CodeIgniter
@@ -33,9 +33,11 @@ namespace CodeIgniter\HTTP\Files;
  * @copyright  2014-2019 British Columbia Institute of Technology (https://bcit.ca/)
  * @license    https://opensource.org/licenses/MIT	MIT License
  * @link       https://codeigniter.com
- * @since      Version 3.0.0
+ * @since      Version 4.0.0
  * @filesource
  */
+
+namespace CodeIgniter\HTTP\Files;
 
 /**
  * Class FileCollection
@@ -243,7 +245,7 @@ class FileCollection
 						new \RecursiveArrayIterator($value), \RecursiveIteratorIterator::SELF_FIRST
 				);
 
-				foreach ($iterator as $key => $value)
+				foreach ($iterator as $key => $val)
 				{
 					array_splice($stack, $iterator->getDepth() + 1);
 					$pointer = &$stack[count($stack) - 1];
@@ -251,7 +253,7 @@ class FileCollection
 					$stack[] = &$pointer;
 					if (! $iterator->hasChildren())
 					{
-						$pointer[$field] = $value;
+						$pointer[$field] = $val;
 					}
 				}
 			}
@@ -270,7 +272,7 @@ class FileCollection
 	 *
 	 * @return mixed
 	 */
-	protected function getValueDotNotationSyntax($index, $value)
+	protected function getValueDotNotationSyntax(array $index, array $value)
 	{
 		if (is_array($index) && ! empty($index))
 		{

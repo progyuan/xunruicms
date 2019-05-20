@@ -1,10 +1,28 @@
 <?php namespace Phpcmf\Controllers\Api;
 
-/**
- * PHPCMF框架文件
- * 二次开发时请勿修改本文件
- * 成都天睿信息技术有限公司 www.phpcmf.net
- */
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 
 // 模块ajax操作接口
 class Module extends \Phpcmf\Common
@@ -45,22 +63,23 @@ class Module extends \Phpcmf\Common
         $data = \Phpcmf\Service::M()->db->table($this->tablename)->where('id', $id)->select('hits,updatetime')->get()->getRowArray();
         !$data && $this->_jsonp(0, dr_lang('阅读统计: 模块内容不存在'));
 
-        $hits = (int)$data['hits'] + 1;
+        $plus = defined('IS_HITS_PLUS') && is_numeric(IS_HITS_PLUS) ? intval(IS_HITS_PLUS) : 1;
+        $hits = (int)$data['hits'] + $plus;
 
         // 更新主表
         \Phpcmf\Service::M()->db->table($this->tablename)->where('id', $id)->set('hits', $hits)->update();
 
         // 获取统计数据
         $total = \Phpcmf\Service::M()->db->table($this->tablename.'_hits')->where('id', $id)->get()->getRowArray();
-        !$total && $total['day_hits'] = $total['week_hits'] = $total['month_hits'] = $total['year_hits'] = 1;
+        !$total && $total['day_hits'] = $total['week_hits'] = $total['month_hits'] = $total['year_hits'] = $plus;
 
         // 更新到统计表
         \Phpcmf\Service::M()->db->table($this->tablename.'_hits')->where('id', $id)->update([
             'id' => $id,
             'hits' => $hits,
-            'day_hits' => (date('Ymd', $data['updatetime']) == date('Ymd', SYS_TIME)) ? $hits : 1,
-            'week_hits' => (date('YW', $data['updatetime']) == date('YW', SYS_TIME)) ? ($total['week_hits'] + 1) : 1,
-            'month_hits' => (date('Ym', $data['updatetime']) == date('Ym', SYS_TIME)) ? ($total['month_hits'] + 1) : 1,
+            'day_hits' => (date('Ymd', $data['updatetime']) == date('Ymd', SYS_TIME)) ? $hits : $plus,
+            'week_hits' => (date('YW', $data['updatetime']) == date('YW', SYS_TIME)) ? ($total['week_hits'] + $plus) : $plus,
+            'month_hits' => (date('Ym', $data['updatetime']) == date('Ym', SYS_TIME)) ? ($total['month_hits'] + $plus) : $plus,
             'year_hits' => (date('Ymd', $data['updatetime']) == date('Ymd', strtotime('-1 day'))) ? $hits : $total['year_hits'],
         ]);
 

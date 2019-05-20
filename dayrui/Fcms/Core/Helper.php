@@ -1,10 +1,42 @@
 <?php
 
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
+
+
 /**
  * 插件是否被安装
  */
 function dr_is_app($dir) {
     return is_file(dr_get_app_dir($dir).'/install.lock');
+}
+
+/**
+ * 模块是否被安装
+ */
+function dr_is_module($dir, $siteid = SITE_ID) {
+    return \Phpcmf\Service::L('cache')->get('module-'.$siteid, $dir) ? 1 : 0;
 }
 
 /**
@@ -96,6 +128,32 @@ function dr_content_link($tags, $content, $num = 0) {
     return $content;
 }
 
+
+// 内容加内链
+function dr_neilian($html, $blank = 1, $num = 1)
+{
+    if (!$html) return '';
+
+    $tags = \Phpcmf\Service::L('cache')->get('tag-'.SITE_ID);
+    if ($tags) {
+        foreach ($tags as $t) {
+            $data = explode(',', $t['tags']);
+            if ($data) {
+                foreach ($data as $name) {
+                    $url = '<a href="'.$t['url'].'" '.($blank ? 'target="_blank"' : '').'>'.$name.'</a>';
+                    $html = @preg_replace('\'(?!((<.*?)|(<a.*?)|(<strong.*?)))('.str_replace(array("'", '-'), array("\'", '\-'), preg_quote($name)).')(?!(([^<>]*?)>)|([^>]*?</a>)|([^>]*?</strong>))\'si',
+                        $url,
+                        $html,
+                        $num
+                    );
+                }
+            }
+        }
+    }
+
+    return $html;
+}
+
 // 星级显示
 function dr_star_level($num, $shifen = 0) {
 
@@ -141,7 +199,12 @@ function dr_domain_301($domain, $uri = '') {
 
     !$uri && $uri = (isset($_SERVER['HTTP_X_REWRITE_URL']) && trim($_SERVER['REQUEST_URI'], '/') == SELF ? trim($_SERVER['HTTP_X_REWRITE_URL'], '/') : ($_SERVER['REQUEST_URI'] ? trim($_SERVER['REQUEST_URI'], '/') : ''));
 
-    dr_redirect(rtrim($domain, '/').'/'.$uri, 'auto', 301);exit;
+    $url = rtrim($domain, '/').'/'.$uri;
+    if (CI_DEBUG) {
+        \Phpcmf\Service::C()->_admin_msg(1, '正在做自动识别终端（关闭开发者模式时即可自动跳转）', $url);exit;
+    }
+
+    dr_redirect($url, 'auto', 301);exit;
 }
 
 /**
@@ -339,6 +402,23 @@ function dr_get_keywords($kw, $siteid = SITE_ID) {
     return $rt;
 }
 
+// 会员头像路径和url
+function dr_avatar_path() {
+
+    $config = \Phpcmf\Service::C()->get_cache('site', SITE_ID, 'image');
+    if (!$config['avatar_path'] || !$config['avatar_url']) {
+        return [ROOTPATH.'api/member/', ROOT_URL.'api/member/'];
+    }
+
+    if ((strpos($config['avatar_path'], '/') === 0 || strpos($config['avatar_path'], ':') !== false) && is_dir($config['avatar_path'])) {
+        // 相对于根目录
+        return [rtrim($config['avatar_path'], DIRECTORY_SEPARATOR).'/', trim($config['avatar_url'], '/').'/'];
+    } else {
+        // 在当前网站目录
+        return [ROOTPATH.trim($config['avatar_path'], '/').'/', ROOT_URL.trim($config['avatar_path'], '/').'/'];
+    }
+}
+
 /**
  * 会员头像
  *
@@ -350,8 +430,11 @@ function dr_avatar($uid) {
     if ($uid) {
         if (defined('UCSSO_API')) {
             return ucsso_get_avatar($uid);
-        } elseif (is_file(ROOTPATH.'api/member/'.$uid.'.jpg')) {
-            return ROOT_URL.'api/member/'.$uid.'.jpg';
+        }
+
+        list($cache_path, $cache_url) = dr_avatar_path();
+        if (is_file($cache_path.$uid.'.jpg')) {
+            return $cache_url.$uid.'.jpg';
         }
     }
 
@@ -412,6 +495,10 @@ function dr_list_function($func, $value, $param = [], $data = []) {
     $obj = \Phpcmf\Service::L('Function_list');
     if (method_exists($obj, $func)) {
         return call_user_func_array(array($obj, $func), ['value'=>$value, 'param' => $param, $data]);
+    } elseif (function_exists($func)) {
+        return call_user_func_array($func, ['value'=>$value, 'param' => $param, $data]);
+    } else {
+        log_message('error', '你没有定义字段列表回调函数：'.$func);
     }
 
     return $value;
@@ -427,7 +514,7 @@ function dr_list_function($func, $value, $param = [], $data = []) {
  * @param	string	$html	格式替换
  * @return	string
  */
-function dr_catpos($catid, $symbol = ' > ', $url = true, $html= '', $dirname = MOD_DIR) {
+function dr_catpos($catid, $symbol = ' > ', $url = true, $html= '', $dirname = MOD_DIR, $url_call_func = '') {
 
     if (!$catid) {
         return '';
@@ -442,12 +529,19 @@ function dr_catpos($catid, $symbol = ' > ', $url = true, $html= '', $dirname = M
     $array = explode(',', $cat[$catid]['pids']);
     foreach ($array as $id) {
         if ($id && $cat[$id]) {
-            $murl = $cat[$id]['url'];
+            if ($url_call_func && function_exists($url_call_func)) {
+                $murl = $url_call_func($cat[$id]);
+            } else {
+                $murl = $cat[$id]['url'];
+            }
             $name[] = $url ? ($html ? str_replace(array('[url]', '[name]'), array($murl, $cat[$id]['name']), $html): "<a href=\"{$murl}\">{$cat[$id]['name']}</a>") : $cat[$id]['name'];
         }
     }
-
-    $murl = $cat[$catid]['url'];
+    if ($url_call_func && function_exists($url_call_func)) {
+        $murl = $url_call_func($cat[$catid]);
+    } else {
+        $murl = $cat[$catid]['url'];
+    }
     $name[] = $url ? ($html ? str_replace(array('[url]', '[name]'), array($murl, $cat[$catid]['name']), $html): "<a href=\"{$murl}\">{$cat[$catid]['name']}</a>") : $cat[$catid]['name'];
 
     return implode($symbol, $name);
@@ -1395,8 +1489,6 @@ function dr_file($url) {
         return NULL;
     } elseif (substr($url, 0, 7) == 'http://' || substr($url, 0, 8) == 'https://') {
         return $url;
-    } elseif (strpos($url, SITE_PATH) !== FALSE && SITE_PATH != '/') {
-        return $url;
     } elseif (substr($url, 0, 1) == '/') {
         return ROOT_URL.substr($url, 1);
     }
@@ -1850,7 +1942,7 @@ function dr_member_order($url) {
 /**
  * 百度地图调用
  */
-function dr_baidu_map($value, $zoom = 15, $width = 600, $height = 400, $ak = '您的密钥', $class= '') {
+function dr_baidu_map($value, $zoom = 15, $width = 600, $height = 400, $ak = SYS_BDMAP_API, $class= '') {
 
     if (!$value) {
         return '没有坐标值';
@@ -1860,7 +1952,8 @@ function dr_baidu_map($value, $zoom = 15, $width = 600, $height = 400, $ak = '�
     $width = $width ? $width : '100%';
     list($lngX, $latY) = explode(',', $value);
 
-    $js = \Phpcmf\Service::V()->load_js('http://api.map.baidu.com/api?v=2.0&ak='.$ak);
+    $js = \Phpcmf\Service::V()->load_js((strpos(FC_NOW_URL, 'https') === 0 ? 'https' : 'http').'://api.map.baidu.com/api?v=2.0&ak='.$ak);
+
     return $js.'<div class="'.$class.'" id="' . $id . '" style="width:' . $width . 'px; height:' . $height . 'px; overflow:hidden"></div>
 	<script type="text/javascript">
 	var mapObj=null;
@@ -1952,7 +2045,7 @@ function dr_show_stars($num, $starthreshold = 4) {
  * @return	string
  */
 function dr_module_comment($dir, $id) {
-    $url = "/index.php?s=".$dir."&c=comment&m=index&id={$id}";
+    $url = "".ROOT_URL."index.php?s=".$dir."&c=comment&m=index&id={$id}";
     return "<div id=\"dr_module_comment_{$id}\"></div><script type=\"text/javascript\">
 	function dr_ajax_module_comment_{$id}(type, page) {
 		var index = layer.load(2, { time: 10000 });
@@ -1982,7 +2075,7 @@ function dr_ajax_template($id, $filename) {
     return "<script type=\"text/javascript\">
 		$.ajax({
 			type: \"GET\",
-			url:\"/index.php?s=api&c=api&m=template&name={$filename}\",
+			url:\"".ROOT_URL."index.php?s=api&c=api&m=template&name={$filename}\",
 			dataType: \"jsonp\",
 			success: function(data){
 				$(\"#{$id}\").html(data.msg);
@@ -2005,7 +2098,7 @@ function dr_show_hits($id, $dom = "") {
     return $html."<script type=\"text/javascript\">
 		$.ajax({
 			type: \"GET\",
-			url:\"/index.php?s=api&c=module&siteid=".SITE_ID."&app=".MOD_DIR."&m=hits&id={$id}\",
+			url:\"".ROOT_URL."index.php?s=api&c=module&siteid=".SITE_ID."&app=".MOD_DIR."&m=hits&id={$id}\",
 			dataType: \"jsonp\",
 			success: function(data){
 				if (data.code) {
@@ -2028,7 +2121,7 @@ function dr_show_module_total($name, $id, $dom) {
     return "<script type=\"text/javascript\">
 		$.ajax({
 			type: \"GET\",
-			url:\"/index.php?s=api&c=module&siteid=".SITE_ID."&app=".MOD_DIR."&m=mcount&name={$name}&id={$id}\",
+			url:\"".ROOT_URL."index.php?s=api&c=module&siteid=".SITE_ID."&app=".MOD_DIR."&m=mcount&name={$name}&id={$id}\",
 			dataType: \"jsonp\",
 			success: function(data){
 				if (data.code) {
@@ -2730,6 +2823,132 @@ function dr_tpl_path($is_member = IS_MEMBER) {
     return $path;
 }
 
+
+// 获取网站表单发布页面需要的变量值
+function dr_get_form_post_value($table) {
+
+    $rt = [
+        'form' => dr_form_hidden(),
+    ];
+    $form = \Phpcmf\Service::L('cache')->get('form-'.SITE_ID, $table);
+    if (!$form) {
+        return $rt;
+    }
+
+    $rt['form_name'] = $form['name'];
+    $rt['form_table'] = $form['table'];
+
+    // 是否有验证码
+    $rt['is_post_code'] = dr_member_auth(
+        \Phpcmf\Service::C()->member_authid,
+        \Phpcmf\Service::C()->member_cache['auth_site'][SITE_ID]['form'][$form['table']]['code']
+    );
+    $rt['rt_url'] =  $form['setting']['rt_url'] ? $form['setting']['rt_url'] : dr_now_url();
+
+    // 初始化自定义字段类
+
+    $field = $form['field'];
+    $my_field = $sys_field = $diy_field = [];
+
+    uasort($field, function($a, $b){
+        if($a['displayorder'] == $b['displayorder']){
+            return 0;
+        }
+        return($a['displayorder']<$b['displayorder']) ? -1 : 1;
+    });
+
+    foreach ($field as $i => $t) {
+        if ($t['setting']['is_right'] == 1) {
+            // 右边字段归类为系统字段
+            if (IS_ADMIN) {
+                $sys_field[$i] = $t;
+            } else {
+                $my_field[$i] = $t;
+            }
+
+        } elseif ($t['setting']['is_right'] == 2) {
+            // diy字段
+            $diy_field[$i] = $t;
+        } else {
+            $my_field[$i] = $t;
+        }
+    }
+
+    $rt['myfield'] = \Phpcmf\Service::L('Field')->toform(0, $my_field, []);
+    $rt['sysfield'] = \Phpcmf\Service::L('Field')->toform(0, $sys_field, []);
+    $rt['diyfield'] = \Phpcmf\Service::L('Field')->toform(0, $diy_field, []);
+
+    $rt['post_url'] = dr_url('form/'.$table.'/post');
+
+    return $rt;
+}
+
+// 获取模块表单发布页面需要的变量值
+function dr_get_mform_post_value($mid, $table, $cid) {
+
+
+    $rt = [
+        'form' => dr_form_hidden(),
+    ];
+
+    $module = \Phpcmf\Service::L('cache')->get('module-'.SITE_ID.'-'.$mid);
+    if (!$module) {
+        return $rt;
+    }
+
+    $form = $module['form'][$table];
+    if (!$form) {
+        return $rt;
+    }
+
+    $rt['form_name'] = $form['name'];
+    $rt['form_table'] = $form['table'];
+
+    // 是否有验证码
+    $rt['is_post_code'] = dr_member_auth(
+        \Phpcmf\Service::C()->member_authid,
+        \Phpcmf\Service::C()->member_cache['auth_module'][SITE_ID][$mid]['form'][$form['table']]['code']
+    );
+    $rt['rt_url'] =  $form['setting']['rt_url'] ? $form['setting']['rt_url'] : dr_now_url();
+
+    // 初始化自定义字段类
+
+    $field = $form['field'];
+    $my_field = $sys_field = $diy_field = [];
+
+    uasort($field, function($a, $b){
+        if($a['displayorder'] == $b['displayorder']){
+            return 0;
+        }
+        return($a['displayorder']<$b['displayorder']) ? -1 : 1;
+    });
+
+    foreach ($field as $i => $t) {
+        if ($t['setting']['is_right'] == 1) {
+            // 右边字段归类为系统字段
+            if (IS_ADMIN) {
+                $sys_field[$i] = $t;
+            } else {
+                $my_field[$i] = $t;
+            }
+
+        } elseif ($t['setting']['is_right'] == 2) {
+            // diy字段
+            $diy_field[$i] = $t;
+        } else {
+            $my_field[$i] = $t;
+        }
+    }
+
+    $rt['myfield'] = \Phpcmf\Service::L('Field')->toform(0, $my_field, []);
+    $rt['sysfield'] = \Phpcmf\Service::L('Field')->toform(0, $sys_field, []);
+    $rt['diyfield'] = \Phpcmf\Service::L('Field')->toform(0, $diy_field, []);
+
+    $rt['post_url'] = dr_url($mid.'/'.$table.'/post', ['cid' => $cid]);
+
+    return $rt;
+}
+
 // 获取当前模板文件路径
 function dr_tpl_file($file) {
     return dr_tpl_path().$file;
@@ -2893,10 +3112,16 @@ function dr_related_cat($data, $catid) {
     if ($my['child']) {
         $parent = $my;
         foreach ($data as $t) {
+            if (!$t['show']) {
+                continue;
+            }
             $t['pid'] == $my['id'] && $related[$t['id']] = $t;
         }
     } elseif ($my['pid']) {
         foreach ($data as $t) {
+            if (!$t['show']) {
+                continue;
+            }
             if ($t['pid'] == $my['pid']) {
                 $related[$t['id']] = $t;
                 $parent = $my['child'] ? $my : $data[$t['pid']];
@@ -2908,6 +3133,9 @@ function dr_related_cat($data, $catid) {
         }
         $parent = $my;
         foreach ($data as $t) {
+            if (!$t['show']) {
+                continue;
+            }
             $t['pid'] == 0 && $related[$t['id']] = $t;
         }
     }
@@ -3035,31 +3263,6 @@ function dr_mobile_url($url = SITE_MURL) {
     }
 
     return str_replace($host, $domain[$host], $url);
-}
-
-// 内容加内链
-function dr_neilian($html, $blank = 1, $num = 1)
-{
-    if (!$html) return '';
-
-    $tags = \Phpcmf\Service::L('cache')->get('tag-'.SITE_ID);
-    if ($tags) {
-        foreach ($tags as $t) {
-            $data = explode(',', $t['tags']);
-            if ($data) {
-                foreach ($data as $name) {
-                    $url = '<a href="'.$t['url'].'" '.($blank ? 'target="_blank"' : '').'>'.$name.'</a>';
-                    $html = @preg_replace('\'(?!((<.*?)|(<a.*?)|(<strong.*?)))('.str_replace(array("'", '-'), array("\'", '\-'), preg_quote($name)).')(?!(([^<>]*?)>)|([^>]*?</a>)|([^>]*?</strong>))\'si',
-                        $url,
-                        $html,
-                        $num
-                    );
-                }
-            }
-        }
-    }
-
-    return $html;
 }
 
 ////////////////////////////////////////////////////////////

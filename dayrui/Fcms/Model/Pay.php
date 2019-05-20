@@ -1,5 +1,28 @@
 <?php namespace Phpcmf\Model;
 
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 // 支付类
 // 支付状态 status 0未付款 1付款成功 2转账中 3转账被拒绝
 
@@ -366,11 +389,12 @@ class Pay extends \Phpcmf\Model
 
         $f = \Phpcmf\Service::L('Field')->get($field['fieldtype']);
         $f->remove_div = $remove_div;
-        return $f->input($field, $value, [
+        $html = $f->input($field, $value, [
             'mark' => $mark,
             'title' => $title,
             'url' => $url,
         ]);
+        return $html;
     }
 
     // 增加流水记录
@@ -589,10 +613,10 @@ class Pay extends \Phpcmf\Model
             return dr_return_data(0, dr_lang('付款金额不规范'));
         }
 
+        $post['uid'] = intval($post['uid']);
+        $post['username'] = (string)$post['username'];
         $post['money'] = floatval($post['money']);
-        if (!$post['uid']) {
-            return dr_return_data(0, dr_lang('付款信息不存在'));
-        } elseif ($post['money'] <= 0) {
+        if ($post['money'] <= 0) {
             return dr_return_data(0, dr_lang('付款金额不正确'));
         } elseif ((string)$post['money'] == 'INF') {
             return dr_return_data(0, dr_lang('付款金额不规范'));
@@ -608,6 +632,9 @@ class Pay extends \Phpcmf\Model
 
             // 在线充值
             case 'recharge':
+                if (!$post['uid']) {
+                    return dr_return_data(0, dr_lang('付款账号不存在'));
+                }
                 $title = dr_lang('用户（%s）充值', $post['username']);
                 $money = $post['money'];
                 if (\Phpcmf\Service::C()->member_cache['pay']['min'] && $money < \Phpcmf\Service::C()->member_cache['pay']['min']) {
@@ -622,6 +649,9 @@ class Pay extends \Phpcmf\Model
 
             // 金币充值
             case 'score':
+                if (!$post['uid']) {
+                    return dr_return_data(0, dr_lang('付款账号不存在'));
+                }
                 $money = (int)$post['money'];
                 $title = dr_lang('用户（%s）充值%s：%s', $post['username'], SITE_SCORE, $money);
                 $touid = $post['uid']; // 收款方为自己
@@ -810,7 +840,7 @@ class Pay extends \Phpcmf\Model
 
         // 扣钱
         $rt2 = \Phpcmf\Service::M('member')->add_freeze($this->uid, $post['value']);
-        if (!$rt['code']) {
+        if (!$rt2['code']) {
             // 删除刚刚添加的数据
             $this->table('member_cashlog')->delete($rt['code']);
         }

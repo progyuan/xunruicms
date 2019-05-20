@@ -89,7 +89,7 @@
                 </td>
                 {/if}
                 <td style="text-align:center">{php echo \Phpcmf\Service::M('Pay')->paytype($t.mid)}</td>
-                <td>{Function_list::uid($t.uid)}</td>
+                <td>{if $t.uid}{Function_list::uid($t.uid)}{else}{dr_lang('游客')}{/if}</td>
                 <td><a href="javascript:dr_layer_tips('{str_replace('"', '', $t.title)}');" class="tooltips" data-container="body" data-placement="top" data-original-title="{str_replace('"', '', $t.title)}">{dr_strcut($t.title, 30)}</a></td>
                 <td><b>{dr_pay_money_html($t.value)}</b></td>
                 <td style="text-align:center">{dr_pay_type_html($t.type)}</td>

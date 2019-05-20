@@ -1,4 +1,4 @@
-<?php namespace CodeIgniter;
+<?php
 
 /**
  * CodeIgniter
@@ -32,9 +32,12 @@
  * @copyright  2014-2019 British Columbia Institute of Technology (https://bcit.ca/)
  * @license    https://opensource.org/licenses/MIT	MIT License
  * @link       https://codeigniter.com
- * @since      Version 3.0.0
+ * @since      Version 4.0.0
  * @filesource
  */
+
+namespace CodeIgniter;
+
 use CodeIgniter\Config\Services;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -137,7 +140,7 @@ class Controller
 	 *
 	 * @throws \CodeIgniter\HTTP\Exceptions\HTTPException
 	 */
-	public function forceHTTPS(int $duration = 31536000)
+	protected function forceHTTPS(int $duration = 31536000)
 	{
 		force_https($duration, $this->request, $this->response);
 	}
@@ -150,7 +153,7 @@ class Controller
 	 *
 	 * @param integer $time
 	 */
-	public function cachePage(int $time)
+	protected function cachePage(int $time)
 	{
 		CodeIgniter::cache($time);
 	}
@@ -179,12 +182,12 @@ class Controller
 	 * A shortcut to performing validation on input data. If validation
 	 * is not successful, a $errors property will be set on this class.
 	 *
-	 * @param array|string  $rules
-	 * @param array         $messages An array of custom error messages
+	 * @param array|string $rules
+	 * @param array        $messages An array of custom error messages
 	 *
 	 * @return boolean
 	 */
-	public function validate($rules, array $messages = []): bool
+	protected function validate($rules, array $messages = []): bool
 	{
 		$this->validator = Services::validation();
 

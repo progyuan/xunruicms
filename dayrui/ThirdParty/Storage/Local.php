@@ -27,10 +27,17 @@ class Local {
     // 初始化参数
     public function init($attachment, $filename) {
 
-        $this->filename = trim($filename, DIRECTORY_SEPARATOR);
-        $this->filepath = dirname($filename);
-        $this->filepath == '.' && $this->filepath = '';
-        $attachment['value']['path'] = rtrim($attachment['value']['path'], DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+        if ($attachment['value']['path'] == 'null') {
+            // 表示自定义save_path
+            $attachment['value']['path'] = '';
+            $this->filename = $filename;
+            $this->filepath = dirname($filename);
+        } else {
+            $this->filename = trim($filename, DIRECTORY_SEPARATOR);
+            $this->filepath = dirname($filename);
+            $this->filepath == '.' && $this->filepath = '';
+            $attachment['value']['path'] = rtrim($attachment['value']['path'], DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+        }
         $this->attachment = $attachment;
         $this->fullpath = $this->attachment['value']['path'].$this->filepath;
         $this->fullname = $this->attachment['value']['path'].$this->filename;
@@ -48,7 +55,7 @@ class Local {
         !is_dir($this->fullpath) && dr_mkdirs($this->fullpath);
         if (!is_dir($this->fullpath)) {
             log_message('error', '目录创建失败：'.$this->fullpath);
-            return dr_return_data(0, dr_lang('创建目录失败',$this->fullpath));
+            return dr_return_data(0, dr_lang('创建目录%s失败', IS_ADMIN ? $this->fullpath : ''));
         }
 
         if ($type) {

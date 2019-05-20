@@ -143,15 +143,18 @@
                         <div class="form-group">
                             <label class="col-md-2 control-label">{dr_lang('校验函数/方法')}</label>
                             <div class="col-md-9">
-                                <input class="form-control" type="text" name="data[setting][validate][check]" value="{$data['setting']['validate']['check']}" id="dr_check" />
-                                <span class="help-block">{dr_lang('例如对会员名的重复验证等，格式参考手册，请勿乱填')}</span>
+                                <label><input class="form-control input-large"type="text" name="data[setting][validate][check]" value="{$data['setting']['validate']['check']}" id="dr_check"> </label>
+                                <label><a class="btn btn-sm blue" href="javascript:dr_test_call('dr_check');"> 检测 </a></label>
+                                <span class="help-block"> <a href="javascript:dr_help('601');"> {dr_lang('此功能需要有PHP编程经验，了解函数的定义')}</a> </span>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-md-2 control-label">{dr_lang('过滤函数')}</label>
+                            <label class="col-md-2 control-label">{dr_lang('过滤函数/方法')}</label>
                             <div class="col-md-9">
-                                <input class="form-control" type="text" name="data[setting][validate][filter]" value="{$data['setting']['validate']['filter']}" id="dr_filter" />
-                                <span class="help-block">{dr_lang('如url补全、去除html、生成随机码等等，格式参考手册，请勿乱填')}</span>
+
+                                <label><input class="form-control input-large"type="text" name="data[setting][validate][filter]" value="{$data['setting']['validate']['filter']}" id="dr_filter"> </label>
+                                <label><a class="btn btn-sm blue" href="javascript:dr_test_call('dr_filter');"> 检测 </a></label>
+                                <span class="help-block"> <a href="javascript:dr_help('602');"> {dr_lang('此功能需要有PHP编程经验，了解函数的定义')}</a> </span>
                             </div>
                         </div>
                     </div>
@@ -275,6 +278,17 @@
         } else {
             $('#required').show();
         }
+    }
+
+    function dr_test_call(value) {
+        $.ajax({type: "GET",dataType:"json", url: "{dr_url('api/field_call')}&name="+$('#'+value).val(),
+            success: function(json) {
+                dr_tips(json.code, json.msg);
+            },
+            error: function(HttpRequest, ajaxOptions, thrownError) {
+                dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError)
+            }
+        });
     }
 </script>
 {template "footer.html"}

@@ -1,10 +1,28 @@
 <?php namespace Phpcmf\Controllers\Admin;
 
-/**
- * PHPCMF框架文件
- * 二次开发时请勿修改本文件
- * 成都天睿信息技术有限公司 www.phpcmf.net
- */
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 
 // 金币流水
 class Member_scorelog extends \Phpcmf\Table
@@ -42,7 +60,7 @@ class Member_scorelog extends \Phpcmf\Table
             ),
         );
         // 表单显示名称
-        $this->name = dr_lang('虚拟金币');
+        $this->name = SITE_SCORE;
         // 初始化数据表
         $this->_init([
             'table' => 'member_scorelog',
@@ -53,7 +71,8 @@ class Member_scorelog extends \Phpcmf\Table
         \Phpcmf\Service::V()->assign([
             'menu' => \Phpcmf\Service::M('auth')->_admin_menu(
                 [
-                    '虚拟金币' => [\Phpcmf\Service::L('Router')->class.'/index', 'fa fa-diamond'],
+                    SITE_SCORE => [\Phpcmf\Service::L('Router')->class.'/index', 'fa fa-diamond'],
+                    'help' => [ 599 ],
                 ]
             ),
             'field' => $this->my_field,

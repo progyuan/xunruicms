@@ -1,5 +1,4 @@
-<?php namespace CodeIgniter;
-
+<?php
 /**
  * CodeIgniter
  *
@@ -32,10 +31,14 @@
  * @copyright  2014-2019 British Columbia Institute of Technology (https://bcit.ca/)
  * @license    https://opensource.org/licenses/MIT	MIT License
  * @link       https://codeigniter.com
- * @since      Version 3.0.0
+ * @since      Version 4.0.0
  * @filesource
  */
 
+namespace CodeIgniter;
+
+use Closure;
+use CodeIgniter\Filters\Exceptions\FilterException;
 use CodeIgniter\HTTP\DownloadResponse;
 use CodeIgniter\HTTP\RedirectResponse;
 use CodeIgniter\HTTP\Request;
@@ -49,6 +52,7 @@ use CodeIgniter\HTTP\Response;
 use CodeIgniter\HTTP\CLIRequest;
 use CodeIgniter\Router\RouteCollectionInterface;
 use CodeIgniter\Exceptions\PageNotFoundException;
+use Exception;
 
 /**
  * This class is the core of the framework, and will analyse the
@@ -61,7 +65,7 @@ class CodeIgniter
 	/**
 	 * The current version of CodeIgniter Framework
 	 */
-	const CI_VERSION = '4.0.0-beta.1';
+	const CI_VERSION = '4.0.0-beta.3';
 
 	/**
 	 * App startup time.
@@ -157,6 +161,11 @@ class CodeIgniter
 
 	//--------------------------------------------------------------------
 
+	/**
+	 * Constructor.
+	 *
+	 * @param type $config
+	 */
 	public function __construct($config)
 	{
 		$this->startTime = microtime(true);
@@ -199,6 +208,7 @@ class CodeIgniter
 	 * @param \CodeIgniter\Router\RouteCollectionInterface $routes
 	 * @param boolean                                      $returnResponse
 	 *
+	 * @return boolean|\CodeIgniter\HTTP\RequestInterface|\CodeIgniter\HTTP\Response|\CodeIgniter\HTTP\ResponseInterface|mixed
 	 * @throws \CodeIgniter\Filters\Exceptions\FilterException
 	 * @throws \Exception
 	 */
@@ -234,7 +244,7 @@ class CodeIgniter
 		{
 			return $this->handleRequest($routes, $cacheConfig, $returnResponse);
 		}
-		catch (\CodeIgniter\Filters\Exceptions\FilterException $e)
+		catch (FilterException $e)
 		{
 			$logger = Services::logger();
 			$logger->info('REDIRECTED ROUTE at ' . $e->getMessage());
@@ -278,7 +288,7 @@ class CodeIgniter
 	 * @param boolean                                      $returnResponse
 	 *
 	 * @return \CodeIgniter\HTTP\RequestInterface|\CodeIgniter\HTTP\Response|\CodeIgniter\HTTP\ResponseInterface|mixed
-	 * @throws \CodeIgniter\Filters\Exceptions\FilterException
+	 * @throws \CodeIgniter\Router\Exceptions\RedirectException
 	 */
 	protected function handleRequest(RouteCollectionInterface $routes = null, $cacheConfig, bool $returnResponse = false)
 	{
@@ -533,7 +543,7 @@ class CodeIgniter
 	 *
 	 * @throws \Exception
 	 *
-	 * @return bool|\CodeIgniter\HTTP\ResponseInterface
+	 * @return boolean|\CodeIgniter\HTTP\ResponseInterface
 	 */
 	public function displayCache($config)
 	{
@@ -542,7 +552,7 @@ class CodeIgniter
 			$cachedResponse = unserialize($cachedResponse);
 			if (! is_array($cachedResponse) || ! isset($cachedResponse['output']) || ! isset($cachedResponse['headers']))
 			{
-				throw new \Exception('Error unserializing page cache');
+				throw new Exception('Error unserializing page cache');
 			}
 
 			$headers = $cachedResponse['headers'];
@@ -613,7 +623,7 @@ class CodeIgniter
 	 *
 	 * @return array
 	 */
-	public function getPerformanceStats()
+	public function getPerformanceStats(): array
 	{
 		return [
 			'startTime' => $this->startTime,
@@ -684,6 +694,7 @@ class CodeIgniter
 	 *                                         of the config file.
 	 *
 	 * @return string
+	 * @throws \CodeIgniter\Router\Exceptions\RedirectException
 	 */
 	protected function tryToRouteIt(RouteCollectionInterface $routes = null)
 	{
@@ -845,9 +856,9 @@ class CodeIgniter
 		// Is there a 404 Override available?
 		if ($override = $this->router->get404Override())
 		{
-			if ($override instanceof \Closure)
+			if ($override instanceof Closure)
 			{
-				echo $override();
+				echo $override($e->getMessage());
 			}
 			else if (is_array($override))
 			{

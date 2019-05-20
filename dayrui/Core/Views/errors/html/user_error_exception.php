@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?><!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-cn">
 <head>
 	<meta charset="utf-8">
 	<title>系统错误 - <?= htmlspecialchars($title, ENT_SUBSTITUTE, 'UTF-8') ?></title>
@@ -74,7 +74,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </head>
 <body>
 	<div class="wrap">
-		<h3>CMS系统错误</h3>
+		<h3>系统错误</h3>
 
 		<p>
 			<?php if (! empty($message) && $message != '(null)') : ?>

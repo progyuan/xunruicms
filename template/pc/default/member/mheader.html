@@ -13,7 +13,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta content="width=device-width, initial-scale=1" name="viewport" />
     <link href="{THEME_PATH}assets/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css" />
-    <link href="{THEME_PATH}assets/global/plugins/simple-line-icons/simple-line-icons.min.css" rel="stylesheet" type="text/css" />
     <link href="{THEME_PATH}assets/global/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="{THEME_PATH}assets/global/plugins/bootstrap-switch/css/bootstrap-switch.min.css" rel="stylesheet" type="text/css" />
     <link href="{THEME_PATH}assets/global/css/plugins.min.css" rel="stylesheet" type="text/css" />
@@ -65,7 +64,7 @@
                 <ul class="nav navbar-nav pull-right">
                     <li class="dropdown dropdown-extended dropdown-notification" id="header_notification_bar">
                         <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
-                            <i class="icon-bell"></i>
+                            <i class="fa fa-bell"></i>
                             <span class="badge badge-default dr_notice_num"> 0 </span>
                         </a>
                         <ul class="dropdown-menu">
@@ -112,12 +111,9 @@
                             <li class="divider"> </li>
                             <li>
                                 <a href="javascript:;" onclick="dr_loginout()">
-                                    <i class="icon-key"></i> 我要退出 </a>
+                                    <i class="fa fa-sign-out"></i> 我要退出 </a>
                             </li>
                         </ul>
-                    </li>
-                    <li onclick="dr_loginout()" class="dropdown dropdown-extended quick-sidebar-toggler">
-                        <i class="icon-logout"></i>
                     </li>
                 </ul>
             </div>
@@ -132,7 +128,7 @@
             <ul class="page-sidebar-menu  page-header-fixed page-sidebar-menu-compact" data-keep-expanded="false" data-auto-scroll="true" data-slide-speed="200">
                 <li class="nav-item start {if !$mymenu} active open{/if}">
                     <a href="{MEMBER_URL}" class="nav-link nav-toggle">
-                        <i class="icon-home"></i>
+                        <i class="fa fa-home"></i>
                         <span class="title">用户中心</span>
                     </a>
                 </li>

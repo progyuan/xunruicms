@@ -54,8 +54,7 @@
                         return false;
                     },
                     error: function(HttpRequest, ajaxOptions, thrownError) {
-                        layer.closeAll('loading');
-                        alert(HttpRequest.responseText);
+                        dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError);
                     }
                 });
                 return false;
@@ -150,8 +149,12 @@
                 {/list}
 
                 <td style="overflow:visible">
+
                     {if $ci->_is_admin_auth('edit')}
                     <label><a href="{dr_url($uriprefix.'/edit', ['id'=>$t.id])}" class="btn btn-xs red"> <i class="fa fa-edit"></i> {dr_lang('修改')}</a></label>
+                    {/if}
+                    {if $ci->_is_admin_auth('edit') && dr_is_app('copy')}
+                    <label><a href="JavaScript:;" onclick="dr_ajax_confirm_url('{dr_url('copy/home/content_edit', ['dir'=>MOD_DIR, 'id'=>$t.id])}', '{dr_lang('复制将把此内容生成一条新内容')}', '{dr_now_url()}')" class="btn btn-xs green"> <i class="fa fa-copy"></i> {dr_lang('复制')}</a></label>
                     {/if}
 
                     {loop $clink $a}
@@ -195,7 +198,7 @@
             {/if}
             <label>
                 <div class="btn-group dropup">
-                    <a class="btn  blue btn-sm dropdown-toggle" data-toggle="dropdown" href="javascript:;" aria-expanded="false"> {dr_lang('批量')}
+                    <a class="btn  blue btn-sm dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true" aria-expanded="false" href="javascript:;"> {dr_lang('批量')}
                         <i class="fa fa-angle-up"></i>
                     </a>
                     <ul class="dropdown-menu">

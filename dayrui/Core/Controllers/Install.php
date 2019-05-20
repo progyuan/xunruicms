@@ -1,5 +1,28 @@
 <?php namespace Phpcmf\Controllers;
 
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 define('IS_INSTALL', 1);
 
 // 安装程序
@@ -29,6 +52,7 @@ class Install extends \Phpcmf\Common
             exit('版本控制文件（'.MYPATH.'Config/Version.php'.'）不存在');
         }
         $app = require MYPATH.'Config/Version.php';
+        define('DR_CMS', $app['id']);
         define('DR_NAME', $app['name']);
         define('DR_VERSION', $app['version']);
         \Phpcmf\Service::V()->init('pc');
@@ -38,6 +62,10 @@ class Install extends \Phpcmf\Common
     public function index() {
 
         $step = intval($_GET['step']);
+
+        if (DR_CMS == 10) {
+            !$step && $step = 1;
+        }
 
         switch ($step) {
 
@@ -60,7 +88,12 @@ class Install extends \Phpcmf\Common
                         $error = 1;
                     }
                 }
+				$php = [];
+				$php['mb string扩展'] = function_exists('mb_substr') ? 1 : 0;
+				$php['Curl扩展'] = function_exists('curl_init') ? 1 : 0;
+				
                 \Phpcmf\Service::V()->assign([
+                    'php' => $php,
                     'path' => $path,
                     'error' => $error,
                 ]);
@@ -113,6 +146,8 @@ class Install extends \Phpcmf\Common
                         $this->_json(0, '临时数据存储失败，cahce目录无法写入');
                     }
 
+                    $data['db_prefix'] = strtolower($data['db_prefix']);
+
                     // 存储mysql
                     $database = '<?php
 
@@ -132,7 +167,7 @@ $db[\'default\']	= [
                         $this->_json(0, '数据库配置文件创建失败，config目录无法写入');
                     }
 
-                    $this->_json(1, 'index.php?c=install&m=index&step='.($step+1));
+                    $this->_json(1, 'index.php?c=install&m=index&is_install_db='.intval($_POST['is_install_db']).'&step='.($step+1));
                 }
 
 
@@ -239,6 +274,15 @@ $db[\'default\']	= [
                             // 创建后台默认菜单
                             \Phpcmf\Service::M('Menu')->init('admin');
                             \Phpcmf\Service::M('Menu')->init('member');
+
+                            // 删除app的install.lock
+                            $local = dr_dir_map(dr_get_app_list(), 1);
+                            foreach ($local as $dir) {
+                                $path = dr_get_app_dir($dir);
+                                if (is_file($path.'install.lock')) {
+                                    @unlink($path.'install.lock');
+                                }
+                            }
 
                             // 完成之后更新缓存
                             \Phpcmf\Service::M('cache')->update_cache();

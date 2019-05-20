@@ -1,5 +1,28 @@
 <?php namespace Phpcmf\Library;
 
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 /**
  * 附件类
  */
@@ -78,7 +101,12 @@ class Upload
         }
 
         // 保存目录名称
-        $path = isset($config['path']) && $config['path'] ? $config['path'].'/' : date('Ym', SYS_TIME).'/';
+        if (isset($config['save_path']) && $config['save_path']) {
+            $path = $config['save_path'];
+        } else {
+            $path = isset($config['path']) && $config['path'] ? $config['path'].'/' : date('Ym', SYS_TIME).'/';
+        }
+
         $file_path = $path.$name.'.'.$file_ext;
 
         // 开始上传存储文件

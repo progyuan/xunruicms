@@ -122,7 +122,7 @@
                             <label class="col-md-2 control-label">{dr_lang('短信验证码登录')}</label>
                             <div class="col-md-9">
                                 <input type="checkbox" name="data[login][sms]" value="1" {if $data['login']['sms']}checked{/if} data-on-text="{dr_lang('开启')}" data-off-text="{dr_lang('关闭')}" data-on-color="success" data-off-color="danger" class="make-switch" data-size="small">
-                                <span class="help-block"><a href="http://help.phpcmf.net/501.html" target="_blank">{dr_lang('登录字段必须包含手机号码才能使用此功能')}</a></span>
+                                <span class="help-block"><a href="javascript:dr_help(501);">{dr_lang('登录字段必须包含手机号码才能使用此功能')}</a></span>
                             </div>
                         </div>
 
@@ -242,7 +242,7 @@
                         <div class="form-group">
                             <label class="col-md-2 control-label">{dr_lang('不允许注册的用户名')}</label>
                             <div class="col-md-9">
-                                <input class="form-control" type="text" name="data[register][notallow]" value="{$data['register']['notallow']}" >
+                                <textarea class="form-control" style="height:150px; width:100%;" name="data[register][notallow]">{$data['register']['notallow']}</textarea>
                                 <span class="help-block">{dr_lang('多个用户名以分号“,”分隔')}</span>
                             </div>
                         </div>
@@ -269,6 +269,7 @@
                                         <th width="90"> {dr_lang('接入商')} </th>
                                         <th width="210"> {dr_lang('ID')} </th>
                                         <th> {dr_lang('密钥')} </th>
+                                        <th width="90">  </th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -276,16 +277,19 @@
                                         <td>QQ</td>
                                         <td><input class="form-control" name="data[oauth][qq][id]" type="text" value="{$data['oauth']['qq']['id']}"></td>
                                         <td><input class="form-control" name="data[oauth][qq][value]" type="text" value="{$data['oauth']['qq']['value']}"></td>
+                                        <td style="text-align: center"><a href="javascript:dr_help(586);">{dr_lang('申请接口')}</a></td>
                                     </tr>
                                     <tr class="odd gradeX">
                                         <td>微信</td>
                                         <td><input class="form-control" name="data[oauth][weixin][id]" type="text" value="{$data['oauth']['weixin']['id']}"></td>
                                         <td><input class="form-control" name="data[oauth][weixin][value]" type="text" value="{$data['oauth']['weixin']['value']}"></td>
+                                        <td style="text-align: center"><a href="javascript:dr_help(587);">{dr_lang('申请接口')}</a></td>
                                     </tr>
                                     <tr class="odd gradeX">
                                         <td>微博</td>
                                         <td><input class="form-control" name="data[oauth][weibo][id]" type="text" value="{$data['oauth']['weibo']['id']}"></td>
                                         <td><input class="form-control" name="data[oauth][weibo][value]" type="text" value="{$data['oauth']['weibo']['value']}"></td>
+                                        <td style="text-align: center"><a href="javascript:dr_help(588);">{dr_lang('申请接口')}</a></td>
                                     </tr>
                                     </tbody>
                                 </table>

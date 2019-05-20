@@ -1,7 +1,11 @@
 {template "header.html"}
 <script>
 $(function () {
+    {if $is_scategory}
     dr_tid({intval($data.tid)});
+    {else}
+    dr_tid(1);
+    {/if}
 });
 function dr_tid(i) {
     $('.dr_tid_0').hide();
@@ -56,7 +60,7 @@ function dr_tid(i) {
                             </div>
                         </div>
 
-                        {if $module.share}
+                        {if $is_scategory}
                         <div class="form-group r1">
                             <label class="col-md-2 control-label">{dr_lang('栏目类型')}</label>
                             <div class="col-md-9">
@@ -67,7 +71,9 @@ function dr_tid(i) {
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group dr_tid_0 dr_tid_1 " style="display: none">
+                        {/if}
+                        {if $module.share}
+                        <div class="form-group dr_tid_1 " style="display: none">
                             <label class="col-md-2 control-label">{dr_lang('共享模块')}</label>
                             <div class="col-md-9">
                                 <label>
@@ -112,14 +118,14 @@ function dr_tid(i) {
                                 <span class="help-block">{dr_lang('前端循环调用不会显示')}</span>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group dr_tid_0">
                             <label class="col-md-2 control-label">{dr_lang('继承下级')}</label>
                             <div class="col-md-9">
                                 <input type="checkbox" name="data[setting][getchild]" value="1" {if $data['setting']['getchild']}checked{/if} data-on-text="{dr_lang('是')}" data-off-text="{dr_lang('否')}" data-on-color="success" data-off-color="danger" class="make-switch" data-size="small">
                                 <span class="help-block">{dr_lang('选择“是”时，将下级第一个页面数据作为当前的栏目，只对父级单网页有效')}</span>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group dr_tid_1">
                             <label class="col-md-2 control-label">{dr_lang('禁止修改')}</label>
                             <div class="col-md-9">
                                 <input type="checkbox" name="data[setting][notedit]" value="1" {if $data['setting']['notedit']}checked{/if} data-on-text="{dr_lang('是')}" data-off-text="{dr_lang('否')}" data-on-color="success" data-off-color="danger" class="make-switch" data-size="small">
@@ -183,22 +189,22 @@ function dr_tid(i) {
                 </div>
                 <div class="tab-pane {if $page==4}active{/if}" id="tab_4">
                     <div class="form-body">
-                        <div class="form-group">
+                        <div class="form-group dr_tid_1">
                             <label class="col-md-2 control-label">{dr_lang('电脑列表信息数')}</label>
                             <div class="col-md-9">
                                 <label><input class="form-control" type="text" value="{$data['setting']['template']['pagesize']}" name="data[setting][template][pagesize]"></label>
                                 <span class="help-block">{dr_lang('列表页面每页显示的信息数量，静态生成时调用此参数')}</span>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group dr_tid_1">
                             <label class="col-md-2 control-label">{dr_lang('手机列表信息数')}</label>
                             <div class="col-md-9">
                                 <label><input class="form-control" type="text" value="{$data['setting']['template']['mpagesize']}" name="data[setting][template][mpagesize]"></label>
                                 <span class="help-block">{dr_lang('列表页面每页显示的信息数量，静态生成时调用此参数')}</span>
                             </div>
                         </div>
-                        {if $module.share}
-                        <div class="form-group">
+                        {if $is_scategory}
+                        <div class="form-group dr_tid_0">
                             <label class="col-md-2 control-label">{dr_lang('单网页模板')}</label>
                             <div class="col-md-9">
                                 <label><input class="form-control" type="text" value="{$data['setting']['template']['page']}" name="data[setting][template][page]"></label>
@@ -206,28 +212,28 @@ function dr_tid(i) {
                             </div>
                         </div>
                         {/if}
-                        <div class="form-group">
+                        <div class="form-group dr_tid_1">
                             <label class="col-md-2 control-label">{dr_lang('内容列表页模板')}</label>
                             <div class="col-md-9">
                                 <label><input class="form-control" type="text" value="{$data['setting']['template']['list']}" name="data[setting][template][list]"></label>
                                 <span class="help-block">{dr_lang('模块栏目列表默认list.html')}</span>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group dr_tid_1">
                             <label class="col-md-2 control-label">{dr_lang('内容栏目封面模板')}</label>
                             <div class="col-md-9">
                                 <label><input class="form-control" type="text" value="{$data['setting']['template']['category']}" name="data[setting][template][category]"></label>
                                 <span class="help-block">{dr_lang('默认category.html')}</span>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group dr_tid_1">
                             <label class="col-md-2 control-label">{dr_lang('内容搜索页模板')}</label>
                             <div class="col-md-9">
                                 <label><input class="form-control" type="text" value="{php echo $data['setting']['template']['search'] ? $data['setting']['template']['search'] : 'search.html'}" name="data[setting][template][search]"></label>
                                 <span class="help-block">{dr_lang('默认search.html')}</span>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group dr_tid_1">
                             <label class="col-md-2 control-label">{dr_lang('内容详细页模板')}</label>
                             <div class="col-md-9">
                                 <label><input class="form-control" type="text" value="{$data['setting']['template']['show']}" name="data[setting][template][show]"></label>

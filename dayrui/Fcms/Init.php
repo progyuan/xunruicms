@@ -1,5 +1,28 @@
 <?php
 
+/* *
+ *
+ * Copyright [2019] [李睿]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * http://www.tianruixinxi.com
+ *
+ * 本文件是框架系统文件，二次开发时不建议修改本文件
+ *
+ * */
+
+
 // 当前URL
 $pageURL = 'http';
 ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on')
@@ -39,11 +62,11 @@ define('COREPATH', FCPATH.'Core/');
 // 是否来自ajax提交
 define('IS_AJAX', (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest'));
 // 是否来自post提交
-define('IS_POST', $_SERVER['REQUEST_METHOD'] == 'POST' && $_POST && count($_POST) ? TRUE : FALSE);
+define('IS_POST', isset($_POST) && count($_POST) ? TRUE : FALSE);
+
+define('IS_AJAX_POST', IS_POST);
 // 当前系统时间戳
 define('SYS_TIME', $_SERVER['REQUEST_TIME'] ? $_SERVER['REQUEST_TIME'] : time());
-// 来自ajax的post提交
-define('IS_AJAX_POST', IS_POST);
 
 // 系统变量
 $system = is_file(WRITEPATH.'config/system.php') ? require WRITEPATH.'config/system.php' : [
@@ -208,25 +231,34 @@ if (!IS_API && isset($_GET['s']) && preg_match('/^[a-z]+$/i', $_GET['s'])) {
 define('CI_DEBUG', IS_DEV ? 1 : IS_ADMIN && SYS_DEBUG);
 define('TESTPATH', WRITEPATH.'tests/');
 
+// 显示错误提示
+if (CI_DEBUG) {
+   ini_set('display_errors', 1);
+} else {
+   ini_set('display_errors', 0);
+}
+
 /*
- * ---------------------------------------------------------------
- * GRAB OUR CONSTANTS & COMMON
- * ---------------------------------------------------------------
+ * 重写config函数，防止modules被加载
  */
+function config ($name, $getShared = true) {
+
+    if ($name == 'Modules') {
+        $name = 'Config\Modules';
+    }
+
+    return \CodeIgniter\Config\Config::get($name, $getShared);
+}
+
+/******* CodeIgniter Bootstrap *******/
+
+// 定义常量
 require COREPATH.'Config/Constants.php';
 
 require BASEPATH.'Common.php';
 
-/*
- * ---------------------------------------------------------------
- * LOAD OUR AUTOLOADER
- * ---------------------------------------------------------------
- *
- * The autoloader allows all of the pieces to work together
- * in the framework. We have to load it here, though, so
- * that the config files can use the path constants.
- */
 
+// 自动加载机制
 require COREPATH . 'Config/Modules.php';
 
 require BASEPATH.'Autoloader/Autoloader.php';

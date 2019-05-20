@@ -422,7 +422,7 @@ CREATE TABLE IF NOT EXISTS `{dbprefix}member_group_verify` (
 DROP TABLE IF EXISTS `{dbprefix}member_setting`;
 CREATE TABLE IF NOT EXISTS `{dbprefix}member_setting` (
   `name` varchar(50) NOT NULL,
-  `value` text NOT NULL,
+  `value` mediumtext NOT NULL,
   PRIMARY KEY (`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='用户属性参数表';
 
