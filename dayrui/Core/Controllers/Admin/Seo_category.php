@@ -41,6 +41,11 @@ class Seo_category extends \Phpcmf\Common
                 unset($module[$dir]);
                 continue;
             } elseif ($t['hlist'] == 1) {
+                //1表示不出现在模块管理、评论tab、搜索tab、内容维护tab的列表之中
+                unset($module[$dir]);
+                continue;
+            } elseif ($t['hcategory']) {
+                //1表示不使用栏目功能和发布权限功能
                 unset($module[$dir]);
                 continue;
             }

@@ -22,23 +22,23 @@
 
 
 class Diy extends \Phpcmf\Library\A_Field {
-	
-	/**
+
+    /**
      * 构造函数
      */
     public function __construct(...$params) {
         parent::__construct(...$params);
-		$this->fieldtype = TRUE;
-		$this->defaulttype = 'VARCHAR';
+        $this->fieldtype = TRUE;
+        $this->defaulttype = 'VARCHAR';
     }
-	
-	/**
-	 * 字段相关属性参数
-	 *
-	 * @param	array	$value	值
-	 * @return  string
-	 */
-	public function option($option) {
+
+    /**
+     * 字段相关属性参数
+     *
+     * @param   array   $value  值
+     * @return  string
+     */
+    public function option($option) {
 
         $option['type'] = isset($option['type']) ? $option['type'] : 0;
         $option['code'] = isset($option['code']) ? $option['code'] : '';
@@ -55,7 +55,7 @@ class Diy extends \Phpcmf\Library\A_Field {
         }
         $str.= '</select>';
 
-		return ['
+        return ['
                 <div class="form-group dr_type">
                     <label class="col-md-2 control-label">'.dr_lang('自定义文件').'</label>
                     <div class="col-md-9">
@@ -63,36 +63,37 @@ class Diy extends \Phpcmf\Library\A_Field {
                     <span class="help-block">'.dr_lang('将设计好的文件上传到./config/myfield/目录之下').'</span>
                     </div>
                 </div>
-				<div class="form-group">
+                <div class="form-group">
                     <label class="col-md-2 control-label">'.dr_lang('默认值').'</label>
                     <div class="col-md-9">
                     <label><input id="field_default_value" type="text" class="form-control" size="20" value="'.$option['value'].'" name="data[setting][option][value]"></label>
-					<label>'.$this->member_field_select().'</label>
-					<span class="help-block">'.dr_lang('也可以设置会员表字段，表示用当前登录会员信息来填充这个值').'</span>
+                    <label>'.$this->member_field_select().'</label>
+                    <span class="help-block">'.dr_lang('也可以设置会员表字段，表示用当前登录会员信息来填充这个值').'</span>
                     </div>
                 </div>'.$this->field_type($option['fieldtype'], $option['fieldlength'])];
-	}
-	
-	/**
-	 * 字段入库值
-	 */
-	public function insert_value($field) {
-		$data = \Phpcmf\Service::L('Field')->post[$field['fieldname']];
-        if (function_exists('dr_diy_field_'.$field['setting']['option']['code'].'_insert_value')) {
+    }
+
+    /**
+     * 字段入库值
+     */
+    public function insert_value($field) {
+        $data = \Phpcmf\Service::L('Field')->post[$field['fieldname']];
+        $func = 'dr_diy_field_'.substr($field['setting']['option']['file'], 0, -4).'_insert_value';
+        if (function_exists($func)) {
             // 回调格式化函数
-            $data = call_user_func('dr_diy_field_'.$field['setting']['option']['code'].'_insert_value', $data);
+            $data = call_user_func($func, $data);
         }
         is_array($data) && $data = dr_array2string($data);
-		\Phpcmf\Service::L('Field')->data[$field['ismain']][$field['fieldname']] = $data;
-	}
-	
-	/**
-	 * 字段表单输入
-	 *
-	 * @param	string	$cname	字段
-	 * @param	string	$value	值
-	 * @return  string
-	 */
+        \Phpcmf\Service::L('Field')->data[$field['ismain']][$field['fieldname']] = $data;
+    }
+
+    /**
+     * 字段表单输入
+     *
+     * @param   string  $cname  字段
+     * @param   string  $value  值
+     * @return  string
+     */
     public function input($field, $value = 0) {
 
         // 字段禁止修改时就返回显示字符串
@@ -104,11 +105,11 @@ class Diy extends \Phpcmf\Library\A_Field {
         $text = ($field['setting']['validate']['required'] ? '<span class="required" aria-required="true"> * </span>' : '').$field['name'];
 
         // 表单附加参数
-		$attr = isset($field['setting']['validate']['formattr']) && $field['setting']['validate']['formattr'] ? $field['setting']['validate']['formattr'] : '';
-		// 字段提示信息
-		$tips = isset($field['setting']['validate']['tips']) && $field['setting']['validate']['tips'] ? '<span class="help-block" id="dr_'.$field['fieldname'].'_tips">'.$field['setting']['validate']['tips'].'</span>' : '';
-		// 字段默认值
-		$value = @strlen($value) ? $value : $this->get_default_value($field['setting']['option']['value']);
+        $attr = isset($field['setting']['validate']['formattr']) && $field['setting']['validate']['formattr'] ? $field['setting']['validate']['formattr'] : '';
+        // 字段提示信息
+        $tips = isset($field['setting']['validate']['tips']) && $field['setting']['validate']['tips'] ? '<span class="help-block" id="dr_'.$field['fieldname'].'_tips">'.$field['setting']['validate']['tips'].'</span>' : '';
+        // 字段默认值
+        $value = @strlen($value) ? $value : $this->get_default_value($field['setting']['option']['value']);
 
         // 文件类型
         $file = ROOTPATH.'config/myfield/'.$field['setting']['option']['file'];
@@ -125,7 +126,7 @@ class Diy extends \Phpcmf\Library\A_Field {
             $code = '<font color=red>文件（'.$file.'）不存在</font>';
         }
 
-		return $this->input_format($field['fieldname'], $text, $code);
-	}
-	
+        return $this->input_format($field['fieldname'], $text, $code);
+    }
+
 }

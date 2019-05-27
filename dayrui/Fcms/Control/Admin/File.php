@@ -30,6 +30,7 @@ class File extends \Phpcmf\Common
 {
     protected $dir;
     protected $root_path;
+    protected $not_root_path;
     protected $backups_dir;
     protected $exclude_dir;
     protected $backups_path;
@@ -414,7 +415,7 @@ class File extends \Phpcmf\Common
             ]
         ];
 
-        $source_dir	= $this->root_path.($dir ? $dir : trim($dir, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR);
+        $source_dir	= dr_rp($this->root_path.($dir ? $dir : trim($dir, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR), ['//', DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR], ['/', DIRECTORY_SEPARATOR]);
         $cname = $this->_get_list_ini($source_dir);
 
         if ($fp = @opendir($source_dir)) {
@@ -423,6 +424,8 @@ class File extends \Phpcmf\Common
                 if (in_array($file, ['.', '..', '.DS_Store', 'name.ini'])) {
                     continue;
                 } elseif (strtolower(strrchr($file, '.')) == '.php') {
+                    continue;
+                } elseif ($this->not_root_path && in_array($source_dir.$file, $this->not_root_path)) {
                     continue;
                 }
                 $edit =\Phpcmf\Service::L('Router')->url(trim(APP_DIR.'/'.\Phpcmf\Service::L('Router')->class.'/edit', '/'), ['file' => $this->dir.'/'.$file]);

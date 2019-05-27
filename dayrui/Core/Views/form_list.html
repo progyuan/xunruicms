@@ -17,7 +17,7 @@
             </th>
             {/if}
             <th width="200"> {dr_lang('名称')} </th>
-            <th width="200"> {dr_lang('数据表')} </th>
+            <th width="200"> {dr_lang('别名')} </th>
             <th>  </th>
         </tr>
         </thead>
@@ -33,7 +33,7 @@
             </td>
             {/if}
             <td>{$t.name}</td>
-            <td>{SITE_ID}_form_{$t.table}</td>
+            <td>{$t.table}</td>
             <td>
                 <?php $cg = dr_string2array($t['setting']);?>
                 {if !$cg.dev}<label><a href="/index.php?s=form&c={$t.table}&m=post" target="_blank" class="btn btn-xs yellow"> <i class="fa fa-send"></i> {dr_lang('预览')} </a></label>{/if}

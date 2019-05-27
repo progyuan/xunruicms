@@ -32,6 +32,7 @@ class Mform extends \Phpcmf\Table
     public $cid; // 内容id
     public $form; // 表单信息
     public $is_verify; // 判断是否来自审核控制器
+    protected $is_add_menu = 1; //允许有添加菜单
 
     public function __construct(...$params) {
         parent::__construct(...$params);
@@ -70,13 +71,14 @@ class Mform extends \Phpcmf\Table
             'where_list' => $where,
         ]);
 
+
         $menu = $this->is_verify ? \Phpcmf\Service::M('auth')->_admin_menu([
             '审核管理' => [MOD_DIR.'/'.\Phpcmf\Service::L('Router')->class.'/index', 'fa fa-edit'],
         ]) : \Phpcmf\Service::M('auth')->_module_menu(
             $this->module,
             ' <i class="'.dr_icon($this->form['setting']['icon']).'"></i>  '.dr_lang('%s管理', $this->form['name']),
            \Phpcmf\Service::L('Router')->url(APP_DIR.'/'.$this->form['table'].'/index', ['cid' =>  $this->cid]),
-             $this->cid ?\Phpcmf\Service::L('Router')->url(APP_DIR.'/'.$this->form['table'].'/add', ['cid' =>  $this->cid]) : ''
+             $this->cid && $this->is_add_menu ? \Phpcmf\Service::L('Router')->url(APP_DIR.'/'.$this->form['table'].'/add', ['cid' =>  $this->cid]) : ''
         );
         
         // 写入模板

@@ -810,9 +810,6 @@
          */
         public function get_default_value($value) {
             if (preg_match('/\{(\w+)\}/', $value, $match)) {
-                if (IS_ADMIN) {
-                    return;
-                }
                 return isset(\Phpcmf\Service::C()->member[$match[1]]) ? \Phpcmf\Service::C()->member[$match[1]] : '';
             }
             return $value;

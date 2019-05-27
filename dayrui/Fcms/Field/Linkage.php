@@ -45,7 +45,7 @@ class Linkage extends \Phpcmf\Library\A_Field {
 		if ($data) {
 			$linkage = isset($option['linkage']) ? $option['linkage'] : '';
 			foreach ($data as $t) {
-				$str.= '<option value="'.$t['code'].'" '.($linkage == $t['code'] ? 'selected' : '').'> '.$t['name'].' </option>';
+				$str.= '<option value="'.$t['code'].'" '.($linkage == $t['code'] ? 'selected' : '').'> '.$t['name'].'（'.$t['code'].'） </option>';
 			}
 		}
 		$str.= '</select>';

@@ -50,7 +50,7 @@ class Comment extends \Phpcmf\Common
             $fields = $this->module['category'][$this->index['catid']]['field'] ? array_merge($this->module['field'], $this->module['category'][$this->index['catid']]['field']) : $this->module['field'];
             $fields['inputtime'] = ['fieldtype' => 'Date'];
             $fields['updatetime'] = ['fieldtype' => 'Date'];
-            $this->index = \Phpcmf\Service::L('Field')->format_value($fields, $this->index);
+            $this->index = \Phpcmf\Service::L('Field')->app($this->module['dirname'])->format_value($fields, $this->index);
         }
         $this->index['url'] = dr_url_prefix($this->index['url'], MOD_DIR);
         \Phpcmf\Service::V()->module(MOD_DIR);

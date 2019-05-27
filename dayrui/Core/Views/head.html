@@ -66,6 +66,22 @@
                 }
             });
         }
+        function dr_update_cache_data() {
+            var index = layer.load(2, {
+                shade: [0.3,'#fff'], //0.1透明度的白色背景
+                time: 10000
+            });
+            $.ajax({type: "GET",dataType:"json", url: admin_file+"?c=api&m=cache_clear",
+                success: function(json) {
+                    layer.close(index);
+                    dr_tips(1, "{dr_lang('缓存更新完成')}");
+                },
+                error: function(HttpRequest, ajaxOptions, thrownError) {
+                    layer.closeAll('loading');
+                    dr_tips(0, "{dr_lang('更新失败')}");
+                }
+            });
+        }
         function show_category_field(catid) {
             {if $category_field_url}
             window.location.href = '{$category_field_url}&catid='+catid;

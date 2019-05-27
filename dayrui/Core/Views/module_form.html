@@ -17,7 +17,7 @@
             </th>
             {/if}
             <th width="150"> {dr_lang('名称')} </th>
-            <th width="160"> {dr_lang('数据表')} </th>
+            <th width="160"> {dr_lang('表单别名')} </th>
             <th width="240"> {dr_lang('模板文件')} </th>
             <th>  </th>
         </tr>
@@ -34,7 +34,7 @@
             </td>
             {/if}
             <td>{$t.name}</td>
-            <td>{dr_module_table_prefix($t.module)}_form_{$t.table}</td>
+            <td>{$t.table}</td>
             <td>{$t.module}/form_{$t.table}.html</td>
             <td>
                 {if $ci->_is_admin_auth('edit')}

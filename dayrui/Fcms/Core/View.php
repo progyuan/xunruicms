@@ -183,13 +183,18 @@ class View {
 
         $this->_filename = str_replace('..', '[removed]', $_name);
 
-        !IS_DEV && $this->_options = null;
-
 
         // 加载编译后的缓存文件
         $this->_disp_dir = $_dir;
         $_view_file = $this->get_file_name($this->_filename, $_dir);
         $_view_name = str_replace([TPLPATH, FCPATH, APPSPATH], ['TPLPATH/', 'FCPATH/', 'APPSPATH/'], $_view_file);
+
+        if (IS_DEV) {
+            echo "<!--当前页面的模板文件是：$_view_name （本代码只在开发者模式下显示）-->".PHP_EOL;
+        } else {
+            $this->_options = null;
+        }
+
         \Config\Services::timer()->start($_view_name);
         include $this->load_view_file($_view_file);
         \Config\Services::timer()->stop($_view_name);
@@ -1638,7 +1643,7 @@ class View {
                     $sql_where = ($sql_where ? $sql_where.' AND' : '')."`$table`.`id` IN (".implode(',', $in).")";
                     unset($flag, $in);
                 }
-
+                $first_url = '';
                 if ($system['page']) {
                     $page = max(1, (int)$_GET['page']);
                     if ($system['catid'] && is_numeric($system['catid'])) {
@@ -1648,6 +1653,7 @@ class View {
                         } else {
                             $system['pagesize'] = (int)$module['category'][$system['catid']]['setting']['template']['pagesize'];
                         }
+                        $first_url = \Phpcmf\Service::L('router')->category_url($module, $module['category'][$system['catid']]);
                     }
                     $pagesize = (int)$system['pagesize'];
                     !$pagesize && $pagesize = 10;
@@ -1660,7 +1666,7 @@ class View {
                             return $this->_return($system['return'], '没有查询到内容', $sql, 0);
                         }
                     }
-                    $pages = $this->_get_pagination($system['urlrule'], $pagesize, $total, $system['pagefile']);
+                    $pages = $this->_get_pagination($system['urlrule'], $pagesize, $total, $system['pagefile'], $first_url);
                     $sql_limit = 'LIMIT '.$pagesize * ($page - 1).','.$pagesize;
                 } elseif ($system['num']) {
                     $pages = '';
@@ -1736,7 +1742,7 @@ class View {
     /**
      * 分页
      */
-    public function _get_pagination($url, $pagesize, $total, $name = 'page') {
+    public function _get_pagination($url, $pagesize, $total, $name = 'page', $first_url = '') {
 
         // 这里要支持移动端分页条件
         !$name && $name = 'page';
@@ -1756,6 +1762,7 @@ class View {
         !$url && $url = '此标签没有设置urlrule参数';
 
         $config['base_url'] = str_replace(['[page]', '%7Bpage%7D', '%5Bpage%5D', '%7bpage%7d', '%5bpage%5d'], '{page}', $url);
+        $config['first_url'] = $first_url;
         $config['per_page'] = $pagesize;
         $config['total_rows'] = $total;
         $config['use_page_numbers'] = TRUE;

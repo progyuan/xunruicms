@@ -273,6 +273,9 @@ class Content extends \Phpcmf\Model {
 
             // 删除审核表
             $this->table($this->mytable.'_verify')->delete($data[1]['id']);
+
+            // 执行审核后的回调
+            $this->_call_verify($data[1], $old['verify']);
         }
 
         // 表示新发布
@@ -1571,6 +1574,9 @@ class Content extends \Phpcmf\Model {
 
     // 内复制成功之后
     public function _content_copy_after($id, $save) { }
+
+    // 内容审核操作之后
+    public function _call_verify($data, $verify) { }
 
     // 格式化处理内容
     public function _format_content_data($data) {

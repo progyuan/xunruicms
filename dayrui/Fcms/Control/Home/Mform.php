@@ -336,7 +336,7 @@ class Mform extends \Phpcmf\Table
         $fields['updatetime'] = ['fieldtype' => 'Date'];
 
         $data['url'] = dr_url_prefix($data['url'], MOD_DIR);
-        return \Phpcmf\Service::L('Field')->format_value($fields, $data);
+        return \Phpcmf\Service::L('Field')->app(MOD_DIR)->format_value($fields, $data);
     }
 
     /**

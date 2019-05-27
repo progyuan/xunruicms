@@ -11,10 +11,13 @@
                     <a href="#tab_0" data-toggle="tab" onclick="$('#dr_page').val('0')"> <i class="fa fa-cog"></i> {dr_lang('附件设置')} </a>
                 </li>
                 <li class="{if $page==1}active{/if}">
-                    <a href="#tab_1" data-toggle="tab" onclick="$('#dr_page').val('1')"> <i class="fa fa-photo"></i> {dr_lang('缩略图设置')} </a>
+                    <a href="#tab_1" data-toggle="tab" onclick="$('#dr_page').val('1')"> <i class="fa fa-photo"></i> {dr_lang('缩略图路径')} </a>
                 </li>
                 <li class="{if $page==2}active{/if}">
-                    <a href="#tab_2" data-toggle="tab" onclick="$('#dr_page').val('2')"> <i class="fa fa-user"></i> {dr_lang('头像存储')} </a>
+                    <a href="#tab_2" data-toggle="tab" onclick="$('#dr_page').val('2')"> <i class="fa fa-user"></i> {dr_lang('头像存储路径')} </a>
+                </li>
+                <li class="{if $page==3}active{/if}">
+                    <a href="#tab_3" data-toggle="tab" onclick="$('#dr_page').val('3')"> <i class="fa fa-cloud"></i> {dr_lang('部分系统字段存储策略')} </a>
                 </li>
             </ul>
         </div>
@@ -114,6 +117,42 @@
                 </div>
 
 
+                <div class="tab-pane {if $page==3}active{/if}" id="tab_3">
+                    <div class="form-body">
+
+
+
+                        <div class="form-body">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">{dr_lang('缩略图存储策略')}</label>
+                                <div class="col-md-9">
+                                    <label><select class="form-control" name="data[SYS_FIELD_THUMB_ATTACH]">
+                                        <option value="0"> {dr_lang('本地存储')} </option>
+                                        {loop $remote $i $t}
+                                        <option value="{$i}" {php echo ($i == $data['SYS_FIELD_THUMB_ATTACH'] ? 'selected' : '');}> {dr_lang($t['name'])} </option>
+                                        {/loop}
+                                    </select></label>
+                                    <span class="help-block">{dr_lang('适用于：共享栏目、独立模块栏目')}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-body">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">{dr_lang('内容编辑器存储策略')}</label>
+                                <div class="col-md-9">
+                                    <label><select class="form-control" name="data[SYS_FIELD_CONTENT_ATTACH]">
+                                        <option value="0"> {dr_lang('本地存储')} </option>
+                                        {loop $remote $i $t}
+                                        <option value="{$i}" {php echo ($i == $data['SYS_FIELD_CONTENT_ATTACH'] ? 'selected' : '');}> {dr_lang($t['name'])} </option>
+                                        {/loop}
+                                    </select></label>
+                                    <span class="help-block">{dr_lang('适用于：共享栏目、独立模块栏目')}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
 
             </div>
         </div>

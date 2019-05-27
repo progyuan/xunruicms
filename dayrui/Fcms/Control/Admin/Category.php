@@ -55,7 +55,8 @@ class Category extends \Phpcmf\Table
                     'option' => array(
                         'mode' => 1,
                         'height' => 300,
-                        'width' => '100%'
+                        'width' => '100%',
+                        'attachment' => defined('SYS_FIELD_CONTENT_ATTACH') ? SYS_FIELD_CONTENT_ATTACH : 0,
                     )
                 ),
             ];
@@ -66,11 +67,26 @@ class Category extends \Phpcmf\Table
                 $this->_admin_msg(0, dr_lang('模块【%s】禁止使用栏目', $dir));
             }
         }
+
+        $this->module['category_field']['thumb'] = [
+            'name' => dr_lang('缩略图'),
+            'ismain' => 1,
+            'ismember' => 1,
+            'fieldtype' => 'File',
+            'fieldname' => 'thumb',
+            'setting' => array(
+                'option' => array(
+                    'ext' => 'jpg,gif,png,jpeg',
+                    'size' => 10,
+                    'input' => 1,
+                    'attachment' => defined('SYS_FIELD_THUMB_ATTACH') ? SYS_FIELD_THUMB_ATTACH : 0,
+                )
+            )
+        ];
         // 初始化数据表
         $this->_init([
             'table' => SITE_ID.'_'.$dir.'_category',
             'field' => $this->module['category_field'],
-            'sys_field' => ['thumb'],
             'show_field' => 'name',
             'order_by' => 'displayorder ASC,id ASC',
         ]);
@@ -106,11 +122,22 @@ class Category extends \Phpcmf\Table
                 }
             }
             $t['tid'] = isset($t['tid']) ? $t['tid'] : 1;
-            $t['tid'] != 2 && $this->_is_admin_auth('add') && $option.= '<a class="btn btn-xs blue" href='.\Phpcmf\Service::L('Router')->url(APP_DIR.'/category/add', array('pid' => $t['id'])).'> <i class="fa fa-plus"></i> '.dr_lang('子类').'</a>';
-            $this->_is_admin_auth('edit') && $option.= '<a class="btn btn-xs green" href='.\Phpcmf\Service::L('Router')->url(APP_DIR.'/category/edit', array('id' => $t['id'])).'> <i class="fa fa-edit"></i> '.dr_lang('修改').'</a>';
-            $this->_is_admin_auth('add') && ($t['tid'] == 1 && !$t['child'] && $t['mid']) && $option.= '<a class="btn btn-xs dark" href='.\Phpcmf\Service::L('Router')->url($t['mid'].'/home/add', array('catid' => $t['id'])).'> <i class="fa fa-plus"></i> '.dr_lang('发布').'</a>';
-            $this->_is_admin_auth('edit') && ($t['tid'] == 0 && $this->is_scategory) && $option.= '<a class="btn btn-xs dark" href="javascript:dr_page_content('.$t['id'].');"> <i class="fa fa-edit"></i> '.dr_lang('编辑内容').'</a>';
-            $this->_is_admin_auth('edit') && ($t['tid'] == 2 && $this->is_scategory) && $option.= '<a class="btn btn-xs dark" href="javascript:dr_link_url('.$t['id'].');"> <i class="fa fa-edit"></i> '.dr_lang('编辑地址').'</a>';
+            if ($t['tid'] != 2 && $this->_is_admin_auth('add')) {
+                // 非外链添加子类
+                $option.= '<a class="btn btn-xs blue" href='.\Phpcmf\Service::L('Router')->url(APP_DIR.'/category/add', array('pid' => $t['id'])).'> <i class="fa fa-plus"></i> '.dr_lang('子类').'</a>';
+            }
+            if ($this->_is_admin_auth('edit')) {
+                $option.= '<a class="btn btn-xs green" href='.\Phpcmf\Service::L('Router')->url(APP_DIR.'/category/edit', array('id' => $t['id'])).'> <i class="fa fa-edit"></i> '.dr_lang('修改').'</a>';
+            }
+            if ($this->_is_admin_auth('add') && ($t['tid'] == 1 && !$t['child'] && $t['mid']))  {
+                $option.= '<a class="btn btn-xs dark" href='.\Phpcmf\Service::L('Router')->url($t['mid'].'/home/add', array('catid' => $t['id'])).'> <i class="fa fa-plus"></i> '.dr_lang('发布').'</a>';
+            }
+            if ($this->_is_admin_auth('edit') && ($t['tid'] == 0 && $this->is_scategory)) {
+                $option.= '<a class="btn btn-xs dark" href="javascript:dr_page_content('.$t['id'].');"> <i class="fa fa-edit"></i> '.dr_lang('编辑内容').'</a>';
+            }
+            if ($this->_is_admin_auth('edit') && ($t['tid'] == 2 && $this->is_scategory)) {
+                $option.= '<a class="btn btn-xs dark" href="javascript:dr_link_url('.$t['id'].');"> <i class="fa fa-edit"></i> '.dr_lang('编辑地址').'</a>';
+            }
 
             $t['option'] = $option;
             // 判断显示和隐藏开关
@@ -127,12 +154,15 @@ class Category extends \Phpcmf\Table
                 // 共享模块显示栏类别
                 if ($this->is_scategory) {
                     // 栏目类型
-                    $t['type_html'] = '<span class="badge badge-info"> '.dr_lang('单页').' </span>';
                     if ($t['tid'] == 1) {
                         $t['type_html'] = '<span class="badge badge-success"> '.dr_lang('模块').' </span>';
                     } elseif ($t['tid'] == 2) {
                         $t['type_html'] = '<span class="badge badge-warning"> '.dr_lang('外链').' </span>';
                         $t['is_page_html'] = '';
+                        $t['mid'] = '';
+                    } else {
+                        $t['mid'] = '';
+                        $t['type_html'] = '<span class="badge badge-info"> '.dr_lang('单页').' </span>';
                     }
                     !$t['mid'] && $t['mid'] = '<span class="label label-sm label-danger circle">'.dr_lang('无').'</span>';
                 }

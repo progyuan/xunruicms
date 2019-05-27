@@ -337,7 +337,6 @@ class Page {
 			}
 		}
 
-
 		return $this;
 	}
 
@@ -415,7 +414,6 @@ class Page {
 
         // Put together our base and first URLs.
         $this->base_url = trim($this->base_url);
-        $this->first_url = $this->base_url;
 
         // Determine the current page number.
         $base_page = ($this->use_page_numbers) ? 1 : 0;
@@ -474,7 +472,7 @@ class Page {
             // Take the general parameters, and squeeze this pagination-page attr in for JS frameworks.
             $attributes = sprintf('%s %s="%d"', $this->_attributes, $this->data_page_attr, 1);
 
-            $output .= $this->first_tag_open.'<a href="'.str_replace('{page}', 1, $this->base_url).'"'.$attributes.$this->_attr_rel('start').'>'
+            $output .= $this->first_tag_open.'<a href="'.$this->_get_link_url(1).'"'.$attributes.$this->_attr_rel('start').'>'
                 .$this->first_link.'</a>'.$this->first_tag_close;
         }
 
@@ -488,12 +486,12 @@ class Page {
             if ($i === $base_page)
             {
                 // First page
-                $output .= $this->prev_tag_open.'<a href="'.str_replace('{page}', $i, $this->base_url).'"'.$attributes.$this->_attr_rel('prev').'>'
+                $output .= $this->prev_tag_open.'<a href="'.$this->_get_link_url($i).'"'.$attributes.$this->_attr_rel('prev').'>'
                     .$this->prev_link.'</a>'.$this->prev_tag_close;
             }
             else
             {
-                $output .= $this->prev_tag_open.'<a href="'.str_replace('{page}', $i, $this->base_url).'"'.$attributes.$this->_attr_rel('prev').'>'
+                $output .= $this->prev_tag_open.'<a href="'.$this->_get_link_url($i).'"'.$attributes.$this->_attr_rel('prev').'>'
                     .$this->prev_link.'</a>'.$this->prev_tag_close;
             }
 
@@ -519,12 +517,12 @@ class Page {
                     elseif ($i === $base_page)
                     {
                         // First page
-                        $output .= $this->num_tag_open.'<a href="'.str_replace('{page}', 1, $this->base_url).'"'.$attributes.$this->_attr_rel('start').'>'
+                        $output .= $this->num_tag_open.'<a href="'.$this->_get_link_url(1).'"'.$attributes.$this->_attr_rel('start').'>'
                             .$loop.'</a>'.$this->num_tag_close;
                     }
                     else
                     {
-                        $output .= $this->num_tag_open.'<a href="'.str_replace('{page}', $i, $this->base_url).'"'.$attributes.$this->_attr_rel('start').'>'
+                        $output .= $this->num_tag_open.'<a href="'.$this->_get_link_url($i).'"'.$attributes.$this->_attr_rel('start').'>'
                             .$loop.'</a>'.$this->num_tag_close;
                     }
                 }
@@ -538,7 +536,7 @@ class Page {
 
             $attributes = sprintf('%s %s="%d"', $this->_attributes, $this->data_page_attr, (int) $i);
 
-            $output .= $this->next_tag_open.'<a href="'.str_replace('{page}', $i, $this->base_url).'"'.$attributes
+            $output .= $this->next_tag_open.'<a href="'.$this->_get_link_url($i).'"'.$attributes
                 .$this->_attr_rel('next').'>'.$this->next_link.'</a>'.$this->next_tag_close;
         }
 
@@ -549,7 +547,7 @@ class Page {
 
             $attributes = sprintf('%s %s="%d"', $this->_attributes, $this->data_page_attr, (int) $i);
 
-            $output .= $this->last_tag_open.'<a href="'.str_replace('{page}', $i, $this->base_url).'"'.$attributes.'>'
+            $output .= $this->last_tag_open.'<a href="'.$this->_get_link_url($i).'"'.$attributes.'>'
                 .$this->last_link.'</a>'.$this->last_tag_close;
         }
 
@@ -559,5 +557,10 @@ class Page {
 
         // Add the wrapper HTML if exists
         return $this->full_tag_open.$output.$this->full_tag_close;
+    }
+
+    private function _get_link_url($page) {
+
+        return $page <=1 && $this->first_url ? $this->first_url : str_replace('{page}', $page, $this->base_url);
     }
 }

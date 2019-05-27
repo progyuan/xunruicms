@@ -46,6 +46,9 @@ class System extends \Phpcmf\Model
         'SYS_ATTACHMENT_URL'	=> '附件访问地址',
         'SYS_BDMAP_API'	=> '百度地图API',
 
+        'SYS_FIELD_THUMB_ATTACH'	=> '缩略图字段存储策略',
+        'SYS_FIELD_CONTENT_ATTACH'	=> '内容字段存储策略',
+
     ];
     
     

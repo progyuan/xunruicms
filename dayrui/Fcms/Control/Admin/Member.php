@@ -39,9 +39,10 @@ class Member extends \Phpcmf\Common
         // 模块权限数据
         $data = \Phpcmf\Service::M()->db->table('member_setting')->where('name', 'auth_module')->get()->getRowArray();
         $this->auth = dr_string2array($data['value']);
+        $this->is_hcategory = isset($this->module['config']['hcategory']) && $this->module['config']['hcategory'];
         // 栏目
         $this->tree = [];
-        if (!IS_SHARE) {
+        if (!IS_SHARE && !$this->is_hcategory) {
             foreach($this->module['category'] as $t) {
                 $t['is_post'] = 0;
                 if (!$t['child']) {
@@ -50,6 +51,7 @@ class Member extends \Phpcmf\Common
                 $this->tree[$t['id']] = $t;
             }
         }
+
 
     }
 
@@ -103,6 +105,7 @@ class Member extends \Phpcmf\Common
             'verify' => \Phpcmf\Service::M()->table('admin_verify')->getAll(),
             'categroy' => $this->tree ? \Phpcmf\Service::L('Tree')->init($this->tree)->html_icon()->get_tree_array(0) : [],
             'is_comment' => $this->module['comment'] ? 1 : 0,
+            'is_hcategory' => $this->is_hcategory,
         ]);
         \Phpcmf\Service::V()->display('share_member_index.html');
     }

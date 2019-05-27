@@ -65,10 +65,10 @@ class Module extends \Phpcmf\Common
                 'length' => '200'
             ],
             'table' => [
-                'name' => '数据表名称',
+                'name' => '表单别名',
                 'rule' => [
-                    'empty' => dr_lang('数据表名称不能为空'),
-                    'table' => dr_lang('数据表名称格式不正确'),
+                    'empty' => dr_lang('表单别名不能为空'),
+                    'table' => dr_lang('表单别名格式不正确'),
                 ],
                 'filter' => [],
                 'length' => '200'
@@ -293,10 +293,10 @@ class Module extends \Phpcmf\Common
 
 
         $page = intval(\Phpcmf\Service::L('Input')->get('page'));
+        $config = require dr_get_app_dir($data['dirname']).'Config/App.php';
 
         if (!$data['site'][SITE_ID]['title']) {
-            $cfg = require dr_get_app_dir($data['dirname']).'Config/App.php';
-            $data['site'][SITE_ID]['title'] = $cfg['name'];
+            $data['site'][SITE_ID]['title'] = $config['name'];
         }
 
         \Phpcmf\Service::V()->assign([
@@ -305,6 +305,7 @@ class Module extends \Phpcmf\Common
             'site' => $data['site'][SITE_ID],
             'form' => dr_form_hidden(['page' => $page]),
             'field' => $field,
+            'is_hcategory' => isset($config['hcategory']) && $config['hcategory'],
             'comment_field' => $comment_field,
         ]);
         \Phpcmf\Service::V()->display('module_edit.html');

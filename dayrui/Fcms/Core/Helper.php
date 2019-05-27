@@ -23,7 +23,22 @@
  * */
 
 
+// 获取内容中的缩略图
+function dr_get_content_img($value, $num = 0) {
 
+    $rt = array();
+    $value = preg_replace('/\.(gif|jpg|jpeg|png)@(.*)(\'|")/iU', '.$1$3', $value);
+    if (preg_match_all("/(src)=([\"|']?)([^ \"'>]+\.(gif|jpg|jpeg|png))\\2/i", $value, $imgs)) {
+        $imgs[3] = array_unique($imgs[3]);
+        foreach ($imgs[3] as $i => $img) {
+            if ($num && $i+1 > $num) {
+                break;
+            }
+            $rt[] = dr_file($img);
+        }
+    }
+    return $rt;
+}
 
 /**
  * 插件是否被安装
@@ -491,6 +506,10 @@ function dr_member_invite($uid, $name = 'uid') {
  * 执行函数
  */
 function dr_list_function($func, $value, $param = [], $data = []) {
+
+    if (!$func) {
+        return $value;
+    }
 
     $obj = \Phpcmf\Service::L('Function_list');
     if (method_exists($obj, $func)) {

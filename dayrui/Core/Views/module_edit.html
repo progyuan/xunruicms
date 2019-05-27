@@ -32,6 +32,7 @@
                             </div>
                         </div>
                         {/if}
+                        {if !$is_hcategory}
                         <div class="form-group">
                             <label class="col-md-2 control-label">{dr_lang('同步其他栏目')}</label>
                             <div class="col-md-9">
@@ -39,11 +40,12 @@
                                 <span class="help-block">{dr_lang('将内容同步发布到其他的栏目之中')}</span>
                             </div>
                         </div>
+                        {/if}
                         <div class="form-group">
                             <label class="col-md-2 control-label">{dr_lang('自动存储关键词')}</label>
                             <div class="col-md-9">
                                 <input type="checkbox" name="data[setting][auto_save_tag]" value="1" {if $data['setting']['auto_save_tag']}checked{/if} data-on-text="{dr_lang('开启')}" data-off-text="{dr_lang('关闭')}" data-on-color="success" data-off-color="danger" class="make-switch" data-size="small">
-                                <span class="help-block">{dr_lang('发布文章时自动将关键词存储到关键字库之中')}</span>
+                                <span class="help-block">{dr_lang('增加内容时自动将关键词存储到关键字库之中')}</span>
                             </div>
                         </div>
                         <div class="form-group">

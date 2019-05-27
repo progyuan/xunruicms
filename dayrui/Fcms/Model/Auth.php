@@ -491,11 +491,11 @@ class Auth extends \Phpcmf\Model {
         // 非内容页面就显示返回链接
         if (\Phpcmf\Service::L('router')->uri() != $module['dirname'].'/home/index'
             && $this->_is_admin_auth($module['dirname'].'/home/index') ) {
-            $menu.= '<li> <a href="'.\Phpcmf\Service::L('Router')->get_back($module['dirname'].'/home/index').'" class=""> <i class="fa fa-reply"></i> '.dr_lang('内容管理').'</a> <i class="fa fa-circle"></i> </li>';
+            $menu.= '<li> <a href="'.\Phpcmf\Service::L('Router')->get_back($module['dirname'].'/home/index').'" class=""> <i class="fa fa-reply"></i> '.dr_lang('%s管理', $module['cname']).'</a> <i class="fa fa-circle"></i> </li>';
         }
 
         // 发布和编辑权限
-        $this->_is_admin_auth($module['dirname'].'/home/add') && $post_url && $menu.= '<li> <a href="'.$post_url.'" class="'.(\Phpcmf\Service::L('router')->method == 'add' ? 'on' : '').'"> <i class="fa fa-plus"></i> '.dr_lang('发布').'</a> <i class="fa fa-circle"></i> </li>';
+        $this->_is_admin_auth($module['dirname'].'/home/add') && $post_url && $menu.= '<li> <a href="'.$post_url.'" class="'.(\Phpcmf\Service::L('router')->method == 'add' ? 'on' : '').'"> <i class="fa fa-plus"></i> '.(isset($module['post_name']) && $module['post_name'] ? dr_lang($module['post_name']) : dr_lang('发布')).'</a> <i class="fa fa-circle"></i> </li>';
         \Phpcmf\Service::L('router')->method == 'edit' && $menu.= '<li> <a href="'.dr_now_url().'" class="on"> <i class="fa fa-edit"></i> '.dr_lang('修改').'</a> <i class="fa fa-circle"></i> </li>';
 
 

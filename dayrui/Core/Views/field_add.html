@@ -264,12 +264,18 @@
     });
     function show_field_option(type) {
         $("#dr_loading").show();
-        $.get('/index.php?s=api&c=api&m=field&rand='+Math.random(),{type:type, relatedid:'{$rid}', relatedname:'{$rname}', app:'{$namespace}', id:{intval($data.id)}}, function(data){
-            $('#dr_css').html(data.style);
-            $('#dr_option').html(data.option);
-            $("#dr_loading").hide();
-            App.init();
-        }, 'json');
+        $.ajax({type: "GET",dataType:"json", url: '/index.php?s=api&c=api&m=field&rand='+Math.random(),
+            data: {type:type, relatedid:'{$rid}', relatedname:'{$rname}', app:'{$namespace}', id:{intval($data.id)}},
+            success: function(data) {
+                $('#dr_css').html(data.style);
+                $('#dr_option').html(data.option);
+                $("#dr_loading").hide();
+                App.init();
+            },
+            error: function(HttpRequest, ajaxOptions, thrownError) {
+                dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError)
+            }
+        });
 
     }
     function set_required(id) {

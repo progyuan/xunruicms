@@ -184,6 +184,10 @@ class Module extends \Phpcmf\Common
 
         $field = $value ? 'support' : 'oppose';
         $table = $this->tablename.'_'.$field;
+        if (!\Phpcmf\Service::M()->db->tableExists($table)) {
+            $this->_json(0, dr_lang('插件[模块内容点赞]未安装到本模块[%s]', $this->dirname));
+        }
+
         $result = \Phpcmf\Service::M()->db->table($table)->where('cid', $id)->where('uid', $this->uid)->get()->getRowArray();
 
         if ($result) {

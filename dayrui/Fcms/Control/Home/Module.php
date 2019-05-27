@@ -246,7 +246,7 @@ class Module extends \Phpcmf\Common
             ),
         ];
 
-        $category = \Phpcmf\Service::L('Field')->format_value($this->module['category_field'], $category, $page);
+        $category = \Phpcmf\Service::L('Field')->app($this->module['dirname'])->format_value($this->module['category_field'], $category, $page);
 
         \Phpcmf\Service::V()->assign($this->content_model->_format_category_seo($this->module, $catid, $page));
         \Phpcmf\Service::V()->assign(array(
@@ -427,7 +427,7 @@ class Module extends \Phpcmf\Common
             $fields['updatetime'] = ['fieldtype' => 'Date'];
 
             // 格式化字段
-            $data = \Phpcmf\Service::L('Field')->format_value($fields, $data, $page);
+            $data = \Phpcmf\Service::L('Field')->app($this->module['dirname'])->format_value($fields, $data, $page);
 
             // 模块的回调处理
             $data = $this->content_model->_call_show($data);
@@ -650,11 +650,11 @@ class Module extends \Phpcmf\Common
 
         // 无权限访问栏目内容
         if ($this->member_cache['auth_module'][SITE_ID][$this->module['dirname']]['category'][$catid]['show']) {
-            return dr_return_data(0, '开启了栏目访问权限');
+            return dr_return_data(0, '请关闭栏目访问权限');
         } elseif ($this->member_cache['auth_module'][SITE_ID][$this->module['dirname']]['home']) {
-            return dr_return_data(0, '开启了模块访问权限');
+            return dr_return_data(0, '请关闭模块访问权限');
         } elseif ($this->member_cache['auth_site'][SITE_ID]['home']) {
-            return dr_return_data(0, '开启了站点访问权限');
+            return dr_return_data(0, '请关闭站点访问权限');
         }
 
         // 格式化生成文件
@@ -699,11 +699,11 @@ class Module extends \Phpcmf\Common
 
         // 无权限访问栏目内容
         if ($this->member_cache['auth_module'][SITE_ID][$this->module['dirname']]['category'][$data['catid']]['show']) {
-            return dr_return_data(0, '开启了栏目访问权限');
+            return dr_return_data(0, '请关闭栏目访问权限');
         } elseif ($this->member_cache['auth_module'][SITE_ID][$this->module['dirname']]['home']) {
-            return dr_return_data(0, '开启了模块访问权限');
+            return dr_return_data(0, '请关闭模块访问权限');
         } elseif ($this->member_cache['auth_site'][SITE_ID]['home']) {
-            return dr_return_data(0, '开启了站点访问权限');
+            return dr_return_data(0, '请关闭站点访问权限');
         }
 
         // 同步数据不执行生成
