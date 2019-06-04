@@ -34,7 +34,7 @@ class Urlrule extends \Phpcmf\Table
         parent::__construct(...$params);
         $this->type = array(
             0 => dr_lang('自定义页面'),
-            4 => dr_lang('站点URL'),
+            4 => dr_lang('关键词库'),
             1 => dr_lang('独立模块'),
             2 => dr_lang('共享模块'),
             3 => dr_lang('共享栏目'),

@@ -70,6 +70,7 @@ class Cloud extends \Phpcmf\Common
                 ]
             ),
             'ip_address' => \Phpcmf\Service::L('input')->ip_address(),
+            'domain' => dr_get_domain_name(ROOT_URL),
         ]);
         \Phpcmf\Service::V()->display('cloud_index.html');exit;
     }
@@ -654,7 +655,7 @@ class Cloud extends \Phpcmf\Common
 
     public function bf_count() {
 
-        $surl = 'http://www.tianruiyun.com/version.php?action=bf_count';
+        $surl = 'http://www.tianruiyun.com/version.php?action=bf_count&domain='.dr_get_domain_name(ROOT_URL).'&cms='.$this->version['id'].'&license='.$this->license_sn;
         $json = dr_catcher_data($surl);
         if (!$json) {
             $this->_json(0, '没有从服务端获取到数据');

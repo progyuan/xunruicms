@@ -72,7 +72,11 @@ class Api extends \Phpcmf\Home\Api
     public function search() {
 
         $dir = dr_safe_replace(\Phpcmf\Service::L('Input')->get('dir'));
-        !$dir && $this->_msg(0, dr_lang('模块参数不能为空'));
+        if (!$dir) {
+            $this->_msg(0, dr_lang('模块参数不能为空'));
+        } elseif (!dr_is_module($dir)) {
+            $this->_msg(0, dr_lang('模块[%s]未安装', $dir));
+        }
         $keyword = dr_safe_replace(\Phpcmf\Service::L('Input')->get('keyword'));
         // 跳转url
         dr_redirect(\Phpcmf\Service::L('Router')->search_url([], 'keyword', $keyword, $dir));

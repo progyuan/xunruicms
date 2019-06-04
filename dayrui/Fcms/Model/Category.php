@@ -293,8 +293,8 @@ class Category extends \Phpcmf\Model
         if ($module['share']) {
             // 共享模块单独删除
             foreach ($cats as $t) {
-                $mod = \Phpcmf\Service::L('cache')->get('module-'.SITE_ID.'-'.$t['mid']);
-               if ($mod) {
+                $mod = \Phpcmf\Service::L('cache')->get('module-'.SITE_ID.'-content', $t['mid']);
+               if ($mod && $t['mid']) {
                    // 删除栏目模型字段
                    $this->db->table('field')->where('relatedid', $t['id'])
                        ->where('relatedname', 'share-'.SITE_ID)->delete();

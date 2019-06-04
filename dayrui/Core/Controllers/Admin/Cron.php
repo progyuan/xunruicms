@@ -79,6 +79,17 @@ class Cron extends \Phpcmf\Table
         \Phpcmf\Service::V()->display($tpl);
     }
 
+    public function show() {
+
+        list($tpl, $data) = $this->_Show(\Phpcmf\Service::L('Input')->get('id'));
+
+        \Phpcmf\Service::V()->assign([
+            'show_error' => var_export(dr_string2array($data['error']), true),
+            'show_value' => var_export(dr_string2array($data['value']), true),
+        ]);
+        \Phpcmf\Service::V()->display($tpl);exit;
+    }
+
     // 后台删除任务
     public function del() {
         $this->_Del(

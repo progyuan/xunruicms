@@ -71,7 +71,7 @@ class Site_config extends \Phpcmf\Common
                 ]
             ),
 			'theme' => dr_get_theme(),
-			'is_theme' => strpos($data['SITE_THEME'], 'http://') === 0 ? 1 : 0,
+			'is_theme' => (strpos($data['SITE_THEME'], 'http://') === 0 || strpos($data['SITE_THEME'], 'https://') === 0) ? 1 : 0,
             'logofield' => dr_fieldform($field['logo'], $data['config']['logo']),
 			'template_path' => dr_dir_map(TPLPATH.'pc/', 1),
 		]);

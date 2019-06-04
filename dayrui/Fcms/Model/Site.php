@@ -298,7 +298,7 @@ class Site extends \Phpcmf\Model
                 if ($t['id'] > 1 && $t['setting']['webpath']) {
                     $webpath[$t['id']]['site'] = dr_get_dir_path($t['setting']['webpath']);
                     if (!is_dir($webpath[$t['id']]['site'])) {
-                        log_message('error', '站点【'.$t['id'].'】目录不存在');
+                        log_message('error', '多站点：站点【'.$t['id'].'】目录【'.$webpath[$t['id']]['site'].'】不存在');
                         unset($cache[$t['id']]);
                         continue;
                     }

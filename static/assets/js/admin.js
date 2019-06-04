@@ -245,7 +245,10 @@ function dr_install_module_select(url) {
         {
             shade: 0,
             title: '安装选择',
-            btn: ['独立', '共享']
+            btn: ['独立', '共享', '了解区别'],
+            btn3: function(index, layero){
+                dr_help(626);
+            }
         }, function(index){
             var index = layer.load(2, {
                 shade: [0.3,'#fff'], //0.1透明度的白色背景
@@ -778,7 +781,7 @@ function dr_url_module_list() {
         '<br><br><b>使用自定义函数方法(需要有php开发经验)</b><hr>'+
         '{自定义函数方法名($data)}	   表示用自定义函数方法来定义url<br>'+
         '<br><br><b>自定义函数举例(需要有php开发经验)</b><hr>'+
-        '自定义函数文件: /dayrui/Fcms/My/Function.php <br>增加以下函数体:<br>'+
+        '自定义函数文件: /config/custom.php <br>增加以下函数体:<br>'+
         'function my_url($data) { return "你的URL"; } // 这个函数内容你自己定义<br>'+
         '那么你就填写: {my_url($data)}<br>'+
         '', {
@@ -804,7 +807,7 @@ function dr_url_module_show() {
         '<br><br><b>使用自定义函数方法(需要有php开发经验)</b><hr>'+
         '{自定义函数方法名($data)}	   表示用自定义函数方法来定义url<br>'+
         '<br><br><b>自定义函数举例(需要有php开发经验)</b><hr>'+
-        '自定义函数文件: /dayrui/Fcms/My/Function.php <br>增加以下函数体:<br>'+
+        '自定义函数文件: /config/custom.php <br>增加以下函数体:<br>'+
         'function my_url($data) { return "你的URL"; } // 这个函数内容你自己定义<br>'+
         '那么你就填写: {my_url($data)}<br>'+
         ''+
@@ -827,7 +830,7 @@ function dr_url_page() {
         '<br><br><b>使用自定义函数方法(需要有php开发经验)</b><hr>'+
         '{自定义函数方法名($data)}	   表示用自定义函数方法来定义url<br>'+
         '<br><br><b>自定义函数举例(需要有php开发经验)</b><hr>'+
-        '自定义函数文件: /dayrui/Fcms/My/Function.php <br>增加以下函数体:<br>'+
+        '自定义函数文件: /config/custom.php <br>增加以下函数体:<br>'+
         'function my_url($data) { return "你的URL"; } // 这个函数内容你自己定义<br>'+
         '那么你就填写: {my_url($data)}<br>'+
         ''+
@@ -847,7 +850,7 @@ function dr_url_module_tag() {
         '<br><br><b>使用自定义函数方法(需要有php开发经验)</b><hr>'+
         '{自定义函数方法名($data)}	   表示用自定义函数方法来定义url<br>'+
         '<br><br><b>自定义函数举例(需要有php开发经验)</b><hr>'+
-        '自定义函数文件: /dayrui/Fcms/My/Function.php <br>增加以下函数体:<br>'+
+        '自定义函数文件: /config/custom.php <br>增加以下函数体:<br>'+
         'function my_url($data) { return "你的URL"; } // 这个函数内容你自己定义<br>'+
         '那么你就填写: {my_url($data)}<br>'+
         ''+
@@ -897,7 +900,7 @@ function dr_url_module_search_page() {
         '<br><br><b>使用自定义函数方法(需要有php开发经验)</b><hr>'+
         '{自定义函数方法名($data)}	   表示用自定义函数方法来定义url<br>'+
         '<br><br><b>自定义函数举例(需要有php开发经验)</b><hr>'+
-        '自定义函数文件: /dayrui/Fcms/My/Function.php <br>增加以下函数体:<br>'+
+        '自定义函数文件: /config/custom.php <br>增加以下函数体:<br>'+
         'function my_url($data) { return "你的URL"; } // 这个函数内容你自己定义<br>'+
         '那么你就填写: {my_url($data)}<br>'+
         ''+

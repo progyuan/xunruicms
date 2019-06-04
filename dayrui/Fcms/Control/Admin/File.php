@@ -120,7 +120,8 @@ class File extends \Phpcmf\Common
 
             if (strpos($name, '.') !== false) {
                 // 文件
-                trim(strtolower(strrchr($file, '.')), '.') == 'php' && $this->_json(0, dr_lang('文件不允许'));
+                $ext = trim(strtolower(strrchr($file, '.')), '.');
+                strpos($ext, 'php') !== false && $this->_json(0, dr_lang('文件不允许'));
                 file_put_contents($file, '') === false && $this->_json(0, dr_lang('文件创建失败'), ['field' => 'name']);
             } else {
                 mkdir($file, 0777);

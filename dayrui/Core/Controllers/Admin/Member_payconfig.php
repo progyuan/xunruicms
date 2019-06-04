@@ -27,15 +27,6 @@
 class Member_payconfig extends \Phpcmf\Common
 {
 
-    public function __construct(...$params) {
-        parent::__construct(...$params);
-        \Phpcmf\Service::V()->assign('menu', \Phpcmf\Service::M('auth')->_admin_menu(
-            [
-                '支付设置' => ['member_payconfig/index', 'fa fa-cog'],
-            ]
-        ));
-    }
-
     public function index() {
 
         $data = \Phpcmf\Service::M()->db->table('member_setting')->where('name', 'pay')->get()->getRowArray();
@@ -50,9 +41,18 @@ class Member_payconfig extends \Phpcmf\Common
             $this->_json(1, dr_lang('操作成功'));
         }
 
+        $page = intval(\Phpcmf\Service::L('Input')->get('page'));
+
         \Phpcmf\Service::V()->assign([
             'data' => $data,
-            'form' => dr_form_hidden(),
+            'page' => $page,
+            'form' => dr_form_hidden(['page' => $page]),
+            'menu' => \Phpcmf\Service::M('auth')->_admin_menu(
+                [
+                    '支付设置' => ['member_payconfig/index', 'fa fa-cog'],
+                    'help' => [625],
+                ]
+            )
         ]);
         \Phpcmf\Service::V()->display('member_payconfig.html');
     }

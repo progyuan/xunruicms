@@ -598,10 +598,10 @@ function dr_linkagepos($code, $id, $symbol = ' > ', $url = '', $html = '') {
     $pids = @explode(',', $data['pids']);
 
     foreach ($pids as $pid) {
-        $pid && $pid != $data['ii'] && ($name[] = $url ? ($html ? str_replace(array('[url]', '[name]'), array(str_replace('[linkage]', $cids[$pid], $url), $link[$cids[$pid]]['name']), $html) : "<a href=\"".str_replace('[linkage]', $cids[$pid], $url)."\">{$link[$cids[$pid]]['name']}</a>") : $link[$cids[$pid]]['name']);
+        $pid && $pid != $data['ii'] && ($name[] = $url ? ($html ? str_replace(array('[url]', '[name]'), array(str_replace(['[linkage]', '{linkage}'], $cids[$pid], $url), $link[$cids[$pid]]['name']), $html) : "<a href=\"".str_replace(['[linkage]', '{linkage}'], $cids[$pid], $url)."\">{$link[$cids[$pid]]['name']}</a>") : $link[$cids[$pid]]['name']);
     }
 
-    $name[] = $url ? ($html ? str_replace(array('[url]', '[name]'), array(str_replace('[linkage]', $id, $url), $data['name']), $html) : "<a href=\"".str_replace('[linkage]', $id, $url)."\">{$data['name']}</a>") : $data['name'];
+    $name[] = $url ? ($html ? str_replace(array('[url]', '[name]'), array(str_replace(['[linkage]', '{linkage}'], $id, $url), $data['name']), $html) : "<a href=\"".str_replace(['[linkage]', '{linkage}'], $id, $url)."\">{$data['name']}</a>") : $data['name'];
 
 
     return implode($symbol, $name);
@@ -2064,7 +2064,7 @@ function dr_show_stars($num, $starthreshold = 4) {
  * @return	string
  */
 function dr_module_comment($dir, $id) {
-    $url = "".ROOT_URL."index.php?s=".$dir."&c=comment&m=index&id={$id}";
+    $url = "/index.php?s=".$dir."&c=comment&m=index&id={$id}";
     return "<div id=\"dr_module_comment_{$id}\"></div><script type=\"text/javascript\">
 	function dr_ajax_module_comment_{$id}(type, page) {
 		var index = layer.load(2, { time: 10000 });
@@ -3505,6 +3505,14 @@ if(!function_exists('mime_content_type')) {
     }
 }
 
+if (!function_exists('array_key_first')) {
+    function array_key_first(array $arr) {
+        foreach($arr as $key => $unused) {
+            return $key;
+        }
+        return NULL;
+    }
+}
 
 ////////////////////////////////////////////////////////////
 

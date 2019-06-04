@@ -37,8 +37,8 @@
                             <label class="col-md-2 control-label">{dr_lang('商城购物评论')}</label>
                             <div class="col-md-9">
                                 <div class="mt-radio-inline">
-                                    <label class="mt-radio"><input onclick="$('.pt').hide()" type="radio" name="data[{$i}][buy]" value="1" {if $m['comment']['buy']}checked{/if} /> {dr_lang('启用')} <span></span></label>
-                                    <label class="mt-radio"><input onclick="$('.pt').show()" type="radio" name="data[{$i}][buy]" value="0" {if !$m['comment']['buy']}checked{/if} /> {dr_lang('不限制')} <span></span></label>
+                                    <label class="mt-radio"><input onclick="$('.pt').hide()" type="radio" name="data[{$i}][buy]" value="1" {if $m['comment']['buy']}checked{/if} /> {dr_lang('电商评论模式')} <span></span></label>
+                                    <label class="mt-radio"><input onclick="$('.pt').show()" type="radio" name="data[{$i}][buy]" value="0" {if !$m['comment']['buy']}checked{/if} /> {dr_lang('通用评论模式')} <span></span></label>
                                 </div>
                             </div>
                         </div>

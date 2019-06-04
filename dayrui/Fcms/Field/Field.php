@@ -144,11 +144,12 @@ return [
         'name' => '购买（组合）',
         'namespace' => '',
     ],
+    /*
     [
         'id' => 'Paystext',
         'name' => '购买（组合）参数',
         'namespace' => '',
-    ],
+    ],*/
     [
         'id' => 'Score',
         'name' => '用户组设定值',

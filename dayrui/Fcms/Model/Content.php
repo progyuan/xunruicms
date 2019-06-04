@@ -1293,10 +1293,12 @@ class Content extends \Phpcmf\Model {
         // 获取文章标题
         $index = $this->table($this->mytable)->get($row['cid']);
         $row['title'] = $index['title'];
+        $row['index'] = $index;
         \Phpcmf\Service::L('Notice')->send_notice('module_comment_verify_1', $row);
 
         // 挂钩点 评论完成之后
         \Phpcmf\Hooks::trigger('comment_after', $row);
+        $this->_comment_after($row);
 
         \Phpcmf\Service::L('cache')->clear('module_'.MOD_DIR.'_show_id_'.$id);
     }
@@ -1577,6 +1579,9 @@ class Content extends \Phpcmf\Model {
 
     // 内容审核操作之后
     public function _call_verify($data, $verify) { }
+
+    // 评论成功操作之后
+    public function _comment_after($data) { }
 
     // 格式化处理内容
     public function _format_content_data($data) {

@@ -54,7 +54,7 @@
                     }
                 },
                 error: function(HttpRequest, ajaxOptions, thrownError) {
-                    obj.html('<font color="red">{dr_lang("系统崩溃，请将错误日志发送给官方处理")}</font>');
+                    obj.html('<a href="javascript:dr_show_file_code(\'{dr_lang('查看日志')}\', \'admin.php?c=error&m=log_show\');" style="color:red">{dr_lang("系统崩溃，请将错误日志发送给官方处理")}</a>');
                 }
             });
         }
@@ -81,7 +81,7 @@
                 }
             },
             error: function(HttpRequest, ajaxOptions, thrownError) {
-                obj.html('<font color="red">{dr_lang("系统崩溃，请将错误日志发送给官方处理")}</font>');
+                obj.html('<a href="javascript:dr_show_file_code(\'{dr_lang('查看日志')}\', \'admin.php?c=error&m=log_show\');" style="color:red">{dr_lang("系统崩溃，请将错误日志发送给官方处理")}</a>');
             }
         });
     }

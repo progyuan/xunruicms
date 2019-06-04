@@ -167,10 +167,12 @@ abstract class Common extends \CodeIgniter\Controller
         // 全局URL
         define('ROOT_URL', $this->site_info[1]['SITE_URL']); // 主站URL
         define('LANG_PATH', ROOT_URL.'config/language/'.SITE_LANGUAGE.'/'); // 语言包
-        define('THEME_PATH', ROOT_URL.'static/'); // 站点风格
-        define('ROOT_THEME_PATH', THEME_PATH); // 站点风格别名
+
+        define('THEME_PATH', (SYS_THEME_ROOT ? SITE_URL : ROOT_URL).'static/'); // 系统风格
+        define('ROOT_THEME_PATH', ROOT_URL.'static/'); // 系统风格绝对路径
+
+        define('HOME_THEME_PATH', (SYS_THEME_ROOT ? SITE_URL : ROOT_URL).'static/'.SITE_THEME.'/'); // 站点风格
         define('MOBILE_THEME_PATH', SITE_MURL.'static/'.SITE_THEME.'/'); // 移动端站点风格
-        define('HOME_THEME_PATH', SITE_URL.'static/'.SITE_THEME.'/'); // 站点风格
 
         // 本地附件上传目录和地址
         if (SYS_ATTACHMENT_PATH
@@ -198,6 +200,7 @@ abstract class Common extends \CodeIgniter\Controller
             define('CLIENT_URL', SITE_URL);
             \Phpcmf\Service::V()->init('pc');
         }
+
         // 移动端模板
         if (defined('IS_MOBILE')) {
             \Phpcmf\Service::V()->init('mobile');

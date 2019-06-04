@@ -618,14 +618,15 @@ class Module extends \Phpcmf\Common
         
         if (!$catid) {
             return dr_return_data(0, '栏目id不存在');
-        }
-        if (!defined('MODULE_NAME')) {
+        } elseif (!defined('MODULE_NAME')) {
             return dr_return_data(0, 'MODULE_NAME未定义');
         }
 
         $cat = $this->module['category'][$catid];
         if (!$cat) {
             return dr_return_data(0, '栏目#'.$catid.'不存在');
+        } elseif ($this->module['setting']['search']['catsync'] && $cat['tid'] == 1) {
+            return dr_return_data(0, '此模块开启了搜索集成栏目页，因此栏目无法生成静态');
         }
 
         $url = $page > 0 ?\Phpcmf\Service::L('Router')->category_url($this->module, $cat, $page) : $cat['url'];
@@ -758,13 +759,18 @@ class Module extends \Phpcmf\Common
     protected function _Category_Html_File() {
 
         // 判断权限
-        !dr_html_auth() && $this->_json(0, '权限验证超时，请重新执行生成');
+        if (!dr_html_auth()) {
+            $this->_json(0, '权限验证超时，请重新执行生成');
+        }
 
         // 初始化模块
         $this->_module_init();
 
-        $this->member_cache['auth_site'][SITE_ID]['home'] && $this->_json(0, '当前网站设置了访问权限，无法生成静态');
-        $this->member_cache['auth_module'][SITE_ID][$this->module['dirname']]['home'] && $this->_json(0, '当前模块设置了访问权限，无法生成静态');
+        if ($this->member_cache['auth_site'][SITE_ID]['home']) {
+            $this->_json(0, '当前网站设置了访问权限，无法生成静态');
+        } elseif ($this->member_cache['auth_module'][SITE_ID][$this->module['dirname']]['home']) {
+            $this->_json(0, '当前模块设置了访问权限，无法生成静态');
+        }
 
         $this->_Create_Category_Html(intval(\Phpcmf\Service::L('Input')->get('id')));
         exit;
@@ -780,8 +786,11 @@ class Module extends \Phpcmf\Common
         // 初始化模块
         $this->_module_init();
 
-        $this->member_cache['auth_site'][SITE_ID]['home'] && $this->_json(0, '当前网站设置了访问权限，无法生成静态');
-        $this->member_cache['auth_module'][SITE_ID][$this->module['dirname']]['home'] && $this->_json(0, '当前模块设置了访问权限，无法生成静态');
+        if ($this->member_cache['auth_site'][SITE_ID]['home']) {
+            $this->_json(0, '当前网站设置了访问权限，无法生成静态');
+        } elseif ($this->member_cache['auth_module'][SITE_ID][$this->module['dirname']]['home']) {
+            $this->_json(0, '当前模块设置了访问权限，无法生成静态');
+        }
 
         $this->_Create_Show_Html(intval(\Phpcmf\Service::L('Input')->get('id')));
         exit;
@@ -795,16 +804,21 @@ class Module extends \Phpcmf\Common
     protected function _Index_Html() {
 
         // 判断权限
-        !dr_html_auth() && $this->_json(0, '权限验证超时，请重新执行生成');
-
-        $this->member_cache['auth_site'][SITE_ID]['home'] && $this->_json(0, '当前网站设置了访问权限，无法生成静态');
-        $this->member_cache['auth_module'][SITE_ID][APP_DIR]['home'] && $this->_json(0, '当前模块设置了访问权限，无法生成静态');
+        if (!dr_html_auth()) {
+            $this->_json(0, '权限验证超时，请重新执行生成');
+        } elseif ($this->member_cache['auth_site'][SITE_ID]['home']) {
+            $this->_json(0, '当前网站设置了访问权限，无法生成静态');
+        } elseif ($this->member_cache['auth_module'][SITE_ID][APP_DIR]['home']) {
+            $this->_json(0, '当前模块设置了访问权限，无法生成静态');
+        }
 
         // 标识变量
         !defined('SC_HTML_FILE') && define('SC_HTML_FILE', 1);
-
         !$this->module && $this->_module_init();
-        !$this->module['setting']['module_index_html'] && $this->_json(0, '当前模块未开启首页静态功能');
+
+        if (!$this->module['setting']['module_index_html']) {
+            $this->_json(0, '当前模块未开启首页静态功能');
+        }
 
 
         if ($this->module['domain']) {

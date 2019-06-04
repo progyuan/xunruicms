@@ -102,8 +102,8 @@ function dr_show_info(msg, width) {
         //scrollbar: false,
         shadeClose: true,
         title: lang['show'],
-        area: [width+'%', height],
-        content: '<div style="padding:20px">'+(msg)+'</div>'
+        area: [width+'%', height+'%'],
+        content: '<div style="padding:20px;overflow-y:scrol">'+(msg)+'</div>'
     });
 }
 function dr_tips(code, msg, time) {
@@ -185,10 +185,10 @@ function dr_iframe(type, url, width, height, nogo) {
                             }
 
                         }
-                        dr_tips(1, json.msg);
+                        dr_cmf_tips(1, json.msg);
                     } else {
                         $(body).find('#dr_row_'+json.data.field).addClass('has-error');
-                        dr_tips(0, json.msg);
+                        dr_cmf_tips(0, json.msg);
                     }
                     return false;
                 },
@@ -202,10 +202,10 @@ function dr_iframe(type, url, width, height, nogo) {
             // 主要用于后台权限验证
             var body = layer.getChildFrame('body', index);
             var json = $(body).html();
-            if (json.indexOf('"code":0') > 0 && json.length < 150){
+            if (json.indexOf('"code":0') > 0 && json.length < 500){
                 var obj = JSON.parse(json);
                 layer.close(index);
-                dr_tips(0, obj.msg);
+                dr_cmf_tips(0, obj.msg);
             }
         },
         content: url+'&is_ajax=1'
@@ -249,10 +249,10 @@ function dr_iframe_show(type, url, width, height) {
             // 主要用于后台权限验证
             var body = layer.getChildFrame('body', index);
             var json = $(body).html();
-            if (json.indexOf('"code":0') > 0 && json.length < 150){
+            if (json.indexOf('"code":0') > 0 && json.length < 500){
                 var obj = JSON.parse(json);
                 layer.close(index);
-                dr_tips(0, obj.msg);
+                dr_cmf_tips(0, obj.msg);
             }
         },
         content: url+'&is_ajax=1'
@@ -308,7 +308,7 @@ function dr_ajax_confirm_url(url, msg, tourl) {
                             setTimeout("window.location.href = '"+tourl+"'", 2000);
                         }
                     }
-                    dr_tips(json.code, json.msg);
+                    dr_cmf_tips(json.code, json.msg);
                 },
                 error: function(HttpRequest, ajaxOptions, thrownError) {
                     dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError)
@@ -321,7 +321,7 @@ function dr_ajax_confirm_url(url, msg, tourl) {
 function dr_ajax_url(url) {
     var index = layer.load(2, {
         shade: [0.3,'#fff'], //0.1透明度的白色背景
-        time: 10000
+        time: 100000000
     });
     $.ajax({
         type: "GET",
@@ -329,7 +329,7 @@ function dr_ajax_url(url) {
         dataType: "json",
         success: function (json) {
             layer.close(index);
-            dr_tips(json.code, json.msg);
+            dr_cmf_tips(json.code, json.msg);
             if (json.data.url) {
                 setTimeout("window.location.href = '"+json.data.url+"'", 2000);
             }
@@ -352,7 +352,7 @@ function dr_ajaxp_url(url) {
         dataType: "jsonp",
         success: function (json) {
             layer.close(index);
-            dr_tips(json.code, json.msg);
+            dr_cmf_tips(json.code, json.msg);
             if (json.data.url) {
                 setTimeout("window.location.href = '"+json.data.url+"'", 2000);
             }
@@ -411,7 +411,7 @@ function dr_ajax_option(url, msg, remove) {
                         }
 
                     }
-                    dr_tips(json.code, json.msg);
+                    dr_cmf_tips(json.code, json.msg);
                 },
                 error: function(HttpRequest, ajaxOptions, thrownError) {
                     dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError)
@@ -449,7 +449,7 @@ function dr_ajax_option_url(url, msg, tourl) {
                             setTimeout("window.location.href = '" + tourl + "'", 2000);
                         }
                     }
-                    dr_tips(json.code, json.msg);
+                    dr_cmf_tips(json.code, json.msg);
                 },
                 error: function(HttpRequest, ajaxOptions, thrownError) {
                     dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError)
@@ -478,7 +478,7 @@ function dr_ajax_submit(url, form, time, go) {
         success: function(json) {
             layer.close(loading);
             if (json.code == 1) {
-                dr_tips(1, json.msg);
+                dr_cmf_tips(1, json.msg);
                 if (json.data.htmlfile) {
                     // 执行生成htmljs
                     $.ajax({
@@ -509,7 +509,7 @@ function dr_ajax_submit(url, form, time, go) {
                     setTimeout("window.location.href = '"+gourl+"'", time);
                 }
             } else {
-                dr_tips(0, json.msg);
+                dr_cmf_tips(0, json.msg);
                 $('.fc-code img').click();
                 if (json.data.field) {
                     $('#dr_row_'+json.data.field).addClass('has-error');
@@ -537,7 +537,7 @@ function dr_loginout(msg) {
                     error: function(){ }
                 });
             }
-            dr_tips(1, json.msg);
+            dr_cmf_tips(1, json.msg);
             setTimeout('window.location.href="'+json.data.url+'"', 2000);
         },
         error: function(HttpRequest, ajaxOptions, thrownError) {
@@ -550,7 +550,7 @@ function dr_ajax_member(url, form) {
 
     var loading = layer.load(2, {
         shade: [0.3,'#fff'], //0.1透明度的白色背景
-        time: 10000
+        time: 100000000
     });
 
     $("#"+form+' .form-group').removeClass('has-error');
@@ -581,7 +581,7 @@ function dr_ajax_member(url, form) {
                     window.location.href = json.data.url;
                 }
             } else {
-                dr_tips(0, json.msg);
+                dr_cmf_tips(0, json.msg);
                 $('.fc-code img').click();
                 if (json.data.field) {
                     $('#dr_row_'+json.data.field).addClass('has-error');
@@ -599,7 +599,7 @@ function dr_pc_or_mobile(url) {
 
     var loading = layer.load(2, {
         shade: [0.3,'#fff'], //0.1透明度的白色背景
-        time: 10000
+        time: 100000000
     });
 
     $.ajax({
@@ -620,12 +620,12 @@ function dr_pc_or_mobile(url) {
                         error: function(){ }
                     });
                 }
-                dr_tips(1, json.msg);
+                dr_cmf_tips(1, json.msg);
                 if (json.data.url) {
                     window.location.href = json.data.url;
                 }
             } else {
-                dr_tips(0, json.msg);
+                dr_cmf_tips(0, json.msg);
             }
         },
         error: function(HttpRequest, ajaxOptions, thrownError) {
@@ -657,7 +657,7 @@ function dr_file_remove(e) {
 function dr_file_delete(e, id) {
     $.get("/index.php?s=api&c=file&m=file_delete&id=" + id + "&rand=" + Math.random(),
     function(data) {
-        top.dr_tips(data.code, data.msg);
+        top.dr_cmf_tips(data.code, data.msg);
         if (data.code) {
             $(e).parents(".files_row").remove();
         }
@@ -690,13 +690,13 @@ function dr_show_ip(name) {
 }
 
 function dr_diy_func(name) {
-    dr_tips(1, '这是一个自定义函数');
+    dr_cmf_tips(1, '这是一个自定义函数');
 }
 
 // 模块收藏
 function dr_module_favorite(dir, id) {
     $.get("/index.php?is_ajax=1&s=api&app="+dir+"&c=module&m=favorite&id="+id, function(data){
-        dr_tips(data.code, data.msg);
+        dr_cmf_tips(data.code, data.msg);
         if (data.code) {
             $('#module_favorite_'+id).html(data.data);
         }
@@ -706,7 +706,7 @@ function dr_module_favorite(dir, id) {
 // 模块支持反对
 function dr_module_digg(dir, id, value) {
     $.get("/index.php?is_ajax=1&s=api&app="+dir+"&c=module&m=digg&id="+id+'&value='+value, function(data){
-        dr_tips(data.code, data.msg);
+        dr_cmf_tips(data.code, data.msg);
         if (data.code) {
             $('#module_digg_'+id+'_'+value).html(data.data);
         }
@@ -737,12 +737,12 @@ function d_tips(name, status, code) {
     }
     if (status) {
         if (code) {
-            dr_tips(1, code)
+            dr_cmf_tips(1, code)
         }
     } else {
         $("#dr_" + name).focus();
         if (code) {
-            dr_tips(0, code)
+            dr_cmf_tips(0, code)
         }
     }
 }
@@ -754,13 +754,13 @@ function check_title(t) {
         function(data) {
             if (data) {
                 if (t == "1") {
-                    dr_tips(0, data);
+                    dr_cmf_tips(0, data);
                 } else {
                     $("#dr_title_tips").html(data);
                 }
             } else {
                 if (t == "1") {
-                    //dr_tips(1, 'ok');
+                    //dr_cmf_tips(1, 'ok');
                 } else {
                     $("#dr_title_tips").html("");
                 }
@@ -829,11 +829,11 @@ function dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError) {
     if (typeof is_admin != "undefined" && is_admin == 1) {
         var msg = HttpRequest.responseText;
         if (!msg) {
-            dr_tips(0, lang['error']);
+            dr_cmf_tips(0, lang['error_admin']);
         } else {
             layer.open({
                 type: 1,
-                title: lang['error'],
+                title: lang['error_admin'],
                 fix:true,
                 shadeClose: true,
                 shade: 0,
@@ -842,7 +842,7 @@ function dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError) {
             });
         }
     } else {
-        dr_tips(0, lang['error']);
+        dr_cmf_tips(0, lang['error']);
     }
 
 }

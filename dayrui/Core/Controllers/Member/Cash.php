@@ -41,6 +41,7 @@ class Cash extends \Phpcmf\Table
             'date_field' => 'inputtime',
             'where_list' => 'uid='.$this->uid,
         ]);
+        $this->member_cache['pay']['cash']['price'] = \Phpcmf\Service::M('Pay')->cash_price($this->member);
     }
 
     // index

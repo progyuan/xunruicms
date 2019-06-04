@@ -62,24 +62,7 @@ class Select extends \Phpcmf\Library\A_Field {
 				</div>
 			</div>'
 			.
-			$this->field_type($option['fieldtype'], $option['fieldlength']).'
-			<div class="form-group">
-				<label class="col-md-2 control-label">'.dr_lang('显示格式').'</label>
-				<div class="col-md-9">
-					<div class="mt-radio-inline">
-						<label class="mt-radio  mt-radio-outline">
-							<input type="radio" name="data[setting][option][show_type]" value="0" '.(!$option['option']['show_type'] ? 'checked' : '').'> '.dr_lang('横排显示').'
-							<span></span>
-						</label>
-						<label class="mt-radio  mt-radio-outline">
-							<input type="radio" name="data[setting][option][show_type]" value="1" '.($option['option']['show_type'] ? 'checked' : '').'> '.dr_lang('竖排显示').'
-							<span></span>
-						</label>
-					</div>
-					
-				</div>
-			</div>
-			'
+			$this->field_type($option['fieldtype'], $option['fieldlength'])
 		];
 	}
 

@@ -56,6 +56,11 @@
             success: function (json) {
                 if (json.code == 0) {
                     dr_tips(0, json.msg);
+                    $('#dr_check_div').show();
+                    $('#dr_check_result').show();
+                    $('#dr_check_button').attr('disabled', false);
+                    $('#dr_check_button').html('<i class="fa fa-refresh"></i> 重新对比');
+                    $('#dr_check_html').append('<p style="color: red">'+json.msg+'</p>');
                 } else {
                     $('#dr_check_bf').html("");
                     $('#dr_check_html').html("");

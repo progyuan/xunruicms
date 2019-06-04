@@ -36,79 +36,117 @@
  * @filesource
  */
 
-namespace CodeIgniter\Router;
+namespace CodeIgniter\Session\Handlers;
 
-use CodeIgniter\HTTP\Request;
+use CodeIgniter\Session\Exceptions\SessionException;
+use CodeIgniter\Config\BaseConfig;
+use CodeIgniter\Database\BaseConnection;
+use Config\Database;
 
 /**
- * Expected behavior of a Router.
+ * Session handler using static array for storage.
+ * Intended only for use during testing.
  */
-interface RouterInterface
+class ArrayHandler extends BaseHandler implements \SessionHandlerInterface
 {
-
-	/**
-	 * Stores a reference to the RouteCollection object.
-	 *
-	 * @param RouteCollectionInterface  $routes
-	 * @param \CodeIgniter\HTTP\Request $request
-	 */
-	public function __construct(RouteCollectionInterface $routes, Request $request = null);
+	protected static $cache = [];
 
 	//--------------------------------------------------------------------
 
 	/**
-	 * Scans the URI and attempts to match the current URI to the
-	 * one of the defined routes in the RouteCollection.
+	 * Open
 	 *
-	 * @param string $uri
+	 * Ensures we have an initialized database connection.
 	 *
-	 * @return mixed
+	 * @param string $savePath Path to session files' directory
+	 * @param string $name     Session cookie name
+	 *
+	 * @return boolean
+	 * @throws \Exception
 	 */
-	public function handle(string $uri = null);
+	public function open($savePath, $name): bool
+	{
+		return true;
+	}
 
 	//--------------------------------------------------------------------
 
 	/**
-	 * Returns the name of the matched controller.
+	 * Read
 	 *
-	 * @return mixed
+	 * Reads session data and acquires a lock
+	 *
+	 * @param string $sessionID Session ID
+	 *
+	 * @return string    Serialized session data
 	 */
-	public function controllerName();
+	public function read($sessionID): string
+	{
+		return '';
+	}
 
 	//--------------------------------------------------------------------
 
 	/**
-	 * Returns the name of the method to run in the
-	 * chosen container.
+	 * Write
 	 *
-	 * @return mixed
+	 * Writes (create / update) session data
+	 *
+	 * @param string $sessionID   Session ID
+	 * @param string $sessionData Serialized session data
+	 *
+	 * @return boolean
 	 */
-	public function methodName();
+	public function write($sessionID, $sessionData): bool
+	{
+		return true;
+	}
 
 	//--------------------------------------------------------------------
 
 	/**
-	 * Returns the binds that have been matched and collected
-	 * during the parsing process as an array, ready to send to
-	 * instance->method(...$params).
+	 * Close
 	 *
-	 * @return mixed
+	 * Releases locks and closes file descriptor.
+	 *
+	 * @return boolean
 	 */
-	public function params();
+	public function close(): bool
+	{
+		return true;
+	}
 
 	//--------------------------------------------------------------------
 
 	/**
-	 * Sets the value that should be used to match the index.php file. Defaults
-	 * to index.php but this allows you to modify it in case your are using
-	 * something like mod_rewrite to remove the page. This allows you to set
-	 * it a blank.
+	 * Destroy
 	 *
-	 * @param $page
+	 * Destroys the current session.
 	 *
-	 * @return mixed
+	 * @param string $sessionID
+	 *
+	 * @return boolean
 	 */
-	public function setIndexPage($page);
+	public function destroy($sessionID): bool
+	{
+		return true;
+	}
+
+	//--------------------------------------------------------------------
+
+	/**
+	 * Garbage Collector
+	 *
+	 * Deletes expired sessions
+	 *
+	 * @param integer $maxlifetime Maximum lifetime of sessions
+	 *
+	 * @return boolean
+	 */
+	public function gc($maxlifetime): bool
+	{
+		return true;
+	}
 
 	//--------------------------------------------------------------------
 }

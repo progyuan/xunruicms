@@ -72,14 +72,14 @@ class View {
 
         // 模板缓存目录
         $this->_cache = WRITEPATH.'template/';
-        $this->_tname = $this->_is_mobile && is_dir(TPLPATH.'mobile/') ? 'mobile' : $name;
+        $this->_tname = $this->_is_mobile ? 'mobile' : $name;
         // 当前项目模板目录
         if (IS_ADMIN) {
             // 后台
             $this->admin();
         } elseif (IS_MEMBER) {
             // 会员
-            $this->_is_mobile && !is_dir(TPLPATH.'mobile/'.SITE_TEMPLATE.'/member/') && $this->_tname = 'pc';
+            //$this->_is_mobile && !is_dir(TPLPATH.'mobile/'.SITE_TEMPLATE.'/member/') && $this->_tname = 'pc';
             $this->_root = $this->get_client_home_path($this->_tname);
             $this->_dir = $this->_mroot = $this->get_client_member_path($this->_tname);
             // 当用户中心没有这个模板目录时我们就调用default的用户中心模板
@@ -89,12 +89,12 @@ class View {
         } elseif (IS_API || (APP_DIR && dr_is_app_dir(APP_DIR))) {
             // 插件模块或者api
             $dir = IS_API ? 'api' : APP_DIR;
-            $this->_is_mobile && !is_dir(TPLPATH.'mobile/'.SITE_TEMPLATE.'/home/') && $this->_tname = 'pc';
+            //$this->_is_mobile && !is_dir(TPLPATH.'mobile/'.SITE_TEMPLATE.'/home/') && $this->_tname = 'pc';
             $this->_root = $this->get_client_home_path($this->_tname);
             $this->_dir = $this->get_client_home_path($this->_tname, $dir);
         } else {
             // 首页前端页面
-            $this->_is_mobile && !is_dir(TPLPATH.'mobile/'.SITE_TEMPLATE.'/home/') && $this->_tname = 'pc';
+            //$this->_is_mobile && !is_dir(TPLPATH.'mobile/'.SITE_TEMPLATE.'/home/') && $this->_tname = 'pc';
             $this->_dir = $this->_root = $this->get_client_home_path($this->_tname);
         }
 
@@ -274,12 +274,14 @@ class View {
             $error = $dir === '/' ? $this->_root.$file : $this->_dir.$file;
         }
 
+        /*
         // 如果移动端模板不存在就调用主网站风格
         if ($this->_is_mobile && is_file(str_replace('/mobile/', '/pc/', $error))) {
             return str_replace('/mobile/', '/pc/', $error);
         } elseif ($this->_is_mobile && is_file(str_replace('/mobile/', '/pc/', $this->_root.$file))) {
             return str_replace('/mobile/', '/pc/', $this->_root.$file);
-        } elseif ($file == 'msg.html' && is_file(TPLPATH.'pc/default/home/msg.html')) {
+        }*/
+        if ($file == 'msg.html' && is_file(TPLPATH.'pc/default/home/msg.html')) {
             return TPLPATH.'pc/default/home/msg.html';
         }
 

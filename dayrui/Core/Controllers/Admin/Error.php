@@ -90,6 +90,7 @@ class Error extends \Phpcmf\Common
 	public function log_show() {
 
         $time = dr_safe_filename($_GET['time']);
+        !$time && $time = date('Y-m-d');
         $file = WRITEPATH.'error/log-'.$time.'.php';
         if (!$file) {
             exit('文件不存在：'.$file);

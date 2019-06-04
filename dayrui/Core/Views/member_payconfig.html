@@ -75,13 +75,15 @@
                 <div class="tab-pane {if $page==1}active{/if}" id="tab_1">
 
                     <div class="form-body">
+                        {loop $ci->member_cache['group'] $gid $t}
                         <div class="form-group">
-                            <label class="col-md-2 control-label">{dr_lang('手续费')}</label>
+                            <label class="col-md-2 control-label">{$t.name}</label>
                             <div class="col-md-9">
-                                <label><input class="form-control input-small" style="width:75px!important;" type="text" name="data[cash][price]" value="{$data['cash']['price']}" /></label>
-                                <label>&nbsp;&nbsp;%</label>
+                                <label><input class="form-control input-small" style="width:75px!important;" type="text" name="data[cash][group_price][{$gid}]" value="{intval($data['cash']['group_price'][$gid])}" /></label>
+                                <label>&nbsp;&nbsp;%，{dr_lang('提现手续费')}</label>
                             </div>
                         </div>
+                        {/loop}
                         <div class="form-group">
                             <label class="col-md-2 control-label">{dr_lang('最小提现金额')}</label>
                             <div class="col-md-9">

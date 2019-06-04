@@ -160,7 +160,6 @@ class Related extends \Phpcmf\Library\A_Field {
                 type: 2,
                 title: \'<i class="fa fa-cog"></i> '.dr_lang('关联内容').'\',
                 fix:true,
-                scrollbar: false,
                 shadeClose: true,
                 shade: 0,
                 area: ["70%", "65%"],

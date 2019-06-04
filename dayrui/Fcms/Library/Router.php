@@ -36,7 +36,7 @@ class Router
     public function __construct(...$params)
     {
 
-        $routes = \Config\Services::router(null, true);
+        $routes = \Config\Services::router(null, null, true);
 
         // 获取路由信息
         $this->class = strtolower(substr(strrchr($routes->controllerName(), '\\'), 1));
@@ -373,7 +373,7 @@ class Router
             return $url;
         }
 
-        return $this->url_prefix('php') . 'c=page&id=' . $data['id'] . ($page ? '&page=' . $page : '');
+        return $this->url_prefix('php') . 's=page&id=' . $data['id'] . ($page ? '&page=' . $page : '');
     }
 
 
@@ -385,10 +385,13 @@ class Router
 
         if (!$name) {
             return 'TagURL name参数为空';
+        } elseif (!dr_is_app('tag')) {
+            return '关键词库插件没有安装';
         }
 
         // PC端
-        $rule = \Phpcmf\Service::L('cache')->get('urlrule', SITE_REWRITE, 'value');
+        $cfg = \Phpcmf\Service::M('app')->get_config('tag');
+        $rule = \Phpcmf\Service::L('cache')->get('urlrule', (int)$cfg['urlrule'], 'value');;
         if ($rule && $rule['tag']) {
             $data['tag'] = $name;
             $data['tag'] = str_replace('/', $rule['catjoin'], $data['tag']);
@@ -416,6 +419,9 @@ class Router
         if ($file) {
             $url = file_get_contents($file);
             if ($url) {
+                if (!dr_is_app('tag')) {
+                    return '关键词库插件没有安装';
+                }
                 return $url;
             }
         }
@@ -520,6 +526,10 @@ class Router
         defined('MOD_DIR') && MOD_DIR && $dir = MOD_DIR;
         $moddir && $dir = $moddir;
 
+        if (!dr_is_module($dir)) {
+            return '没有安装【'.$dir.'】模块';
+        }
+
         $module = \Phpcmf\Service::L('cache')->get('module-' . SITE_ID . '-' . $dir);
 
         return $this->url_prefix('php', $module, array(), SITE_FID) . 'c=comment&id=' . $id;
@@ -529,9 +539,17 @@ class Router
     function donation_url($id, $moddir = '')
     {
 
+        if (!dr_is_app('shang')) {
+            return '没有安装【打赏】插件';
+        }
+
         // 模块目录识别
         defined('MOD_DIR') && MOD_DIR && $dir = MOD_DIR;
         $moddir && $dir = $moddir;
+
+        if (!dr_is_module($dir)) {
+            return '没有安装【'.$dir.'】模块';
+        }
 
         $module = \Phpcmf\Service::L('cache')->get('module-' . SITE_ID . '-' . $dir);
 
@@ -546,6 +564,10 @@ class Router
         defined('MOD_DIR') && MOD_DIR && $dir = MOD_DIR;
         $moddir && $dir = $moddir;
 
+        if (!dr_is_module($dir)) {
+            return '没有安装【'.$dir.'】模块';
+        }
+
         $module = \Phpcmf\Service::L('cache')->get('module-' . SITE_ID . '-' . $dir);
 
         return $this->url_prefix('php', $module, [], SITE_FID) . 'c=' . $form . '&m=show&id=' . $id . ($page > 1 || strlen($page) > 1 ? '&page=' . $page : '');
@@ -559,6 +581,10 @@ class Router
         defined('MOD_DIR') && MOD_DIR && $dir = MOD_DIR;
         $moddir && $dir = $moddir;
 
+        if (!dr_is_module($dir)) {
+            return '没有安装【'.$dir.'】模块';
+        }
+
         $module = \Phpcmf\Service::L('cache')->get('module-' . SITE_ID . '-' . $dir);
 
         return $this->url_prefix('php', $module, [], SITE_FID) . 'c=' . $form . '&m=post&cid=' . $cid;
@@ -571,6 +597,10 @@ class Router
         // 模块目录识别
         defined('MOD_DIR') && MOD_DIR && $dir = MOD_DIR;
         $moddir && $dir = $moddir;
+
+        if (!dr_is_module($dir)) {
+            return '没有安装【'.$dir.'】模块';
+        }
 
         $module = \Phpcmf\Service::L('cache')->get('module-' . SITE_ID . '-' . $dir);
 

@@ -25,22 +25,6 @@
                                 <span class="help-block">{dr_lang('开启之后首页将会自动生成静态文件')}</span>
                             </div>
                         </div>
-                        {if dr_is_app('tag')}
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">{dr_lang('URL规则')}</label>
-                            <div class="col-md-9">
-                                <label>
-                                    <select class="form-control" name="data[SITE_REWRITE]">
-                                        <option value="0"> -- </option>
-                                        {list action=cache name=urlrule return=u}
-                                        {if $u.type==4}<option value="{$u.id}" {if $u.id==$data['SITE_REWRITE']}selected{/if}> {$u.name} </option>{/if}
-                                        {/list}
-                                    </select>
-                                </label>
-                                <label>&nbsp;&nbsp;<a href="{dr_url('urlrule/index')}">{dr_lang('[URL规则管理]')}</a></label>
-                            </div>
-                        </div>
-                        {/if}
                         <div class="form-group">
                             <label class="col-md-2 control-label">{dr_lang('SEO连接符')}</label>
                             <div class="col-md-9">

@@ -535,6 +535,7 @@ class Module extends \Phpcmf\Table
                     return dr_return_data(0, dr_lang('当前角色无权限管理此栏目'));
                 }
             }
+            return dr_return_data(1, 'ok');
         }, function($rows) {
             foreach ($rows as $t) {
                 // 删除索引

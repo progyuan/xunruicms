@@ -82,12 +82,12 @@
                 <td>{dr_date($t.inputtime, null, 'red')}</td>
                 <td>{dr_date($t.updatetime, null, 'red')}</td>
                 <td style="text-align:center">
-                    <label>{if $t.status}<a href="javascript:;" onclick="dr_show_info('{$t.error}')" class="label label-sm label-danger">{dr_lang('查看错误')}</a>{else}<span class="label label-sm label-warning">{dr_lang('待执行')}</span>{/if}</label>
+                    <label>{if $t.status}<a href="javascript:;" onclick="dr_iframe_show('{dr_lang('执行情况')}', '{dr_url($uriprefix.'/show')}&id={$t.id}')" class="label label-sm label-danger">{dr_lang('查看错误')}</a>{else}<span class="label label-sm label-warning">{dr_lang('待执行')}</span>{/if}</label>
                 </td>
                 <td>
-                    <label><a href="javascript:;" class="btn green btn-xs" onclick="dr_show_info('{$t.value}')">{dr_lang('查看参数')}</a></label>
+                    <label><a href="javascript:;" class="btn green btn-xs" onclick="dr_iframe_show('{dr_lang('执行情况')}', '{dr_url($uriprefix.'/show')}&id={$t.id}')">{dr_lang('查看参数')}</a></label>
                     {if $t.error}
-                    <label><a href="javascript:;" class="btn red btn-xs" onclick="dr_show_info('{$t.error}')">{dr_lang('执行%s次', $t.status)}</a></label>
+                    <label><a href="javascript:;" class="btn red btn-xs" onclick="dr_iframe_show('{dr_lang('执行情况')}', '{dr_url($uriprefix.'/show')}&id={$t.id}')">{dr_lang('执行%s次', $t.status)}</a></label>
                     {/if}
                 </td>
             </tr>

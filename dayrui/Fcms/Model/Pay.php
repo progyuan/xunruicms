@@ -814,6 +814,29 @@ class Pay extends \Phpcmf\Model
         return;
     }
 
+    // 提现手续费比例
+    public function cash_price($member) {
+
+        if (!$member) {
+            return 0;
+        }
+
+        $price = [];
+
+        if (\Phpcmf\Service::C()->member_cache['pay']['cash']['group_price'] && is_array(\Phpcmf\Service::C()->member_cache['pay']['cash']['group_price'])) {
+            foreach (\Phpcmf\Service::C()->member_cache['pay']['cash']['group_price'] as $gid => $value) {
+                if (in_array($gid, $member['groupid'])) {
+                    $price[] = $value;
+                }
+            }
+            if ($price) {
+                return intval(min($price));
+            }
+        }
+
+        return 0;
+    }
+
     /// 提现申请
     public function add_cash($post) {
 
@@ -823,12 +846,15 @@ class Pay extends \Phpcmf\Model
             return dr_return_data(0, dr_lang('金额不规范'));
         }
 
+        // 手续费
+        $price = $this->cash_price($this->member);
+
         $rt = $this->table('member_cashlog')->insert([
             'uid' => $this->uid,
             'username' => $this->member['username'],
             'content' => dr_safe_replace($post['content']),
             'value' => $post['value'],
-            'money' => \Phpcmf\Service::C()->member_cache['pay']['cash']['price'] ? $post['value'] - $post['value'] * (\Phpcmf\Service::C()->member_cache['pay']['cash']['price']/100) : $post['value'],
+            'money' => $price ? $post['value'] - $post['value'] * ($price/100) : $post['value'],
             'status' => 0,
             'result' => '',
             'paytime' => 0,

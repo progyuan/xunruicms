@@ -376,7 +376,7 @@ class Check extends \Phpcmf\Common
         }
 	    $counts = \Phpcmf\Service::M()->table($table)->counts();
 	    if ($counts > 100000) {
-            return '数据表【'.$name.'/'.$ptable.'】数据量超过10万，会影响加载速度，建议对其进行数据优化';
+            return '<font color="green">数据表【'.$name.'/'.$ptable.'】数据量超过10万，会影响加载速度，建议对其进行数据优化</font>';
         }
     }
 

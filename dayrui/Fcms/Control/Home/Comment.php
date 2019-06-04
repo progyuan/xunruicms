@@ -298,9 +298,24 @@ class Comment extends \Phpcmf\Common
                 $this->session()->setTempdata($name, 1, 3600);
                 $this->_json(1, $num);
                 break;
-            
+
+            case 'delete':
+                if (!$this->uid) {
+                    $this->_json(1, '无权限删除');
+                } elseif (!$this->member['adminid']) {
+                    $this->_json(1, '当前用户['.$this->member['username'].']无权限删除');
+                }
+                // 删除
+                \Phpcmf\Service::M()->table($this->content_model->mytable.'_comment')->delete($data['id']);
+                \Phpcmf\Service::M('member')->delete_admin_notice(MOD_DIR.'/comment_verify/edit:cid/'.$data['cid'].'/id/'.$data['id'], SITE_ID);
+                // 重新统计评论数
+                $this->content_model->comment_update_total($data);
+                $this->content_model->comment_update_review($data);
+                $this->_json(1, '删除成功');
+                break;
+
             default:
-                $this->_json(1, '未定义的op动作');
+                $this->_json(1, '未定义的动作('.$op.')');
                 break;
         }
     }

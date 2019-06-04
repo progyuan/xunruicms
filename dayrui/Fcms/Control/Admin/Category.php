@@ -509,7 +509,10 @@ class Category extends \Phpcmf\Table
             if (!$category[$topid]) {
                 $this->_json(0, dr_lang('目标栏目不存在'));
             } elseif ($this->is_scategory && $category[$topid]['child'] == 0 && $category[$topid]['tid'] == 1) {
-                $this->_json(0, dr_lang('目标栏目【%s】存在内容数据，无法作为父栏目', $category[$topid]['name']));
+                $mid = $category[$topid]['mid'] ? $category[$topid]['mid'] : APP_DIR;
+                if (dr_is_module($mid) && \Phpcmf\Service::M()->table(dr_module_table_prefix($mid))->where('catid', $topid)->counts()) {
+                    $this->_json(0, dr_lang('目标栏目【%s】存在内容数据，无法作为父栏目', $category[$topid]['name']));
+                }
             }
             /*
         foreach ($ids as $id) {
@@ -593,7 +596,13 @@ class Category extends \Phpcmf\Table
 
         $id = intval(\Phpcmf\Service::L('input')->get('id'));
         $row = \Phpcmf\Service::M('Category')->init($this->init)->get($id);
-        !$row && $this->_json(0, dr_lang('栏目数据不存在'));
+        if (!$row) {
+            $this->_admin_msg(0, dr_lang('栏目数据不存在'));
+        }
+        $row['setting'] = dr_string2array($row['setting']);
+        if ($row['setting']['getchild']) {
+            $this->_admin_msg(0, dr_lang('本栏目已开启【继承下级】请编辑它下级第一个单页面数据'));
+        }
 
         if (IS_POST) {
             $post = \Phpcmf\Service::L('input')->post('data');
@@ -728,7 +737,10 @@ class Category extends \Phpcmf\Table
                     if (!$this->module['category'][$save['pid']]) {
                         $this->_json(0, dr_lang('父栏目不存在'));
                     } elseif ($this->is_scategory && $this->module['category'][$save['pid']]['child'] == 0 && $this->module['category'][$save['pid']]['tid'] == 1) {
-                        $this->_json(0, dr_lang('目标栏目【%s】存在内容数据，无法作为父栏目', $this->module['category'][$save['pid']]['name']));
+                        $mid = $this->module['category'][$save['pid']]['mid'] ? $this->module['category'][$save['pid']]['mid'] : APP_DIR;
+                        if (dr_is_module($mid) && \Phpcmf\Service::M()->table(dr_module_table_prefix($mid))->where('catid', $save['pid'])->counts()) {
+                            $this->_json(0, dr_lang('目标栏目【%s】存在内容数据，无法作为父栏目', $this->module['category'][$save['pid']]['name']));
+                        }
                     }
                 }
 
