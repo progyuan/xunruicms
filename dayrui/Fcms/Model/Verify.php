@@ -29,7 +29,7 @@ class Verify extends \Phpcmf\Model
 {
 
     // 缓存
-    public function cache() {
+    public function cache($site = SITE_ID) {
 
         $data = $this->table('admin_verify')->getAll();
         $cache = [];

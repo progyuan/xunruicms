@@ -92,6 +92,7 @@ class Member_setting_notice extends \Phpcmf\Common
                 'name' => 'notice',
                 'value' => dr_array2string(\Phpcmf\Service::L('input')->post('data', true))
             ]);
+            \Phpcmf\Service::M('cache')->sync_cache('member'); // 自动更新缓存
             $this->_json(1, dr_lang('操作成功'));
         } else {
             $this->_json(0, dr_lang('异常请求'));
@@ -129,8 +130,6 @@ class Member_setting_notice extends \Phpcmf\Common
                 ]
             ];
         }
-
-
 
         \Phpcmf\Service::V()->assign([
             'list' => $list,

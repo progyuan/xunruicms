@@ -96,6 +96,7 @@ class Seo_search extends \Phpcmf\Common
             \Phpcmf\Service::M()->db->table('module')->where('dirname', $dir)->update([
                 'site' => dr_array2string($data['site'])
             ]);
+            \Phpcmf\Service::M('cache')->sync_cache('');
             $this->_json(1, '操作成功');
         }
     }

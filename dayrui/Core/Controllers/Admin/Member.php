@@ -257,6 +257,7 @@ class Member extends \Phpcmf\Table
 
                 }
                 defined('UCSSO_API') && ucsso_delete($ids);
+                return dr_return_data(1, 'ok');
             },
             \Phpcmf\Service::M()->dbprefix('member')
         );
@@ -285,7 +286,7 @@ class Member extends \Phpcmf\Table
     public function login_index() {
         
         $uid = (int)\Phpcmf\Service::L('Input')->get('id');
-        $list = \Phpcmf\Service::M()->table('member_login')->where('uid', $uid)->getAll();
+        $list = \Phpcmf\Service::M()->table('member_login')->where('uid', $uid)->order_by('logintime desc')->getAll();
 
         \Phpcmf\Service::V()->assign([
             'list' => $list,

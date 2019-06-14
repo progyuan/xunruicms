@@ -1596,7 +1596,13 @@ class Image
         $file = $attach['file'];
         if (!is_file($file)) {
             if ($attach['remote']) {
-                // 远程图片输出直接地址
+                // 远程图片
+                $remote = \Phpcmf\Service::C()->get_cache('attachment', $attach['remote']);
+                if ($remote['value']['image']) {
+                    // 输出带后缀的图片
+                    return $attach['url'].$remote['value']['image'];
+                }
+                //输出直接地址
                return $attach['url'];
             }
             $data = dr_catcher_data($attach['url']);

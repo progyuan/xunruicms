@@ -93,6 +93,7 @@ class Menu extends \Phpcmf\Common
 		if (IS_AJAX_POST) {
 			$data = \Phpcmf\Service::L('Input')->post('data');
 			$this->_validation($type, $data);
+            \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
 			\Phpcmf\Service::L('Input')->system_log('添加后台菜单: '.$data['name']);
 			\Phpcmf\Service::M('Menu')->_add('admin', $pid, $data) ? exit($this->_json(1, dr_lang('操作成功'))) : exit($this->_json(0, dr_lang('操作失败')));
 		}
@@ -119,6 +120,7 @@ class Menu extends \Phpcmf\Common
 			$data = \Phpcmf\Service::L('Input')->post('data');
 			$this->_validation($type, $data);
 			\Phpcmf\Service::M('Menu')->_update('admin', $id, $data);
+            \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
 			\Phpcmf\Service::L('Input')->system_log('修改后台菜单: '.$data['name']);
 			exit($this->_json(1, dr_lang('操作成功')));
 		}
@@ -139,6 +141,7 @@ class Menu extends \Phpcmf\Common
 		!$ids && exit($this->_json(0, dr_lang('你还没有选择呢')));
 
 		\Phpcmf\Service::M('Menu')->_delete('admin', $ids);
+        \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
 		\Phpcmf\Service::L('Input')->system_log('批量删除后台菜单: '. @implode(',', $ids));
 		exit($this->_json(1, dr_lang('操作成功'), ['ids' => $ids]));
 	}
@@ -150,6 +153,7 @@ class Menu extends \Phpcmf\Common
 		\Phpcmf\Service::M('Menu')->init('admin');
 
 		\Phpcmf\Service::L('Input')->system_log('初始化后台菜单');
+        \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
 		exit($this->_json(1, dr_lang('初始化菜单成功，请按F5刷新整个页面')));
 	}
 
@@ -159,6 +163,7 @@ class Menu extends \Phpcmf\Common
 		$i = intval(\Phpcmf\Service::L('Input')->get('id'));
 		$v = \Phpcmf\Service::M('Menu')->_uesd('admin', $i);
 		$v == -1 && exit($this->_json(0, dr_lang('数据#%s不存在', $i), ['value' => $v]));
+        \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
 		\Phpcmf\Service::L('Input')->system_log('修改后台菜单状态: '. $i);
 		exit($this->_json(1, dr_lang($v ? '此菜单已被隐藏' : '此菜单已被启用'), ['value' => $v]));
 
@@ -175,6 +180,7 @@ class Menu extends \Phpcmf\Common
 			dr_safe_replace(\Phpcmf\Service::L('Input')->get('value'))
 		);
 
+        \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
 		\Phpcmf\Service::L('Input')->system_log('修改后台菜单信息: '. $i);
 		exit($this->_json(1, dr_lang('更改成功')));
 	}

@@ -574,7 +574,7 @@ class Module extends \Phpcmf\Model
             }
         }
 
-        return dr_return_data(1, dr_lang('安装成功'), $module);
+        return dr_return_data(1, dr_lang('操作成功，请刷新后台页面'), $module);
     }
 
     /**

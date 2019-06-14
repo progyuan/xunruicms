@@ -119,7 +119,13 @@ class Member_group extends \Phpcmf\Table
     // 排序
     public function order_edit() {
         $this->_init_group();
-        $this->_Display_Order(intval(\Phpcmf\Service::L('Input')->get('id')), intval(\Phpcmf\Service::L('Input')->get('value')));
+        $this->_Display_Order(
+            intval(\Phpcmf\Service::L('Input')->get('id')),
+            intval(\Phpcmf\Service::L('Input')->get('value')),
+            function ($r) {
+                \Phpcmf\Service::M('cache')->sync_cache('member'); // 自动更新缓存
+            }
+        );
     }
 
     // 允许注册
@@ -130,6 +136,7 @@ class Member_group extends \Phpcmf\Table
         !$data && $this->_json(0, dr_lang('数据#%s不存在', $id));
         $value = $data['register'] ? 0 : 1;
         \Phpcmf\Service::M()->table('member_group')->save($id, 'register', $value);
+        \Phpcmf\Service::M('cache')->sync_cache('member'); // 自动更新缓存
         exit($this->_json(1, dr_lang('操作成功'), ['value' => $value]));
     }
 
@@ -141,6 +148,7 @@ class Member_group extends \Phpcmf\Table
         !$data && $this->_json(0, dr_lang('数据#%s不存在', $id));
         $value = $data['apply'] ? 0 : 1;
         \Phpcmf\Service::M()->table('member_group')->save($id, 'apply', $value);
+        \Phpcmf\Service::M('cache')->sync_cache('member'); // 自动更新缓存
         exit($this->_json(1, dr_lang('操作成功'), ['value' => $value]));
     }
 
@@ -151,7 +159,9 @@ class Member_group extends \Phpcmf\Table
         $this->_Del(
             $ids,
             null,
-            null,
+            function ($rows) {
+                \Phpcmf\Service::M('cache')->sync_cache('member'); // 自动更新缓存
+            },
             \Phpcmf\Service::M()->dbprefix($this->init['table'])
         );
     }
@@ -204,6 +214,7 @@ class Member_group extends \Phpcmf\Table
         !$data && $this->_json(0, dr_lang('数据#%s不存在', $id));
         $value = $data['apply'] ? 0 : 1;
         \Phpcmf\Service::M()->table('member_level')->save($id, 'apply', $value);
+        \Phpcmf\Service::M('cache')->sync_cache('member'); // 自动更新缓存
         exit($this->_json(1, dr_lang('操作成功'), ['value' => $value]));
     }
 
@@ -213,7 +224,9 @@ class Member_group extends \Phpcmf\Table
         $this->_Del(
             \Phpcmf\Service::L('Input')->get_post_ids(),
             null,
-            null,
+            function ($r) {
+                \Phpcmf\Service::M('cache')->sync_cache('member'); // 自动更新缓存
+            },
             \Phpcmf\Service::M()->dbprefix($this->init['table'])
         );
     }
@@ -236,6 +249,8 @@ class Member_group extends \Phpcmf\Table
                 $data['apply'] = 1;
             }
             return dr_return_data(1, null, $data);
+        }, function ($id, $data, $old) {
+            \Phpcmf\Service::M('cache')->sync_cache('member'); // 自动更新缓存
         });
     }
 

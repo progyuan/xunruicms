@@ -90,6 +90,7 @@ class Member_setting_group extends \Phpcmf\Common
                 'name' => 'auth',
                 'value' => dr_array2string(\Phpcmf\Service::L('Input')->post('data', true))
             ]);
+            \Phpcmf\Service::M('cache')->sync_cache('member'); // 自动更新缓存
             $this->_json(1, dr_lang('操作成功'));
         } else {
             $this->_json(0, dr_lang('异常请求'));

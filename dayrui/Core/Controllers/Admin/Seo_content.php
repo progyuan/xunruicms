@@ -100,6 +100,7 @@ class Seo_content extends \Phpcmf\Common
                 'site' => dr_array2string($data['site']),
                 'setting' => dr_array2string($data['setting']),
             ]);
+            \Phpcmf\Service::M('cache')->sync_cache('');
             $this->_json(1, '操作成功');
         }
     }

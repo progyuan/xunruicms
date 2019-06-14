@@ -38,6 +38,7 @@ class Member_payconfig extends \Phpcmf\Common
                 'name' => 'pay',
                 'value' => dr_array2string($post)
             ]);
+            \Phpcmf\Service::M('cache')->sync_cache('member'); // 自动更新缓存
             $this->_json(1, dr_lang('操作成功'));
         }
 

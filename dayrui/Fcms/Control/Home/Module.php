@@ -72,16 +72,20 @@ class Module extends \Phpcmf\Common
                 // 电脑端访问
                 file_put_contents(\Phpcmf\Service::L('html')->get_webpath(SITE_ID, $this->module['dirname'], $file), $html);
                 // 生成移动端
-                ob_start();
-                \Phpcmf\Service::V()->init('mobile');
-                \Phpcmf\Service::V()->assign([
-                    'fix_html_now_url' => defined('SC_HTML_FILE') ? dr_url_prefix(MODULE_URL, $this->module['dirname'], SITE_ID, 1) : '', // 修复静态下的当前url变量
-                ]);
-                \Phpcmf\Service::V()->display('index.html');
-                file_put_contents(\Phpcmf\Service::L('html')->get_webpath(SITE_ID, $this->module['dirname'], 'mobile/'.$file), ob_get_clean());
+                if (SITE_IS_MOBILE_HTML) {
+                    ob_start();
+                    \Phpcmf\Service::V()->init('mobile');
+                    \Phpcmf\Service::V()->assign([
+                        'fix_html_now_url' => defined('SC_HTML_FILE') ? dr_url_prefix(MODULE_URL, $this->module['dirname'], SITE_ID, 1) : '', // 修复静态下的当前url变量
+                    ]);
+                    \Phpcmf\Service::V()->display('index.html');
+                    file_put_contents(\Phpcmf\Service::L('html')->get_webpath(SITE_ID, $this->module['dirname'], 'mobile/'.$file), ob_get_clean());
+                }
             } else {
                 // 移动端访问
-                file_put_contents(\Phpcmf\Service::L('html')->get_webpath(SITE_ID, $this->module['dirname'], 'mobile/'.$file), $html);
+                if (SITE_IS_MOBILE_HTML) {
+                    file_put_contents(\Phpcmf\Service::L('html')->get_webpath(SITE_ID, $this->module['dirname'], 'mobile/'.$file), $html);
+                }
                 // 生成电脑端
                 ob_start();
                 \Phpcmf\Service::V()->init('pc');
@@ -280,7 +284,6 @@ class Module extends \Phpcmf\Common
     // 模块搜索
     protected function _Search($_catid = 0) {
 
-
         if (SYS_CACHE && SYS_CACHE_PAGE && !defined('SC_HTML_FILE')) {
             // 启用页面缓存
             $this->cachePage(SYS_CACHE_PAGE * 3600);
@@ -331,7 +334,7 @@ class Module extends \Phpcmf\Common
 
         \Phpcmf\Service::V()->assign($this->content_model->_format_search_seo($this->module, $catid, $data['params'], $get['page']));
         \Phpcmf\Service::V()->assign(array(
-            'cat' => $catid && $this->module['category'][$catid] ? $this->module['category'][$catid] : [],
+            'cat' => $catid && $this->module['category'][$catid] ? \Phpcmf\Service::L('Field')->app($this->module['dirname'])->format_value($this->module['category_field'], $this->module['category'][$catid], 1) : [],
             'top' => $catid && $this->module['category'][$catid]['topid'] ? $this->module['category'][$this->module['category'][$catid]['topid']] : $this->module['category'][$catid],
             'get' => $get,
             'list' => $list,
@@ -488,7 +491,7 @@ class Module extends \Phpcmf\Common
         \Phpcmf\Service::V()->assign($data);
         \Phpcmf\Service::V()->assign($this->content_model->_format_show_seo($this->module, $data, $page));
         \Phpcmf\Service::V()->assign([
-            'cat' => $this->module['category'][$data['catid']],
+            'cat' => \Phpcmf\Service::L('Field')->app($this->module['dirname'])->format_value($this->module['category_field'], $this->module['category'][$catid], 1),
             'page' => $page,
             'params' => ['catid' => $catid],
             'parent' => $parent,
@@ -594,7 +597,7 @@ class Module extends \Phpcmf\Common
         \Phpcmf\Service::V()->assign($data);
         \Phpcmf\Service::V()->assign(\Phpcmf\Service::L('Seo')->show($this->module, $data, $page));
         \Phpcmf\Service::V()->assign([
-            'cat' => $this->module['category'][$data['catid']],
+            'cat' => \Phpcmf\Service::L('Field')->app($this->module['dirname'])->format_value($this->module['category_field'], $this->module['category'][$data['catid']], 1),
             'page' => $page,
             'params' => ['catid' => $data['catid']],
             'parent' => $parent,
@@ -664,7 +667,7 @@ class Module extends \Phpcmf\Common
         }
 
         // 移动端生成
-        if (SITE_IS_MOBILE) {
+        if (SITE_IS_MOBILE && SITE_IS_MOBILE_HTML) {
             ob_start();
             \Phpcmf\Service::V()->init('mobile');
             $_GET['page'] = $page;
@@ -727,7 +730,7 @@ class Module extends \Phpcmf\Common
         }
 
         // 移动端生成
-        if (SITE_IS_MOBILE) {
+        if (SITE_IS_MOBILE && SITE_IS_MOBILE_HTML) {
             ob_start();
             \Phpcmf\Service::V()->init('mobile');
             \Phpcmf\Service::V()->module(IS_SHARE ? 'share' : $this->module['dirname']);
@@ -902,12 +905,16 @@ class Module extends \Phpcmf\Common
     protected function _Category_Html() {
 
         // 判断权限
-        !dr_html_auth() && $this->_json(0, '权限验证超时，请重新执行生成');
+        if (!dr_html_auth()) {
+            $this->_json(0, '权限验证超时，请重新执行生成');
+        }
 
         $page = max(1, intval($_GET['pp']));
-        $name = 'category-'.APP_DIR.'-html-file';
+        $name = 'category-'.($this->module['share'] ? '' : APP_DIR).'-html-file';
         $cache = \Phpcmf\Service::L('cache')->init()->get($name);
-        !$cache && $this->_json(0, '临时缓存数据缓存不存在'.$name);
+        if (!$cache) {
+            $this->_json(0, '临时缓存数据缓存不存在'.$name);
+        }
 
         $data = $cache[$page];
         if ($data) {

@@ -39,10 +39,6 @@ class File extends \Phpcmf\Common
     // 验证上传权限，并获取上传参数
     private function _get_upload_params() {
 
-        if (!$this->member) {
-            $this->_json(0, dr_lang('请登录之后再操作'));
-        }
-
         // 验证用户权限
         $rt = \Phpcmf\Service::M('Attachment')->check($this->member, $this->siteid);
         !$rt['code'] && exit(json_encode($rt));
@@ -84,8 +80,10 @@ class File extends \Phpcmf\Common
 
     // 验证权限脚本
     private function _check_upload_auth() {
-
-        if (dr_is_app('mfile') && \Phpcmf\Service::M('mfile', 'mfile')->check_upload($this->uid)) {
+        // 判断权限
+        if (!$this->_member_auth_value($this->member_authid, 'uploadfile')) {
+            $this->_json(0, dr_lang('您的用户组不允许上传文件'));
+        } elseif (dr_is_app('mfile') && \Phpcmf\Service::M('mfile', 'mfile')->check_upload($this->uid)) {
             $this->_json(0, '用户存储空间已满');
         }
 

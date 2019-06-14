@@ -55,7 +55,7 @@ class Html extends \Phpcmf\Common
         $this->member_cache['auth_site'][SITE_ID]['home'] && $this->_json(0, '当前网站设置了访问权限，无法生成静态');
 
         \Phpcmf\Service::V()->assign([
-            'todo_url' => '/index.php?c=page&m=htmlfile',
+            'todo_url' => '/index.php?s=page&m=htmlfile',
             'count_url' =>\Phpcmf\Service::L('Router')->url('html/page_count_index'),
         ]);
         \Phpcmf\Service::V()->display('html_bfb.html');exit;
@@ -74,23 +74,47 @@ class Html extends \Phpcmf\Common
 
         $this->member_cache['auth_site'][SITE_ID]['home'] && $this->_json(0, '当前网站设置了访问权限，无法生成静态');
 
-        $app = \Phpcmf\Service::L('Input')->get('app');
+        $app = \Phpcmf\Service::L('input')->get('app');
+        $ids = \Phpcmf\Service::L('input')->get('ids');
 
         \Phpcmf\Service::V()->assign([
-            'todo_url' => '/index.php?'.($app ? 's='.$app.'&' : '').'c=html&m=category',
-            'count_url' =>\Phpcmf\Service::L('Router')->url('html/category_count_index', ['app' => $app]),
+            'todo_url' => '/index.php?'.($app ? 's='.$app.'&' : '').'c=html&m=category&ids='.$ids,
+            'count_url' =>\Phpcmf\Service::L('Router')->url('html/category_count_index', ['app' => $app, 'ids' => $ids]),
         ]);
         \Phpcmf\Service::V()->display('html_bfb.html');exit;
     }
 
+    // 获取生成的栏目
+    private function _category_data($ids, $cats) {
+
+        if (!$ids) {
+            return $cats;
+        }
+
+        $rt = [];
+        $arr = explode(',', $ids);
+        foreach ($arr as $id) {
+            if ($id && $cats[$id]) {
+                $rt[$id] = $cats[$id];
+            }
+        }
+
+        return $rt;
+    }
+
     // 栏目的数量统计
     public function category_count_index() {
-        $app = \Phpcmf\Service::L('Input')->get('app');
+
+        $app = \Phpcmf\Service::L('input')->get('app');
+        $ids = \Phpcmf\Service::L('input')->get('ids');
+
         if ($app) {
-            \Phpcmf\Service::L('html')->get_category_data($app, $this->get_cache('module-'.SITE_ID.'-'.$app, 'category'));
+            $cat = $this->get_cache('module-'.SITE_ID.'-'.$app, 'category');
         } else {
-            \Phpcmf\Service::L('html')->get_category_data('', $this->get_cache('module-'.SITE_ID.'-share', 'category'));
+            $cat = $this->get_cache('module-'.SITE_ID.'-share', 'category');
         }
+
+        \Phpcmf\Service::L('html')->get_category_data($app, $this->_category_data($ids, $cat));
     }
 
     // 内容
@@ -113,6 +137,10 @@ class Html extends \Phpcmf\Common
             'date_to' => \Phpcmf\Service::L('Input')->get('date_to'),
             'date_form' => \Phpcmf\Service::L('Input')->get('date_form')
         ]);
+    }
+
+    private function _get_cat_data($app, $ids) {
+
     }
 
 }

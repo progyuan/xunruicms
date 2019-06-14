@@ -113,12 +113,12 @@ class Member extends \Phpcmf\Model
             $this->db->table('member_login')->insert($log);
         }
 
-        // 会员部分只保留10条登录记录
-        $row = $this->db->table('member_login')->where('uid', $data['id'])->orderBy('logintime desc')->get()->getResultArray();
-        if (dr_count($row) > 10) {
+        // 会员部分只保留20条登录记录
+        $row = $this->db->table('member_login')->where('uid', $data['id'])->orderBy('logintime asc')->get()->getResultArray();
+        if (dr_count($row) > 20) {
             $del = [];
             foreach ($row as $i => $t) {
-                $i > 9 && $del[] = (int)$t['id'];
+                $i > 19 && $del[] = (int)$t['id'];
             }
             $del && $this->db->table('member_login')->where('uid', $data['id'])->whereIn('id', $del)->delete();
         }
@@ -978,7 +978,9 @@ class Member extends \Phpcmf\Model
             return dr_return_data(0, dr_lang('手机号码%s已经注册', $member['phone']), ['field' => 'phone']);
         }
 
-        if (!IS_ADMIN && \Phpcmf\Service::C()->member_cache['register']['notallow']) {
+        if ($member['username'] == 'guest') {
+            return dr_return_data(0, dr_lang('此名称guest系统不允许注册'), ['field' => 'username']);
+        } elseif (!IS_ADMIN && \Phpcmf\Service::C()->member_cache['register']['notallow']) {
             foreach (\Phpcmf\Service::C()->member_cache['register']['notallow'] as $mt) {
                 if ($mt && stripos($member['username'], $mt) !== false) {
                     return dr_return_data(0, dr_lang('账号%s禁止包含关键字[%s]', $member['username'], $mt), ['field' => 'username']);
@@ -1159,8 +1161,12 @@ class Member extends \Phpcmf\Model
      */
     public function sendmail($tomail, $subject, $msg, $data = []) {
 
-        if (!$tomail || !$subject || !$msg) {
-            return dr_return_data(0, dr_lang('参数不规范'));
+        if (!$tomail) {
+            return dr_return_data(0, dr_lang('第一个参数不能为空'));
+        } elseif (!$subject) {
+            return dr_return_data(0, dr_lang('第二个参数不能为空'));
+        } elseif (!$msg) {
+            return dr_return_data(0, dr_lang('第三个参数不能为空'));
         }
 
         $cache = \Phpcmf\Service::L('cache')->get('email');
@@ -1529,7 +1535,7 @@ class Member extends \Phpcmf\Model
     }
 
     // 用户系统缓存
-    public function cache() {
+    public function cache($site = SITE_ID) {
 
         $cache = [];
 

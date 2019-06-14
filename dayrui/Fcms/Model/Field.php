@@ -454,6 +454,27 @@ class Field extends \Phpcmf\Model
 
     //--------------------------------------------------------------------
 
+    // 订单插件字段
+    private function _sql_order($sql, $ismain) {
+        $table = $this->dbprefix($this->relatedid.'_order');
+        if (!$this->db->tableExists($table)) {
+            return;
+        }
+        $this->db->simpleQuery(str_replace('{tablename}', $table, $sql));
+        $this->_table_field[] = $table;
+    }
+    // 字段是否存在
+    private function _field_order($name) {
+        // 主表
+        $table = $this->dbprefix($this->relatedid.'_order');
+        $rt = $this->_field_exitsts('id', $name, $table, $this->relatedid);
+        if ($rt) {
+            return 1;
+        }
+        return 0;
+    }
+
+
     //--------------------------------------------------------------------
 
     // 单页字段

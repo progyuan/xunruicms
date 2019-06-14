@@ -68,6 +68,7 @@
                     $('#dr_check_div').show();
                     $('#dr_check_result').show();
                     $('#dr_check_button').attr('disabled', true);
+                    $('#dr_check_bf').append('<p style="color: green">服务端最近更新时间：'+json.msg+'</p>');
                     dr_ajax2ajax(1);
                 }
             },

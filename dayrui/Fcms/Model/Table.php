@@ -124,7 +124,7 @@ class Table extends \Phpcmf\Model
         \Phpcmf\Service::L('cache')->set_file('table-'.$siteid, $cache);
 
         // 缓存的字段类型
-        $type = ['Select', 'Checkbox', 'Radio', 'Pay', 'Pays', 'File', 'Files', 'Image', 'Images'];
+        $type = ['Select', 'Checkbox', 'Radio', 'Pay', 'Pays', 'File', 'Files', 'Image', 'Images', 'Ftable'];
         $cache = [];
         $field = $this->db->table('field')->where('disabled', 0)->whereIn('fieldtype', $type)->orderBy('id ASC')->get()->getResultArray();
         if ($field) {

@@ -96,6 +96,7 @@ class Module extends \Phpcmf\Common
         $cfg['share'] = $type ? 0 : 1;
 
         $rt = \Phpcmf\Service::M('Module')->install($dir, $cfg);
+        \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
         $this->_json($rt['code'], $rt['msg']);
     }
 
@@ -112,6 +113,7 @@ class Module extends \Phpcmf\Common
         !$cfg && $this->_json(0, dr_lang('文件[%s]不存在', 'App/'.ucfirst($dir).'/Config/App.php'));
 
         $rt = \Phpcmf\Service::M('Module')->uninstall($dir, $cfg);
+        \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
         $this->_json($rt['code'], $rt['msg']);
 
     }
@@ -175,6 +177,7 @@ class Module extends \Phpcmf\Common
         $rt = \Phpcmf\Service::M('Module')->table('module')->save($id, 'displayorder', $value);
         !$rt['code'] && $this->_json(0, $rt['msg']);
 
+        \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
         \Phpcmf\Service::L('Input')->system_log('修改模块('.$row['dirname'].')的排序值为'.$value);
         $this->_json(1, dr_lang('操作成功'));
     }
@@ -189,6 +192,7 @@ class Module extends \Phpcmf\Common
         $v = $row['disabled'] ? 0 : 1;
         \Phpcmf\Service::M('Module')->table('module')->update($id, ['disabled' => $v]);
 
+        \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
         exit($this->_json(1, dr_lang($v ? '模块已被禁用' : '模块已被启用'), ['value' => $v]));
     }
 
@@ -266,7 +270,12 @@ class Module extends \Phpcmf\Common
         if (IS_AJAX_POST) {
             $post = \Phpcmf\Service::L('Input')->post('data', true);
             $rt = \Phpcmf\Service::M('Module')->config($data, $post);
-            $rt['code'] ? $this->_json(1, '操作成功') : $this->_json(0, $rt['msg']);
+            if ($rt['code']) {
+                \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
+                $this->_json(1, '操作成功');
+            } else {
+                $this->_json(0, $rt['msg']);
+            }
         }
 
         // 主表字段
@@ -326,7 +335,12 @@ class Module extends \Phpcmf\Common
             $rt = \Phpcmf\Service::M('Module')->config($data, null, [
                 'flag' => $post,
             ]);
-            $rt['code'] ? $this->_json(1, '操作成功') : $this->_json(0, $rt['msg']);
+            if ($rt['code']) {
+                \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
+                $this->_json(1, '操作成功');
+            } else {
+                $this->_json(0, $rt['msg']);
+            }
         }
 
         \Phpcmf\Service::V()->assign([
@@ -353,8 +367,12 @@ class Module extends \Phpcmf\Common
             $this->_validation(0, $data);
             \Phpcmf\Service::L('Input')->system_log('创建模块['.$this->dir.']表单('.$data['name'].')');
             $rt = \Phpcmf\Service::M('Module')->create_form($this->dir, $data);
-            !$rt['code'] && $this->_json(0, $rt['msg']);
-            exit($this->_json(1, dr_lang('操作成功')));
+            if ($rt['code']) {
+                \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
+                $this->_json(1, dr_lang('操作成功，请刷新后台页面'));
+            } else {
+                $this->_json(0, $rt['msg']);
+            }
         }
 
         \Phpcmf\Service::V()->assign([
@@ -404,6 +422,8 @@ class Module extends \Phpcmf\Common
                     'setting' => dr_array2string($data['setting'])
                 ]
             );
+
+            \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
             \Phpcmf\Service::L('Input')->system_log('修改模块['.$this->dir.']表单('.$data['name'].')配置');
             exit($this->_json(1, dr_lang('操作成功')));
         }
@@ -439,6 +459,7 @@ class Module extends \Phpcmf\Common
         $rt = \Phpcmf\Service::M('Module')->delete_form($ids);
         !$rt['code'] && exit($this->_json(0, $rt['msg']));
 
+        \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
         \Phpcmf\Service::L('Input')->system_log('批量删除模块表单: '. @implode(',', $ids));
 
         exit($this->_json(1, dr_lang('操作成功'), ['ids' => $ids]));
@@ -476,6 +497,7 @@ class Module extends \Phpcmf\Common
             }
         }
 
+        \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
         $this->_json(1, dr_lang('本站点共（%s）个表单，重建（%s）个文件', $ct, $file));
     }
 

@@ -58,6 +58,7 @@ class Site_client extends \Phpcmf\Common
                 $save
             );
             !is_array($rt) && $this->_json(0, dr_lang('网站终端(#%s)不存在', SITE_ID));
+            \Phpcmf\Service::M('cache')->sync_cache('');
 			\Phpcmf\Service::L('Input')->system_log('设置网站自定义终端参数');
 			exit($this->_json(1, dr_lang('操作成功')));
 		}

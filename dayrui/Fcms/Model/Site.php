@@ -102,16 +102,28 @@ class Site extends \Phpcmf\Model
             $this->query_all($sql);
         }
 
+        // 创建
         if (is_file(MYPATH.'Config/Install.php')) {
             require MYPATH.'Config/Install.php';
         }
 
+        // 应用插件
         $local = dr_dir_map(APPSPATH, 1);
         foreach ($local as $dir) {
-            if (is_file(APPSPATH.$dir.'/install.lock') && is_file(APPSPATH.$dir.'/Config/Install_site.sql')) {
-                $sql = file_get_contents(APPSPATH.$dir.'/Config/Install_site.sql');
-                $this->query_all(str_replace('{dbprefix}',  $this->dbprefix($siteid.'_'), $sql));
+            if (is_file(APPSPATH.$dir.'/install.lock')
+                && is_file(APPSPATH.$dir.'/Config/App.php')
+                && is_file(APPSPATH.$dir.'/Config/Install_site.sql')) {
+                $cfg = require APPSPATH.$dir.'/Config/App.php';
+                if ($cfg['type'] != 'module') {
+                    // 这是插件
+                    $sql = file_get_contents(APPSPATH.$dir.'/Config/Install_site.sql');
+                    $this->query_all(str_replace('{dbprefix}',  $this->dbprefix($siteid.'_'), $sql));
+                } else {
+                    // 这是模块
+
+                }
             }
+
         }
 
         \Phpcmf\Service::M('cache')->update_webpath('Web', $data['webpath'], [
@@ -126,7 +138,23 @@ class Site extends \Phpcmf\Model
             return dr_return_data(0, dr_lang('参数不存在'));
         }
 
-        $this->db->table('site')->whereIn('id', $ids)->delete();
+
+        $database = \Phpcmf\Service::M()->db->query('show table status')->getResultArray();
+
+        // 删除表
+        foreach ($ids as $siteid) {
+            if ($siteid > 1) {
+                $this->db->table('site')->where('id', $siteid)->delete();
+                // 删除表
+                $table = $this->dbprefix($siteid.'_');
+                foreach ($database as $t) {
+                    if (strpos($t['Name'], $table) === 0) {
+                        $this->db->query('DROP TABLE IF EXISTS `'.$t['Name'].'`;');
+                        log_message('error', '删除站点【'.$siteid.'】时联动删除表：'.$t['Name']);
+                    }
+                }
+            }
+        }
 
         return dr_return_data(1, 'ok');
 
@@ -249,6 +277,7 @@ class Site extends \Phpcmf\Model
                     'SITE_LOGO' => $logo ? $logo : ROOT_THEME_PATH.'assets/logo-web.png',
                     'SITE_MOBILE' => (string)$t['setting']['mobile']['domain'],
                     'SITE_AUTO' => (string)$t['setting']['mobile']['auto'],
+                    'SITE_IS_MOBILE_HTML' => (string)$t['setting']['mobile']['tohtml'],
                     'SITE_CLOSE' => $t['setting']['config']['SITE_CLOSE'],
                     'SITE_THEME' => $t['setting']['config']['SITE_THEME'],
                     'SITE_TEMPLATE' => $t['setting']['config']['SITE_TEMPLATE'],

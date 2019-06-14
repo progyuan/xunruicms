@@ -42,28 +42,34 @@ class Attachment extends \Phpcmf\Model {
         $this->member = $member;
         $this->siteid = $siteid;
 
-        if (!$member) {
-            return dr_return_data(0, dr_lang('必须登录之后才能上传附件'));
-        } elseif ($member['is_admin']) {
+        if ($member[``]) {
             return dr_return_data(1); // 管理员不验证
+        } elseif (!\Phpcmf\Service::C()->_member_auth_value($this->member ? $this->member['authid'] : [0], 'uploadfile')) {
+            return dr_return_data(0, dr_lang('您的用户组不允许上传文件'));
         }
         
         return dr_return_data(1);
     }
     
     // 附件归属
-    public function handle($member, $related, $data) {
+    public function handle($uid, $related, $data) {
 
         if (!SYS_ATTACHMENT_DB) {
             return;
         }
 
-        $member = intval($member);
+        $uid = intval($uid);
+        $member = dr_member_info($uid);
 
         // 删除文件
-        if ($data['del']) {
-            foreach ($data['del'] as $id) {
-                $this->file_delete($member, $id);
+        if ($data['del'] && $related && $related != 'rand') {
+            $delete = $this->table('attachment')->where_in('id', $data['del'])->getAll();
+            if ($delete) {
+                foreach ($delete as $row) {
+                    if ($related == $row['related']) {
+                        $this->file_delete($member, $row['id']);
+                    }
+                }
             }
         }
 
@@ -206,7 +212,11 @@ class Attachment extends \Phpcmf\Model {
     public function save_data($data, $related = '') {
 
         if (!$this->member) {
-            return dr_return_data(0, dr_lang('必须登录之后才能上传附件'));
+            $this->member = [
+                'id'=> 0,
+                'username' => 'guest',
+            ];
+
         }
 
         // 按uid散列分表
@@ -300,7 +310,7 @@ class Attachment extends \Phpcmf\Model {
     }
 
     // 远程附件缓存
-    public function cache() {
+    public function cache($site = SITE_ID) {
 
         $data = $this->table('attachment_remote')->getAll();
         $cache = [];

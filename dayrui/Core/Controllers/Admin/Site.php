@@ -77,7 +77,7 @@ class Site extends \Phpcmf\Table
 			$this->_validation($data);
 			\Phpcmf\Service::L('Input')->system_log('创建网站('.$data['name'].')');
 			\Phpcmf\Service::M('Site')->create($data);
-			exit($this->_json(1, dr_lang('操作成功')));
+			exit($this->_json(1, dr_lang('操作成功，请手动更新缓存')));
 		}
 
 		\Phpcmf\Service::V()->assign([
@@ -95,6 +95,7 @@ class Site extends \Phpcmf\Table
 
 		$v = $row['disabled'] ? 0 : 1;
 		\Phpcmf\Service::M('Site')->table('site')->update($id, ['disabled' => $v]);
+        \Phpcmf\Service::M('cache')->sync_cache('');
 
 		exit($this->_json(1, dr_lang($v ? '站点已被禁用' : '站点已被启用'), ['value' => $v]));
 	}
@@ -107,7 +108,8 @@ class Site extends \Phpcmf\Table
 
 		$rt = \Phpcmf\Service::M('Site')->delete_site($ids);
 		!$rt['code'] && exit($this->_json(0, $rt['msg']));
-		
+
+        \Phpcmf\Service::M('cache')->sync_cache('');
 		\Phpcmf\Service::L('Input')->system_log('批量删除站点: '. @implode(',', $ids));
 
 		exit($this->_json(1, dr_lang('操作成功'), ['ids' => $ids]));
@@ -131,6 +133,7 @@ class Site extends \Phpcmf\Table
             ]);
         }
 
+        \Phpcmf\Service::M('cache')->sync_cache('');
 		\Phpcmf\Service::L('Input')->system_log('批量修改站点: '. @implode(',', $ids));
 
 		exit($this->_json(1, dr_lang('操作成功')));

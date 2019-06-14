@@ -100,7 +100,6 @@ class Cloud extends \Phpcmf\Common
     // 功能组件
     public function func() {
 
-
         \Phpcmf\Service::V()->assign([
             'url' => $this->service_url.'&action=app&catid=16',
         ]);
@@ -170,7 +169,8 @@ class Cloud extends \Phpcmf\Common
         $rt = \Phpcmf\Service::M('App')->install($dir);
         !$rt['code'] && $this->_json(0, $rt['msg']);
 
-        $this->_json(1, dr_lang('安装成功，请更新缓存生效'));
+        \Phpcmf\Service::M('cache')->sync_cache('');
+        $this->_json(1, dr_lang('安装成功，请刷新后台页面'));
     }
 
     // 卸载程序
@@ -184,6 +184,7 @@ class Cloud extends \Phpcmf\Common
 
         $rt = \Phpcmf\Service::M('App')->uninstall($dir);
 
+        \Phpcmf\Service::M('cache')->sync_cache('');
         $this->_json($rt['code'], $rt['msg']);
     }
 
@@ -670,7 +671,7 @@ class Cloud extends \Phpcmf\Common
 
         \Phpcmf\Service::L('cache')->init()->save('cloud-bf', $data['data'], 3600);
 
-        $this->_json(dr_count($data['data']), 'ok');
+        $this->_json(dr_count($data['data']), $data['msg']);
     }
 
     public function bf_check() {

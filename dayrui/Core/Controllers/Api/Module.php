@@ -64,6 +64,10 @@ class Module extends \Phpcmf\Common
         !$data && $this->_jsonp(0, dr_lang('阅读统计: 模块内容不存在'));
 
         $plus = defined('IS_HITS_PLUS') && is_numeric(IS_HITS_PLUS) ? intval(IS_HITS_PLUS) : 1;
+        if (!$plus) {
+            // 增量为0时原样输出
+            $this->_jsonp(1, $data['hits']);exit;
+        }
         $hits = (int)$data['hits'] + $plus;
 
         // 更新主表

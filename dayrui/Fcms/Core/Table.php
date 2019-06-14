@@ -167,7 +167,7 @@ class Table extends \Phpcmf\Common
      * 排序值操作
      * $id      内容id
      * */
-    protected function _Display_Order($id, $value) {
+    protected function _Display_Order($id, $value, $after = null) {
 
         // 查询数据
         $row = \Phpcmf\Service::M()->init($this->init)->get($id);
@@ -177,6 +177,13 @@ class Table extends \Phpcmf\Common
         !$rt['code'] && $this->_json(0, $rt['msg']);
 
         \Phpcmf\Service::L('input')->system_log($this->name.'：修改('.$row[$this->init['show_field']].')排序值为'.$value);
+
+        // 自动更新缓存
+        IS_ADMIN && \Phpcmf\Service::M('cache')->sync_cache();
+        // 提交之后的操作
+        if ($after) {
+            call_user_func_array($after, [$row]);
+        }
         $this->_json(1, dr_lang('操作成功'));
 
     }
@@ -452,7 +459,7 @@ class Table extends \Phpcmf\Common
         !$ids && $this->_json(0, dr_lang('所选数据不存在'));
 
         $rows = \Phpcmf\Service::M()->init($this->init)->where_in('id', $ids)->getAll();
-        !$rows && $this->_json(0, dr_lang('所选数据不存在'));
+        !$rows && $this->_json(0, dr_lang('所选数据不存在2'));
 
         // 删除之前执行
         if ($before) {

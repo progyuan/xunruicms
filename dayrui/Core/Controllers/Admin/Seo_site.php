@@ -39,6 +39,7 @@ class Seo_site extends \Phpcmf\Common
             ]);
             !is_array($rt) && $this->_json(0, dr_lang('网站SEO(#%s)不存在', SITE_ID));
 			\Phpcmf\Service::L('Input')->system_log('设置网站SEO');
+            \Phpcmf\Service::M('cache')->sync_cache('');
 			exit($this->_json(1, dr_lang('操作成功')));
 		}
 

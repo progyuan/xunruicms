@@ -163,6 +163,7 @@ class Seo_category extends \Phpcmf\Common
             \Phpcmf\Service::M()->db->table(SITE_ID.'_'.$dir.'_category')->where('id', $id)->update([
                 'setting' => dr_array2string($data['setting']),
             ]);
+            \Phpcmf\Service::M('cache')->sync_cache('');
             $this->_json(1, '操作成功，更新缓存生效');
         }
 

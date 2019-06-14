@@ -56,6 +56,8 @@ class Attachment extends \Phpcmf\Common
             );
             \Phpcmf\Service::M('Site')->config(SITE_ID, 'image', \Phpcmf\Service::L('Input')->post('image'));
             \Phpcmf\Service::L('Input')->system_log('设置附件参数');
+            // 自动更新缓存
+            \Phpcmf\Service::M('cache')->sync_cache('');
             $this->_json(1, dr_lang('操作成功'));
         }
 
@@ -106,6 +108,8 @@ class Attachment extends \Phpcmf\Common
                 'value' => dr_array2string($data['value']),
             ]);
             !$rt['code'] && $this->_json(0, $rt['msg']);
+            // 自动更新缓存
+            \Phpcmf\Service::M('cache')->sync_cache('attachment');
             $this->_json(1, dr_lang('操作成功'));
         }
 	    
@@ -138,6 +142,8 @@ class Attachment extends \Phpcmf\Common
                 ]
             );
             !$rt['code'] && $this->_json(0, $rt['msg']);
+            // 自动更新缓存
+            \Phpcmf\Service::M('cache')->sync_cache('attachment');
             $this->_json(1, dr_lang('操作成功'));
         }
 
@@ -168,6 +174,8 @@ class Attachment extends \Phpcmf\Common
 
         \Phpcmf\Service::M()->table('attachment_remote')->deleteAll($ids);
         \Phpcmf\Service::L('Input')->system_log('批量删除远程附件策略: '. @implode(',', $ids));
+        // 自动更新缓存
+        \Phpcmf\Service::M('cache')->sync_cache('attachment');
         exit($this->_json(1, dr_lang('操作成功'), ['ids' => $ids]));
     }
 	

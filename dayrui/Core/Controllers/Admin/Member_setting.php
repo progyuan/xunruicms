@@ -50,6 +50,7 @@ class Member_setting extends \Phpcmf\Common
                     'value' => dr_array2string($post[$name])
                 ]);
             }
+            \Phpcmf\Service::M('cache')->sync_cache('member'); // 自动更新缓存
             $this->_json(1, dr_lang('操作成功'));
         }
 

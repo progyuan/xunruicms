@@ -434,7 +434,7 @@ class Pay extends \Phpcmf\Model
         if (!$data) {
             return dr_return_data(0, dr_lang('支付记录不存在'));
         } elseif ($data['status'] == 1) {
-            return dr_return_data(0, dr_lang('已经支付'));
+            return dr_return_data(0, dr_lang('此账单已经支付'));
         } else {
             // 分析订单来源
             list($a, $b, $c, $d, $e, $f) = explode('-', $data['mid']);
@@ -535,14 +535,14 @@ class Pay extends \Phpcmf\Model
 
                 case 'order':
                     // 订单交易
-                    \Phpcmf\Service::M('Order', 'order')->pay($c, $id);
+                    \Phpcmf\Service::M('order', 'order')->pay($c, $id);
                     break;
 
                 case 'orders':
                     // 订单交易
                     $oids = explode(',', $c);
                     foreach ($oids as $oi) {
-                        \Phpcmf\Service::M('Order', 'order')->pay($oi, $id);
+                        \Phpcmf\Service::M('order', 'order')->pay($oi, $id);
                     }
                     break;
 
@@ -599,6 +599,11 @@ class Pay extends \Phpcmf\Model
                 // 来自单用户商城订单系统
                 $url = dr_url_prefix('index.php?s=member&app=order&c=home&m=show&id='.$fid, '', $data['site']);
                 break;
+
+            case 'orders':
+                // 来自组合订单商城订单系统
+                $url = dr_url_prefix('index.php?s=member&app=order&c=home&m=index', '', $data['site']);
+                break;
         }
 
         return $url;
@@ -610,16 +615,16 @@ class Pay extends \Phpcmf\Model
     public function post($post) {
 
         if (strlen($post['money']) > 8) {
-            return dr_return_data(0, dr_lang('付款金额不规范'));
+            return dr_return_data(0, dr_lang('付款金额[%s]不规范', $post['money']));
         }
 
         $post['uid'] = intval($post['uid']);
         $post['username'] = (string)$post['username'];
         $post['money'] = floatval($post['money']);
         if ($post['money'] <= 0) {
-            return dr_return_data(0, dr_lang('付款金额不正确'));
+            return dr_return_data(0, dr_lang('付款金额[%s]不规范', $post['money']));
         } elseif ((string)$post['money'] == 'INF') {
-            return dr_return_data(0, dr_lang('付款金额不规范'));
+            return dr_return_data(0, dr_lang('付款金额[%s]不规范', $post['money']));
         } elseif (!$post['type']) {
             return dr_return_data(0, dr_lang('未知支付接口'));
         }

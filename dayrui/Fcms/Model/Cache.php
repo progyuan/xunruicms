@@ -26,6 +26,9 @@
 // 系统缓存
 class Cache extends \Phpcmf\Model
 {
+    private $is_sync_cache;
+    private $site_cache;
+    private $module_cache;
 
     // 更新附件缓存
     public function update_attachment() {
@@ -61,6 +64,43 @@ class Cache extends \Phpcmf\Model
 
         exit(\Phpcmf\Service::C()->_json(1, dr_lang('正在更新中（%s/%s）', $page, $tpage), $page + 1));
     }
+
+    // 同步更新缓存
+    // \Phpcmf\Service::M('cache')->sync_cache();
+    public function sync_cache($name = '', $namepspace = '', $is_site = 1) {
+
+
+        if (!$this->is_sync_cache) {
+            $this->site_cache = $this->table('site')->getAll();
+            $this->module_cache = $this->table('module')->order_by('displayorder ASC,id ASC')->getAll();
+            \Phpcmf\Service::M('site')->cache(0, $this->site_cache, $this->module_cache);
+        }
+
+        if (!$is_site && $name) {
+            \Phpcmf\Service::M($name, $namepspace)->cache();
+        }
+
+        foreach ($this->site_cache as $t) {
+
+            if ($this->module_cache) {
+                \Phpcmf\Service::M('table')->cache($t['id'], $this->module_cache);
+                \Phpcmf\Service::M('module')->cache($t['id'], $this->module_cache);
+            }
+
+            if ($is_site && $name) {
+                \Phpcmf\Service::M($name, $namepspace)->cache($t['id']);
+            }
+        }
+
+        \Phpcmf\Service::M('menu')->cache();
+
+        if (!$this->is_sync_cache) {
+            $this->is_sync_cache = 1;
+        }
+
+        $this->update_data_cache();
+    }
+
 
     // 更新缓存
     public function update_cache() {

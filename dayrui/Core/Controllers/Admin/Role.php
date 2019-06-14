@@ -65,7 +65,12 @@ class Role extends \Phpcmf\Common
 			$data = \Phpcmf\Service::L('Input')->post('data');
 			$this->_validation($data);
 			\Phpcmf\Service::L('Input')->system_log('添加角色组('.$data['name'].')');
-			\Phpcmf\Service::M('auth')->add_role($data) ? exit($this->_json(1, dr_lang('操作成功'))) : exit($this->_json(0, dr_lang('操作失败')));
+			if (\Phpcmf\Service::M('auth')->add_role($data)) {
+                \Phpcmf\Service::M('cache')->sync_cache('auth');
+			    exit($this->_json(1, dr_lang('操作成功')));
+            } else {
+			    exit($this->_json(0, dr_lang('操作失败')));
+            }
 		}
 
 		\Phpcmf\Service::V()->assign([
@@ -85,6 +90,7 @@ class Role extends \Phpcmf\Common
 			$data = \Phpcmf\Service::L('Input')->post('data');
 			$this->_validation($data);
 			\Phpcmf\Service::M('auth')->update_role($id, $data);
+            \Phpcmf\Service::M('cache')->sync_cache('auth');
 			\Phpcmf\Service::L('Input')->system_log('修改角色组('.$data['name'].')');
 			exit($this->_json(1, dr_lang('操作成功')));
 		}
@@ -110,6 +116,7 @@ class Role extends \Phpcmf\Common
 			    'system' => dr_array2string($data),
 			    'module' => dr_array2string($module),
             ]);
+            \Phpcmf\Service::M('cache')->sync_cache('auth');
 			\Phpcmf\Service::L('Input')->system_log('设置角色组('.$data['name'].')权限');
 			exit($this->_json(1, dr_lang('操作成功')));
 		}
@@ -168,6 +175,7 @@ class Role extends \Phpcmf\Common
 		if (IS_AJAX_POST) {
 			$data = \Phpcmf\Service::L('Input')->post('data');
 			\Phpcmf\Service::M('auth')->table('admin_role')->update($id, ['site' => dr_array2string($data)]);
+            \Phpcmf\Service::M('cache')->sync_cache('auth');
 			\Phpcmf\Service::L('Input')->system_log('设置角色组('.$data['name'].')站点权限');
 			exit($this->_json(1, dr_lang('操作成功')));
 		}
@@ -186,6 +194,7 @@ class Role extends \Phpcmf\Common
 		in_array(1, $ids) && exit($this->_json(0, dr_lang('超级管理员角色组不能删除')));
 
 		\Phpcmf\Service::M('auth')->delete_role($ids);
+        \Phpcmf\Service::M('cache')->sync_cache('auth');
 		\Phpcmf\Service::L('Input')->system_log('批量删除角色组: '. @implode(',', $ids));
 
 		exit($this->_json(1, dr_lang('操作成功'), ['ids' => $ids]));

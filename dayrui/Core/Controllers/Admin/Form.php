@@ -99,7 +99,8 @@ class Form extends \Phpcmf\Common
 			\Phpcmf\Service::L('Input')->system_log('创建网站表单('.$data['name'].')');
 			$rt = \Phpcmf\Service::M('Form')->create($data);
 			!$rt['code'] && $this->_json(0, $rt['msg']);
-			exit($this->_json(1, dr_lang('操作成功')));
+            \Phpcmf\Service::M('cache')->sync_cache('form', '', 1); // 自动更新缓存
+			exit($this->_json(1, dr_lang('操作成功，请刷新后台页面')));
 		}
 
 		\Phpcmf\Service::V()->assign([
@@ -147,6 +148,7 @@ class Form extends \Phpcmf\Common
 					'setting' => dr_array2string($data['setting'])
 				]
 			);
+            \Phpcmf\Service::M('cache')->sync_cache('form', '', 1); // 自动更新缓存
 			\Phpcmf\Service::L('Input')->system_log('修改网站表单('.$data['name'].')配置');
 			exit($this->_json(1, dr_lang('操作成功')));
 		}
@@ -181,6 +183,7 @@ class Form extends \Phpcmf\Common
 		$rt = \Phpcmf\Service::M('Form')->delete_form($ids);
 		!$rt['code'] && exit($this->_json(0, $rt['msg']));
 
+        \Phpcmf\Service::M('cache')->sync_cache('form', '', 1); // 自动更新缓存
 		\Phpcmf\Service::L('Input')->system_log('批量删除网站表单: '. @implode(',', $ids));
 
 		exit($this->_json(1, dr_lang('操作成功'), ['ids' => $ids]));
@@ -242,6 +245,7 @@ class Form extends \Phpcmf\Common
             }
             $rt = \Phpcmf\Service::M('Form')->import($data);
             !$rt['code'] && $this->_json(0, $rt['msg']);
+            \Phpcmf\Service::M('cache')->sync_cache('form', '', 1); // 自动更新缓存
             \Phpcmf\Service::L('Input')->system_log('导入网站表单('.$data['name'].')');
             exit($this->_json(1, dr_lang('操作成功')));
         }

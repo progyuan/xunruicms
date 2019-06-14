@@ -103,8 +103,9 @@ class Html
         $data = dr_save_bfb_data($data);
         !dr_count($data) && $this->_json(0, '没有可用生成的栏目数据');
 
-        \Phpcmf\Service::L('cache')->init()->save('category-'.$app.'-html-file', $data, 3600);
-        \Phpcmf\Service::C()->_json(1, 'ok');
+        $name = 'category-'.$app.'-html-file';
+        \Phpcmf\Service::L('cache')->init()->save($name, $data, 3600);
+        \Phpcmf\Service::C()->_json(1, $name);
     }
 
     // 内容的数量统计

@@ -150,6 +150,25 @@
             }
         });
     });
+    function dr_scjt() {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "{dr_url($uriprefix.'/scjt_edit')}",
+            data: $("#myform").serialize(),
+            success: function(json) {
+                if (json.code == 1) {
+                    dr_bfb('{dr_lang('生成栏目')}', '', json.msg);
+                } else {
+                    dr_cmf_tips(json.code, json.msg);
+                }
+
+            },
+            error: function(HttpRequest, ajaxOptions, thrownError) {
+                dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError)
+            }
+        });
+    }
 </script>
 
 <div class="row my-content-top-tool">
@@ -214,11 +233,7 @@
             <label>{$move_select}</label>
             <label><button type="button" onclick="dr_ajax_option('{dr_url($uriprefix.'/move_edit')}', '{dr_lang('你确定要移动它们吗？')}', 1)" class="btn blue btn-sm"> <i class="fa fa-edit"></i> {dr_lang('移动')}</button></label>
             {/if}
-            {if IS_SHARE}
-            <label><button type="button" onclick="dr_bfb('{dr_lang('生成共享栏目')}', '', '{dr_url('html/category_index')}')" class="btn green btn-sm"> <i class="fa fa-reorder"></i> {dr_lang('生成静态')} </button></label>
-            {else}
-            <label><button type="button" onclick="dr_bfb('{dr_lang('生成栏目')}', '', '{dr_url('html/category_index')}&app={APP_DIR}')" class="btn green btn-sm"> <i class="fa fa-reorder"></i> {dr_lang('生成静态')} </button></label>
-            {/if}
+            <label><button type="button" onclick="dr_scjt()" class="btn green btn-sm"> <i class="fa fa-reorder"></i> {dr_lang('生成静态')} </button></label>
         </div>
     </div>
 </form>

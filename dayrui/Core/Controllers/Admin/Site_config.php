@@ -54,6 +54,7 @@ class Site_config extends \Phpcmf\Common
                 $attach && \Phpcmf\Service::M('Attachment')->handle($this->member['id'], \Phpcmf\Service::M()->dbprefix('site'), $attach);
             }
 
+            \Phpcmf\Service::M('cache')->sync_cache('');
             $this->_json(1, dr_lang('操作成功'));
 		}
 

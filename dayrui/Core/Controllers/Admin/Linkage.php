@@ -58,6 +58,7 @@ class Linkage extends \Phpcmf\Common
 			\Phpcmf\Service::L('Input')->system_log('创建联动菜单('.$data['name'].')');
 			$rt = \Phpcmf\Service::M('Linkage')->create($data);
 			!$rt['code'] && $this->_json(0, $rt['msg']);
+            \Phpcmf\Service::M('cache')->sync_cache('linkage', '', 1); // 自动更新缓存
 			exit($this->_json(1, dr_lang('操作成功')));
 		}
 
@@ -80,6 +81,7 @@ class Linkage extends \Phpcmf\Common
 			$rt = \Phpcmf\Service::M('Linkage')->table('linkage')->update($id, $data);
 			!$rt['code'] && $this->_json(0, $rt['msg']);
 			\Phpcmf\Service::L('Input')->system_log('修改联动菜单('.$data['name'].')');
+            \Phpcmf\Service::M('cache')->sync_cache('linkage', '', 1); // 自动更新缓存
 			exit($this->_json(1, dr_lang('操作成功')));
 		}
 
@@ -110,6 +112,7 @@ class Linkage extends \Phpcmf\Common
 			}
 		}
 
+        \Phpcmf\Service::M('cache')->sync_cache('linkage', '', 1); // 自动更新缓存
 		$this->_json(1, dr_lang('共%s条数据，导入成功%s条', dr_count($data), $count));
 	}
 	
@@ -122,6 +125,7 @@ class Linkage extends \Phpcmf\Common
 		$rt = \Phpcmf\Service::M('Linkage')->delete_all($ids);
 		!$rt['code'] && exit($this->_json(0, $rt['msg']));
 
+        \Phpcmf\Service::M('cache')->sync_cache('linkage', '', 1); // 自动更新缓存
 		\Phpcmf\Service::L('Input')->system_log('批量联动菜单: '. @implode(',', $ids));
 
 		exit($this->_json(1, dr_lang('操作成功'), ['ids' => $ids]));
@@ -166,6 +170,7 @@ class Linkage extends \Phpcmf\Common
 		$rt = \Phpcmf\Service::M('Linkage')->table('linkage_data_'.$key)->save($id, 'displayorder', $value);
 		!$rt['code'] && $this->_json(0, $rt['msg']);
 
+        \Phpcmf\Service::M('cache')->sync_cache('linkage', '', 1); // 自动更新缓存
 		\Phpcmf\Service::L('Input')->system_log('修改联动菜单值('.$row['name'].')的排序值为'.$value);
 		$this->_json(1, dr_lang('操作成功'));
 	}
@@ -182,6 +187,7 @@ class Linkage extends \Phpcmf\Common
 		$v = $row['hidden'] ? 0 : 1;
 		\Phpcmf\Service::M('Linkage')->table('linkage_data_'.$key)->update($id, ['hidden' => $v]);
 
+        \Phpcmf\Service::M('cache')->sync_cache('linkage', '', 1); // 自动更新缓存
 		\Phpcmf\Service::L('Input')->system_log('修改联动菜单状态: '. $i);
 		exit($this->_json(1, dr_lang($v ? '此菜单已被隐藏' : '此菜单已被启用'), ['value' => $v]));
 
@@ -196,6 +202,7 @@ class Linkage extends \Phpcmf\Common
 		$rt = \Phpcmf\Service::M('Linkage')->delete_list_all($key, $ids);
 		!$rt['code'] && exit($this->_json(0, $rt['msg']));
 
+        \Phpcmf\Service::M('cache')->sync_cache('linkage', '', 1); // 自动更新缓存
 		\Phpcmf\Service::L('Input')->system_log('批量删除联动菜单: '. @implode(',', $ids));
 
 		exit($this->_json(1, dr_lang('操作成功'), ['ids' => $ids]));
@@ -211,6 +218,7 @@ class Linkage extends \Phpcmf\Common
 		$rt = \Phpcmf\Service::M('Linkage')->edit_pid_all($key, $pid, $ids);
 		!$rt['code'] && exit($this->_json(0, $rt['msg']));
 
+        \Phpcmf\Service::M('cache')->sync_cache('linkage', '', 1); // 自动更新缓存
 		\Phpcmf\Service::L('Input')->system_log('批量更改联动菜单分类: '. @implode(',', $ids));
 
 		exit($this->_json(1, dr_lang('操作成功'), ['ids' => $ids]));
@@ -264,6 +272,7 @@ class Linkage extends \Phpcmf\Common
 			$data = \Phpcmf\Service::L('Input')->post('data');
 			$rt = \Phpcmf\Service::M('Linkage')->add_list($key, $data);
 			!$rt['code'] && $this->_json(0, $rt['msg']);
+            \Phpcmf\Service::M('cache')->sync_cache('linkage', '', 1); // 自动更新缓存
 			\Phpcmf\Service::L('Input')->system_log('创建联动菜单('.$data['name'].')');
 			exit($this->_json(1, $rt['msg']));
 		}
@@ -334,6 +343,7 @@ class Linkage extends \Phpcmf\Common
                 \Phpcmf\Service::M()->dbprefix('linkage_data_'.$key),
                 $attach
             );
+            \Phpcmf\Service::M('cache')->sync_cache('linkage', '', 1); // 自动更新缓存
 			\Phpcmf\Service::L('Input')->system_log('修改联动菜单('.$post['name'].')');
 			exit($this->_json(1, dr_lang('操作成功')));
 		}

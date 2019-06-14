@@ -791,6 +791,77 @@ function dr_url_module_list() {
         btn: []
     });
 }
+
+function dr_url_mform_list() {
+    layer.alert('<b>举例</b><hr>'+
+        '默认模块地址: <br>index.php?s=news&c=xxxxx&cid=1<br>'+
+        '形如news/xxxxx/1-list.html <br>这种地址格式为: {modname}/{form}/{cid}-list.html'+
+        '<br><br><b>通配符</b><hr>'+
+        '{page}   表示分页号<br>'+
+        '{cid}   表示对应模块内容的id<br>'+
+        '{form}   表示表单的别名<br>'+
+        '{modname}  表示模块目录<br>'+
+        '支持主表任何字段，格式：{字段名}，如：{name}表示栏目名称<br>'+
+        '<br><br><b>使用自定义函数方法(需要有php开发经验)</b><hr>'+
+        '{自定义函数方法名($data)}	   表示用自定义函数方法来定义url<br>'+
+        '<br><br><b>自定义函数举例(需要有php开发经验)</b><hr>'+
+        '自定义函数文件: /config/custom.php <br>增加以下函数体:<br>'+
+        'function my_url($data) { return "你的URL"; } // 这个函数内容你自己定义<br>'+
+        '那么你就填写: {my_url($data)}<br>'+
+        '', {
+        shade: 0,
+        title: '',
+        area: ['50%', '50%'],
+        btn: []
+    });
+}
+function dr_url_mform_show() {
+    layer.alert('<b>举例</b><hr>'+
+        '默认模块地址: <br>index.php?s=news&c=xxxxx&m=show&cid=1<br>'+
+        '形如news/xxxxx/1-show.html <br>这种地址格式为: {modname}/{form}/{cid}-show.html'+
+        '<br><br><b>通配符</b><hr>'+
+        '{id}   表示表单内容id<br>'+
+        '{page}   表示分页号<br>'+
+        '{cid}   表示对应模块内容的id<br>'+
+        '{form}   表示表单的别名<br>'+
+        '{modname}  表示模块目录<br>'+
+        '支持主表任何字段，格式：{字段名}，如：{name}表示栏目名称<br>'+
+        '<br><br><b>使用自定义函数方法(需要有php开发经验)</b><hr>'+
+        '{自定义函数方法名($data)}	   表示用自定义函数方法来定义url<br>'+
+        '<br><br><b>自定义函数举例(需要有php开发经验)</b><hr>'+
+        '自定义函数文件: /config/custom.php <br>增加以下函数体:<br>'+
+        'function my_url($data) { return "你的URL"; } // 这个函数内容你自己定义<br>'+
+        '那么你就填写: {my_url($data)}<br>'+
+        '', {
+        shade: 0,
+        title: '',
+        area: ['50%', '50%'],
+        btn: []
+    });
+}
+function dr_url_mform_post() {
+    layer.alert('<b>举例</b><hr>'+
+        '默认模块地址: <br>index.php?s=news&c=xxxxx&m=post&cid=1<br>'+
+        '形如news/xxxxx/1-post.html <br>这种地址格式为: {modname}/{form}/{cid}-post.html'+
+        '<br><br><b>通配符</b><hr>'+
+        '{page}   表示分页号<br>'+
+        '{cid}   表示对应模块内容的id<br>'+
+        '{form}   表示表单的别名<br>'+
+        '{modname}  表示模块目录<br>'+
+        '支持主表任何字段，格式：{字段名}，如：{name}表示栏目名称<br>'+
+        '<br><br><b>使用自定义函数方法(需要有php开发经验)</b><hr>'+
+        '{自定义函数方法名($data)}	   表示用自定义函数方法来定义url<br>'+
+        '<br><br><b>自定义函数举例(需要有php开发经验)</b><hr>'+
+        '自定义函数文件: /config/custom.php <br>增加以下函数体:<br>'+
+        'function my_url($data) { return "你的URL"; } // 这个函数内容你自己定义<br>'+
+        '那么你就填写: {my_url($data)}<br>'+
+        '', {
+        shade: 0,
+        title: '',
+        area: ['50%', '50%'],
+        btn: []
+    });
+}
 function dr_url_module_show() {
     layer.alert('<b>举例</b><hr>'+
         '默认模块地址: <br>index.php?s=news&c=show&id=1<br>'+
@@ -820,7 +891,7 @@ function dr_url_module_show() {
 }
 function dr_url_page() {
     layer.alert('<b>举例</b><hr>'+
-        '默认模块地址: <br>index.php?c=page&id=1<br>'+
+        '默认模块地址: <br>index.php?s=page&id=1<br>'+
         '形如page/1.html <br>这种地址格式为: page/{id}.html'+
         '<br><br><b>通配符</b><hr>'+
         '{id}   表示id<br>'+
@@ -843,7 +914,7 @@ function dr_url_page() {
 }
 function dr_url_module_tag() {
     layer.alert('<b>举例</b><hr>'+
-        '默认模块地址: <br>index.php?c=tag&name=guanjianci<br>'+
+        '默认模块地址: <br>index.php?s=tag&name=guanjianci<br>'+
         '形如tag/guanjianci.html <br>这种地址格式为: tag/{tag}.html'+
         '<br><br><b>通配符</b><hr>'+
         '{tag}   表示tag英文名称<br>'+

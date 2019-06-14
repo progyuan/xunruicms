@@ -44,7 +44,16 @@ class Site_domain extends \Phpcmf\Common
     public function index() {
 
         if (IS_AJAX_POST) {
-            \Phpcmf\Service::M('Site')->domain(\Phpcmf\Service::L('Input')->post('data', true));
+            $data = $post = \Phpcmf\Service::L('Input')->post('data', true);
+            foreach ($post as $name => $value) {
+                unset($data[$name]);
+                if ($value && in_array($value, $data)) {
+                    exit($this->_json(0, dr_lang('域名[%s]绑定重复', $value)));
+                }
+                $data[$name] = $value;
+            }
+            \Phpcmf\Service::M('Site')->domain($post);
+            \Phpcmf\Service::M('cache')->sync_cache('');
             \Phpcmf\Service::L('Input')->system_log('设置网站域名参数');
             exit($this->_json(1, dr_lang('操作成功')));
         }

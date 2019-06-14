@@ -179,6 +179,10 @@ class Router
             return SELF;
         }
 
+        if (!IS_ADMIN) {
+            $self = '/'.$self;
+        }
+
         $url = explode('/', $url);
         $uri = array();
 
@@ -194,7 +198,7 @@ class Router
             case 3:
                 $uri['s'] = $url[0];
                 // 非后台且非会员中心的模块地址
-                if (is_dir(APPSPATH . ucfirst($uri['s'])) && $self == 'index.php' && !IS_MEMBER) {
+                if (is_dir(APPSPATH . ucfirst($uri['s'])) && trim($self, '/') == 'index.php' && !IS_MEMBER) {
                     $mod = \Phpcmf\Service::C()->get_cache('module-' . SITE_ID . '-' . $uri['s']);
                     if ($mod['domain']) {
                         unset($uri['s']);

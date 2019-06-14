@@ -91,7 +91,9 @@ class Function_list
 
     // 用于列表显示作者
     function author($value, $param = [], $data = []) {
-        if ((isset($data['username']) || isset($data['author'])) && $data['uid']) {
+        if ($value == 'guest') {
+            return dr_lang('游客');
+        } elseif ((isset($data['username']) || isset($data['author'])) && $data['uid']) {
             // 模块需要重新查询名字
             $member = $this->uid_data[$data['uid']] = isset($this->uid_data[$data['uid']]) && $this->uid_data[$data['uid']] ? $this->uid_data[$data['uid']] : \Phpcmf\Service::M('member')->username($data['uid']);
         } else {

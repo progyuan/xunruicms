@@ -100,6 +100,7 @@ class Member_field extends \Phpcmf\Common
             'value' => dr_array2string($value)
         ]);
 
+        \Phpcmf\Service::M('cache')->sync_cache('member'); // 自动更新缓存
         $this->_json(1, dr_lang('划分成功'));
     }
 
@@ -124,6 +125,7 @@ class Member_field extends \Phpcmf\Common
             'value' => dr_array2string($register)
         ]);
 
+        \Phpcmf\Service::M('cache')->sync_cache('member'); // 自动更新缓存
         $this->_json(1, dr_lang('操作成功'), ['value' => $rt]);
     }
 
@@ -146,6 +148,7 @@ class Member_field extends \Phpcmf\Common
             'value' => dr_array2string($value)
         ]);
 
+        \Phpcmf\Service::M('cache')->sync_cache('member'); // 自动更新缓存
         $this->_json(1, dr_lang('删除成功'));
     }
 

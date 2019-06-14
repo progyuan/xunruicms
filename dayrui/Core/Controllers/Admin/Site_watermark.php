@@ -45,6 +45,7 @@ class Site_watermark extends \Phpcmf\Common
                 'watermark',
                 \Phpcmf\Service::L('Input')->post('data', true)
             );
+            \Phpcmf\Service::M('cache')->sync_cache('');
             \Phpcmf\Service::L('Input')->system_log('设置网站图片水印参数');
             $this->_json(1, dr_lang('操作成功'));
         }

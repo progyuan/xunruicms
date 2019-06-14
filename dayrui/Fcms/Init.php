@@ -87,6 +87,23 @@ $system = is_file(WRITEPATH.'config/system.php') ? require WRITEPATH.'config/sys
 foreach ($system as $var => $value) {
     !defined($var) && define($var, $value);
 }
+// 当前URL
+$pageURL = 'http';
+((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on')
+    || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == '443')
+    || (isset($system['SYS_HTTPS']) && $system['SYS_HTTPS'])) && $pageURL.= 's';
+$pageURL.= '://';
+if (strpos($_SERVER['HTTP_HOST'], ':') !== FALSE) {
+    $url = explode(':', $_SERVER['HTTP_HOST']);
+    $url[0] ? $pageURL.= $_SERVER['HTTP_HOST'] : $pageURL.= $url[0];
+} else {
+    $pageURL.= $_SERVER['HTTP_HOST'];
+}
+
+define('FC_NOW_URL', $pageURL.($_SERVER['REQUEST_URI'] ? $_SERVER['REQUEST_URI'] : $_SERVER['PHP_SELF']));
+define('FC_NOW_HOST', $pageURL.'/');
+unset($system);
+
 
 // 缓存变量
 $cache = [];
@@ -103,6 +120,7 @@ foreach ([
          ] as $name) {
     define($name, (int)$cache[$name]);
 }
+unset($cache);
 
 // 当前域名
 define('DOMAIN_NAME', strtolower($_SERVER['HTTP_HOST']));

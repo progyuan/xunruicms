@@ -103,6 +103,7 @@ class Verify extends \Phpcmf\Table
         $rt = \Phpcmf\Service::M()->table('admin_verify')->insert($data);
 
         !$rt['code'] && $this->_json(0, dr_lang($rt['msg']));
+        \Phpcmf\Service::M('cache')->sync_cache('verify');
         $this->_json(1, dr_lang('复制成功'));
     }
 
@@ -135,6 +136,9 @@ class Verify extends \Phpcmf\Table
             $data[1]['verify'] = dr_array2string($value);
 
             return dr_return_data(1, 'ok', $data);
+        }, function ($id, $data, $old) {
+
+            \Phpcmf\Service::M('cache')->sync_cache('verify');
         });
     }
 
@@ -151,7 +155,13 @@ class Verify extends \Phpcmf\Table
 
     // 后台删除url内容
     public function del() {
-        $this->_Del(\Phpcmf\Service::L('Input')->get_post_ids());
+        $this->_Del(
+            \Phpcmf\Service::L('Input')->get_post_ids(),
+            null,
+            function ($r) {
+                \Phpcmf\Service::M('cache')->sync_cache('verify');
+            }
+        );
     }
 
 }

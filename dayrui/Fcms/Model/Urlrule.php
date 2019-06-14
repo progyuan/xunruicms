@@ -30,7 +30,7 @@ class Urlrule extends \Phpcmf\Model
 
 
     // 缓存
-    public function cache() {
+    public function cache($site = SITE_ID) {
 
         $data = $this->table('urlrule')->getAll();
         $cache = [];

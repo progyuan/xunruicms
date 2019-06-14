@@ -627,7 +627,7 @@ class Menu extends \Phpcmf\Model {
     }
 
     // 缓存
-    public function cache() {
+    public function cache($site = SITE_ID) {
 
 
         $menu = [

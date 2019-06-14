@@ -36,6 +36,7 @@ class Site_mobile extends \Phpcmf\Common
             );
             !is_array($rt) && $this->_json(0, dr_lang('网站信息(#%s)不存在', SITE_ID));
 			\Phpcmf\Service::L('Input')->system_log('设置手机网站参数');
+            \Phpcmf\Service::M('cache')->sync_cache('');
 			exit($this->_json(1, dr_lang('操作成功')));
 		}
 

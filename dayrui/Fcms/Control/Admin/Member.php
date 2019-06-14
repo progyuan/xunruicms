@@ -177,6 +177,7 @@ class Member extends \Phpcmf\Common
                 'name' => 'auth_module',
                 'value' => dr_array2string($this->auth)
             ]);
+            \Phpcmf\Service::M('cache')->sync_cache('member');
             $this->_json(1, dr_lang('操作成功'));
         }
 
@@ -213,6 +214,7 @@ class Member extends \Phpcmf\Common
                 'name' => 'auth_module',
                 'value' => dr_array2string($this->auth)
             ]);
+            \Phpcmf\Service::M('cache')->sync_cache('member');
             $this->_json(1, dr_lang('共复制%s个栏目', $c));
             exit;
         }
@@ -245,6 +247,7 @@ class Member extends \Phpcmf\Common
                 'value' => dr_array2string($this->auth)
             ]);
 
+            \Phpcmf\Service::M('cache')->sync_cache('member');
             $this->_json(1, dr_lang('权限配置清除成功'));
         }
 

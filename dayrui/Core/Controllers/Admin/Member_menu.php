@@ -114,6 +114,7 @@ class Member_menu extends \Phpcmf\Common
 			]);
 		}
 
+        \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
 		$this->_json(1, dr_lang('划分成功'));
 	}
 
@@ -133,6 +134,7 @@ class Member_menu extends \Phpcmf\Common
 			'group' => dr_array2string($value)
 		]);
 
+        \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
 		$this->_json(1, dr_lang('删除成功'));
 	}
 
@@ -155,6 +157,7 @@ class Member_menu extends \Phpcmf\Common
 			]);
 		}
 
+        \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
 		$this->_json(1, dr_lang('划分成功'));
 	}
 
@@ -174,6 +177,7 @@ class Member_menu extends \Phpcmf\Common
 			'site' => dr_array2string($value)
 		]);
 
+        \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
 		$this->_json(1, dr_lang('删除成功'));
 	}
 
@@ -187,7 +191,12 @@ class Member_menu extends \Phpcmf\Common
 			$data = \Phpcmf\Service::L('Input')->post('data');
 			$this->_validation($data);
 			\Phpcmf\Service::L('Input')->system_log('添加用户中心菜单: '.$data['name']);
-            \Phpcmf\Service::M('Menu')->_add('member', $pid, $data) ? exit($this->_json(1, dr_lang('操作成功'))) : exit($this->_json(0, dr_lang('操作失败')));
+            if (\Phpcmf\Service::M('Menu')->_add('member', $pid, $data)) {
+                \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
+                $this->_json(1, dr_lang('操作成功'));
+            } else {
+                $this->_json(0, dr_lang('操作失败'));
+            }
 		}
 
 		\Phpcmf\Service::V()->assign([
@@ -212,6 +221,8 @@ class Member_menu extends \Phpcmf\Common
 			$this->_validation($data);
 			\Phpcmf\Service::M('Menu')->_update('member', $id, $data);
 			\Phpcmf\Service::L('Input')->system_log('修改用户中心菜单: '.$data['name']);
+
+            \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
 			exit($this->_json(1, dr_lang('操作成功')));
 		}
 
@@ -231,6 +242,7 @@ class Member_menu extends \Phpcmf\Common
 		!$ids && exit($this->_json(0, dr_lang('你还没有选择呢')));
 
 		\Phpcmf\Service::M('Menu')->_delete('member', $ids);
+        \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
 		\Phpcmf\Service::L('Input')->system_log('批量删除用户中心菜单: '. @implode(',', $ids));
 		exit($this->_json(1, dr_lang('操作成功'), ['ids' => $ids]));
 	}
@@ -251,6 +263,7 @@ class Member_menu extends \Phpcmf\Common
 		$v = \Phpcmf\Service::M('Menu')->_uesd('member', $i);
 		$v == -1 && exit($this->_json(0, dr_lang('数据#%s不存在', $i), ['value' => $v]));
 		\Phpcmf\Service::L('Input')->system_log('修改用户中心菜单状态: '. $i);
+        \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
 		exit($this->_json(1, dr_lang($v ? '此菜单已被隐藏' : '此菜单已被启用'), ['value' => $v]));
 
 	}
@@ -266,6 +279,7 @@ class Member_menu extends \Phpcmf\Common
 			dr_safe_replace(\Phpcmf\Service::L('Input')->get('value'))
 		);
 
+        \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
 		\Phpcmf\Service::L('Input')->system_log('修改用户中心菜单信息: '. $i);
 		exit($this->_json(1, dr_lang('更改成功')));
 	}

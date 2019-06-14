@@ -90,6 +90,8 @@ class Email extends \Phpcmf\Common
 			\Phpcmf\Service::L('Input')->system_log('添加SMTP服务器: '.$data['name']);
 			$data['displayorder'] = intval($data['displayorder']);
 			\Phpcmf\Service::M()->table('mail_smtp')->insert($data);
+            // 自动更新缓存
+            \Phpcmf\Service::M('cache')->sync_cache('email');
 			exit($this->_json(1, dr_lang('操作成功')));
 		}
 
@@ -112,6 +114,8 @@ class Email extends \Phpcmf\Common
 			$this->_validation($data);
 			\Phpcmf\Service::M()->table('mail_smtp')->update($id, $data);
 			\Phpcmf\Service::L('Input')->system_log('修改SMTP服务器: '.$data['name']);
+
+            \Phpcmf\Service::M('cache')->sync_cache('email'); // 自动更新缓存
 			exit($this->_json(1, dr_lang('操作成功')));
 		}
 
@@ -134,6 +138,7 @@ class Email extends \Phpcmf\Common
 		);
 
 		\Phpcmf\Service::L('Input')->system_log('修改SMTP服务器排序值: '. $i);
+        \Phpcmf\Service::M('cache')->sync_cache('email'); // 自动更新缓存
 		exit($this->_json(1, dr_lang('更改成功')));
 	}
 
@@ -143,6 +148,7 @@ class Email extends \Phpcmf\Common
 		!$ids && exit($this->_json(0, dr_lang('你还没有选择呢')));
 
 		\Phpcmf\Service::M()->table('mail_smtp')->deleteAll($ids);
+        \Phpcmf\Service::M('cache')->sync_cache('email'); // 自动更新缓存
 		\Phpcmf\Service::L('Input')->system_log('批量删除SMTP服务器: '. @implode(',', $ids));
 		exit($this->_json(1, dr_lang('操作成功'), ['ids' => $ids]));
 	}

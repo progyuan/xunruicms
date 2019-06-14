@@ -38,6 +38,7 @@ class Urlrule extends \Phpcmf\Table
             1 => dr_lang('独立模块'),
             2 => dr_lang('共享模块'),
             3 => dr_lang('共享栏目'),
+            //5 => dr_lang('模块表单'),
         );
         if (!dr_is_app('page')) {
             unset($this->type[0]);
@@ -99,6 +100,8 @@ class Urlrule extends \Phpcmf\Table
         ]);
         \Phpcmf\Service::V()->display('urlrule_index.html');
     }
+
+    // 伪静态
     public function rewrite_index() {
 
         $name = $code = $note = '';
@@ -165,8 +168,15 @@ class Urlrule extends \Phpcmf\Table
             'code' => $code,
             'note' => $note,
             'count' => $code ? dr_count(explode(PHP_EOL, $code)) : 0,
+            'rewrite_config' => is_file(MYPATH.'Model/Rewrite.php') ? 1 : 0,
         ]);
         \Phpcmf\Service::V()->display('urlrule_rewrite.html');
+    }
+
+    // 生成伪静态解析文件规则
+    public function rewrite_add() {
+        $rt = \Phpcmf\Service::M('rewrite')->get_code();
+        $this->_json($rt['code'], $rt['msg'], $rt['data']);
     }
 
     // 后台添加url内容
@@ -194,6 +204,7 @@ class Urlrule extends \Phpcmf\Table
         $rt = \Phpcmf\Service::M()->table('urlrule')->insert($data);
 
         !$rt['code'] && $this->_json(0, dr_lang($rt['msg']));
+        \Phpcmf\Service::M('cache')->sync_cache('urlrule');
         $this->_json(1, dr_lang('复制成功'));
     }
 
@@ -208,6 +219,9 @@ class Urlrule extends \Phpcmf\Table
             $value[$type]['catjoin'] = \Phpcmf\Service::L('Input')->post('catjoin') ? \Phpcmf\Service::L('Input')->post('catjoin') : '/';
             $data[1]['value'] = dr_array2string($value[$type]);
             return dr_return_data(1, 'ok', $data);
+        }, function ($id, $data, $old) {
+
+            \Phpcmf\Service::M('cache')->sync_cache('urlrule');
         });
     }
 
@@ -224,7 +238,13 @@ class Urlrule extends \Phpcmf\Table
 
     // 后台删除url内容
     public function del() {
-        $this->_Del(\Phpcmf\Service::L('Input')->get_post_ids());
+        $this->_Del(
+            \Phpcmf\Service::L('Input')->get_post_ids(),
+            null,
+            function ($r) {
+                \Phpcmf\Service::M('cache')->sync_cache('urlrule');
+            }
+        );
     }
 
 }

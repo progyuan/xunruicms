@@ -173,10 +173,14 @@ class Service
     public static function H($name, $namespace) {
 
 
-        $file = APPSPATH.ucfirst($namespace).'/Helpers/'.ucfirst($name).'_helper.php';
+        $file = dr_get_app_dir($namespace).'Helpers/'.ucfirst($name).'.php';
         $_cname = md5($file);
         if (isset(static::$help[$_cname])) {
             return;
+        }
+
+        if (!is_file($file)) {
+            defined('IS_API_HTTP') && IS_API_HTTP ? \Phpcmf\Common::json(0, '函数文件：'.str_replace(FCPATH, '', $file).'不存在') : exit('函数文件：'.str_replace(FCPATH, '', $file).'不存在');
         }
 
         static::$help[$_cname] = 1;

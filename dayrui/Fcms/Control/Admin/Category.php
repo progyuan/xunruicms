@@ -60,7 +60,10 @@ class Category extends \Phpcmf\Table
                     )
                 ),
             ];
-            //$dir != 'share' && $this->_admin_msg(0, dr_lang('共享模块【%s】无权限使用栏目', $dir));
+            if ($this->module['share'] && $dir != 'share') {
+                // 当共享模块进入了独立模块的栏目，就跳转条共享模块
+                dr_redirect(dr_url('category/index'));
+            }
         } else {
             // 独立模块
             if (isset($this->module['config']['hcategory']) && $this->module['config']['hcategory']) {
@@ -362,6 +365,8 @@ class Category extends \Phpcmf\Table
                 !$rt['code'] && $this->_json(0, $rt['msg']);
                 $count ++;
             }
+            // 自动更新缓存
+            \Phpcmf\Service::M('cache')->sync_cache();
             $this->_json(1, dr_lang('批量添加%s个栏目', $count));
             exit;
         }
@@ -399,6 +404,8 @@ class Category extends \Phpcmf\Table
                 }
             }
 
+            // 自动更新缓存
+            \Phpcmf\Service::M('cache')->sync_cache();
             $this->_json(1, dr_lang('批量设置%s个栏目', $c));
             exit;
         }
@@ -437,6 +444,8 @@ class Category extends \Phpcmf\Table
                 // 计算栏目
                 // 删除之后记得删除相关模块数据
                 \Phpcmf\Service::M('Category')->delete_content($rows, $this->module);
+                // 自动更新缓存
+                \Phpcmf\Service::M('cache')->sync_cache();
                 return dr_return_data(1);
             },
             \Phpcmf\Service::M()->dbprefix($this->init['table'])
@@ -460,6 +469,9 @@ class Category extends \Phpcmf\Table
             \Phpcmf\Service::L('input')->system_log('修改栏目状态为: 静态模式 ['. $id.']');
         }
 
+        // 自动更新缓存
+        \Phpcmf\Service::M('cache')->sync_cache();
+
         $this->_json(1, dr_lang('操作成功'));
     }
 
@@ -480,6 +492,8 @@ class Category extends \Phpcmf\Table
             \Phpcmf\Service::L('input')->system_log('修改栏目状态为: 动态模式 ['. $id.']');
         }
 
+        // 自动更新缓存
+        \Phpcmf\Service::M('cache')->sync_cache();
         $this->_json(1, dr_lang('操作成功'));
     }
 
@@ -538,6 +552,8 @@ class Category extends \Phpcmf\Table
         // 批量更换栏目
         \Phpcmf\Service::M()->db->table($this->init['table'])->whereIn('id', $ids)->update(['pid' => $topid]);
 
+        // 自动更新缓存
+        \Phpcmf\Service::M('cache')->sync_cache();
         $this->_json(1, dr_lang('操作成功'));
     }
 
@@ -551,6 +567,8 @@ class Category extends \Phpcmf\Table
         $v = $row['show'] ? 0 : 1;
         \Phpcmf\Service::M('Category')->init($this->init)->update($id, ['show' => $v]);
 
+        // 自动更新缓存
+        \Phpcmf\Service::M('cache')->sync_cache();
         \Phpcmf\Service::L('input')->system_log('修改栏目的显示状态: '. $id);
         exit($this->_json(1, dr_lang($v ? '显示状态' : '隐藏状态'), ['value' => $v, 'share' => 0]));
     }
@@ -571,6 +589,8 @@ class Category extends \Phpcmf\Table
             $row['setting']['html'] = $v;
             \Phpcmf\Service::M('Category')->init($this->init)->update($id, ['setting' => dr_array2string($row['setting'])]);
             \Phpcmf\Service::L('input')->system_log('修改栏目状态为: '. $name . '['. $id.']');
+            // 自动更新缓存
+            \Phpcmf\Service::M('cache')->sync_cache();
             exit($this->_json(1, dr_lang($v ? '静态模式' : '动态模式'), ['value' => $v, 'share' => 1]));
         } else {
             // 独立模块
@@ -584,10 +604,23 @@ class Category extends \Phpcmf\Table
             \Phpcmf\Service::M()->db->table('module')->where('id', $this->module['id'])->update([
                 'site' => dr_array2string($site)
             ]);
-            // 重新生成缓存
-            \Phpcmf\Service::M('Module')->cache(SITE_ID);
             \Phpcmf\Service::L('input')->system_log('修改模块状态为: '. $name);
+            // 自动更新缓存
+            \Phpcmf\Service::M('cache')->sync_cache();
             exit($this->_json(1, dr_lang($name), ['value' => $v, 'share' => 0]));
+        }
+    }
+
+    // 生成栏目静态
+    public function scjt_edit() {
+
+        $ids = \Phpcmf\Service::L('input')->get_post_ids();
+        !$ids && $this->_json(0, dr_lang('没有选择任何栏目'));
+
+        if (IS_SHARE) {
+            $this->_json(1, dr_url('html/category_index', ['app' => '', 'ids' => implode(',', $ids)]));
+        } else {
+            $this->_json(1, dr_url('html/category_index', ['app' => APP_DIR, 'ids' => implode(',', $ids)]));
         }
     }
 
@@ -608,6 +641,8 @@ class Category extends \Phpcmf\Table
             $post = \Phpcmf\Service::L('input')->post('data');
             \Phpcmf\Service::M('Category')->init($this->init)->update($id, ['content' => ($post['content'])]);
             \Phpcmf\Service::L('input')->system_log('修改栏目内容: '. $row['name'] . '['. $id.']');
+            // 自动更新缓存
+            \Phpcmf\Service::M('cache')->sync_cache();
             $this->_json(1, dr_lang('操作成功'));
             exit;
         }
@@ -644,6 +679,8 @@ class Category extends \Phpcmf\Table
             $row['setting']['linkurl'] = \Phpcmf\Service::L('input')->post('url');
             \Phpcmf\Service::M('Category')->init($this->init)->update($id, ['setting' => dr_array2string($row['setting'])]);
             \Phpcmf\Service::L('input')->system_log('修改栏目外链地址: '. $row['name'] . '['. $id.']');
+            // 自动更新缓存
+            \Phpcmf\Service::M('cache')->sync_cache();
             $this->_json(1, dr_lang('操作成功'));
             exit;
         }
@@ -751,6 +788,9 @@ class Category extends \Phpcmf\Table
                 $save['childids'] = '';
 
                 return dr_return_data(1, '', [1 => $save]);
+            }, function ($id, $data, $old) {
+                // 自动更新缓存
+                \Phpcmf\Service::M('cache')->sync_cache();
             }
         );
     }

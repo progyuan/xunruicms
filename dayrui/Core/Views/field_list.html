@@ -10,15 +10,28 @@
                 <div class="portlet-title">
                     <div class="caption font-green-sharp">
                         <i class="icon-speech font-green-sharp"></i>
-                        <span class="caption-subject bold uppercase"> 可用字段</span>
+                        <span class="caption-subject bold uppercase"> 基础字段</span>
+                    </div>
+                </div>
+                <div class="portlet-body row">
+                    {loop $ftype $t}
+                    <div class="field-items margin-top-20 col-md-6">
+                        <a href="javascript:;" class="btn default btn-block field-handle">{$t.name}</a>
+                    </div>
+                    {/loop}
+                </div>
+            </div>
+            <div class="portlet light bordered">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <i class="icon-speech font-green-sharp"></i>
+                        <span class="caption-subject bold uppercase"> 高级字段</span>
                     </div>
                 </div>
                 <div class="portlet-body">
-                    {loop $ftype $t}
                     <div class="field-items margin-top-10">
-                        <a href="javascript:;" class="btn default btn-block field-handle">{$t.name}（{$t.id}）</a>
+                        <a href="javascript:;" class="btn default btn-block field-handle">多行多列表格填空</a>
                     </div>
-                    {/loop}
                 </div>
             </div>
         </div>
@@ -28,7 +41,7 @@
                 <div class="portlet-title">
                     <div class="caption font-green-sharp">
                         <i class="icon-speech font-green-sharp"></i>
-                        <span class="caption-subject bold uppercase"> 自定义字段</span>
+                        <span class="caption-subject bold uppercase"> 自定义表单布局</span>
                     </div>
                     <div class="actions">
                         <a href="javascript:;" class="btn btn-circle btn-default btn-sm">

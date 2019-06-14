@@ -157,6 +157,7 @@ abstract class Common extends \CodeIgniter\Controller
         define('SITE_NAME', $this->site_info[SITE_ID]['SITE_NAME']);
         define('SITE_LOGO', $this->site_info[SITE_ID]['SITE_LOGO']);
         define('SITE_IS_MOBILE', $this->site_info[SITE_ID]['SITE_IS_MOBILE']);
+        define('SITE_IS_MOBILE_HTML', (int)$this->site_info[SITE_ID]['SITE_IS_MOBILE_HTML']);
         define('SITE_THEME', strlen($this->site_info[SITE_ID]['SITE_THEME']) ? $this->site_info[SITE_ID]['SITE_THEME'] : 'default');
         define('SITE_SEOJOIN', strlen($this->site_info[SITE_ID]['SITE_SEOJOIN']) ? $this->site_info[SITE_ID]['SITE_SEOJOIN'] : '_');
         define('SITE_REWRITE', (int)$this->site_info[SITE_ID]['SITE_REWRITE']);
