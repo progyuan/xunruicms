@@ -86,7 +86,7 @@ class Member_group extends \Phpcmf\Table
             'sys_field' => [],
             'order_by' => '`value` asc',
             'list_field' => [],
-            'where_list' => 'gid='.(int)\Phpcmf\Service::L('Input')->get('gid'),
+            'where_list' => 'gid='.(int)\Phpcmf\Service::L('input')->get('gid'),
         ]);
     }
 
@@ -107,8 +107,8 @@ class Member_group extends \Phpcmf\Table
     // 修改
     public function edit() {
         $this->_init_group();
-        list($tpl) = $this->_Post(intval(\Phpcmf\Service::L('Input')->get('id')));
-        $page = intval(\Phpcmf\Service::L('Input')->get('page'));
+        list($tpl) = $this->_Post(intval(\Phpcmf\Service::L('input')->get('id')));
+        $page = intval(\Phpcmf\Service::L('input')->get('page'));
         \Phpcmf\Service::V()->assign([
             'page' => $page,
             'form' => dr_form_hidden(['page' => $page]),
@@ -120,8 +120,8 @@ class Member_group extends \Phpcmf\Table
     public function order_edit() {
         $this->_init_group();
         $this->_Display_Order(
-            intval(\Phpcmf\Service::L('Input')->get('id')),
-            intval(\Phpcmf\Service::L('Input')->get('value')),
+            intval(\Phpcmf\Service::L('input')->get('id')),
+            intval(\Phpcmf\Service::L('input')->get('value')),
             function ($r) {
                 \Phpcmf\Service::M('cache')->sync_cache('member'); // 自动更新缓存
             }
@@ -131,7 +131,7 @@ class Member_group extends \Phpcmf\Table
     // 允许注册
     public function register_edit() {
         $this->_init_group();
-        $id = (int)\Phpcmf\Service::L('Input')->get('id');
+        $id = (int)\Phpcmf\Service::L('input')->get('id');
         $data = $this->_Data($id);
         !$data && $this->_json(0, dr_lang('数据#%s不存在', $id));
         $value = $data['register'] ? 0 : 1;
@@ -143,7 +143,7 @@ class Member_group extends \Phpcmf\Table
     // 允许申请
     public function apply_edit() {
         $this->_init_group();
-        $id = (int)\Phpcmf\Service::L('Input')->get('id');
+        $id = (int)\Phpcmf\Service::L('input')->get('id');
         $data = $this->_Data($id);
         !$data && $this->_json(0, dr_lang('数据#%s不存在', $id));
         $value = $data['apply'] ? 0 : 1;
@@ -155,7 +155,7 @@ class Member_group extends \Phpcmf\Table
     // 删除
     public function del() {
         $this->_init_group();
-        $ids = \Phpcmf\Service::L('Input')->get_post_ids();
+        $ids = \Phpcmf\Service::L('input')->get_post_ids();
         $this->_Del(
             $ids,
             null,
@@ -199,7 +199,7 @@ class Member_group extends \Phpcmf\Table
     // 修改等级
     public function level_edit() {
         $this->_init_level();
-        list($tpl, $data) = $this->_Post(intval(\Phpcmf\Service::L('Input')->get('id')));
+        list($tpl, $data) = $this->_Post(intval(\Phpcmf\Service::L('input')->get('id')));
         \Phpcmf\Service::V()->assign([
             'form' => dr_form_hidden(['gid' => intval($data['gid'])]),
         ]);
@@ -209,7 +209,7 @@ class Member_group extends \Phpcmf\Table
     // 允许申请等级
     public function apply_level_edit() {
         $this->_init_level();
-        $id = (int)\Phpcmf\Service::L('Input')->get('id');
+        $id = (int)\Phpcmf\Service::L('input')->get('id');
         $data = $this->_Data($id);
         !$data && $this->_json(0, dr_lang('数据#%s不存在', $id));
         $value = $data['apply'] ? 0 : 1;
@@ -222,7 +222,7 @@ class Member_group extends \Phpcmf\Table
     public function level_del() {
         $this->_init_level();
         $this->_Del(
-            \Phpcmf\Service::L('Input')->get_post_ids(),
+            \Phpcmf\Service::L('input')->get_post_ids(),
             null,
             function ($r) {
                 \Phpcmf\Service::M('cache')->sync_cache('member'); // 自动更新缓存
@@ -235,12 +235,12 @@ class Member_group extends \Phpcmf\Table
     protected function _Save($id = 0, $data = [], $old = [],  $func = null) {
         return parent::_Save($id, $data, $old, function($id, $data, $old){
             if ($this->type) {
-                $data['setting'] = dr_array2string(\Phpcmf\Service::L('Input')->post('setting'));
+                $data['setting'] = dr_array2string(\Phpcmf\Service::L('input')->post('setting'));
                 $data['price'] = floatval($data['price']);
                 $data['days'] = intval($data['days']);
                 !$id && $data['displayorder'] = 0;
             } else {
-                $data['gid'] = (int)\Phpcmf\Service::L('Input')->post('gid');
+                $data['gid'] = (int)\Phpcmf\Service::L('input')->post('gid');
                 if (!$data['gid']) {
                     dr_return_data(0, dr_lang('所属用户组id不存在'), $data);
                 }

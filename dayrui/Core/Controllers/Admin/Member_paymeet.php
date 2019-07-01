@@ -113,14 +113,14 @@ class Member_paymeet extends \Phpcmf\Table
 
     // edit
     public function edit() {
-        list($tpl, $data) = $this->_Post((int)\Phpcmf\Service::L('Input')->get('id'), [], 1);
+        list($tpl, $data) = $this->_Post((int)\Phpcmf\Service::L('input')->get('id'), [], 1);
         !$data && $this->_admin_msg(0, dr_lang('支付记录不存在'));
         \Phpcmf\Service::V()->display('member_paylog_edit.html');
     }
     
     // 删除
     public function del() {
-        $this->_Del(\Phpcmf\Service::L('Input')->get_post_ids());
+        $this->_Del(\Phpcmf\Service::L('input')->get_post_ids());
     }
 
     /**
@@ -133,7 +133,7 @@ class Member_paymeet extends \Phpcmf\Table
      * */
     protected function _Save($id = 0, $data = [], $old = [], $before = null, $after = null) {
 
-        $post = \Phpcmf\Service::L('Input')->post('post');
+        $post = \Phpcmf\Service::L('input')->post('post');
         if (!isset($post['verify'])) {
             return dr_return_data(0, dr_lang('审核状态必须选择'), ['field' => 'verify']);
         } elseif (!$post['note']) {

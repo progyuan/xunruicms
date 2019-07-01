@@ -113,15 +113,15 @@ class Member extends \Phpcmf\Table
     public function index() {
 
         $p = $where = [];
-        $name = dr_safe_replace(\Phpcmf\Service::L('Input')->request('field'));
-        $value = dr_safe_replace(\Phpcmf\Service::L('Input')->request('keyword'));
+        $name = dr_safe_replace(\Phpcmf\Service::L('input')->request('field'));
+        $value = dr_safe_replace(\Phpcmf\Service::L('input')->request('keyword'));
         
         if ($name && $value && isset($this->my_field[$name])) {
             $p[$name] = $value;
             $where[] = '`'.$name.'` LIKE "%'.$value.'%"';
         }
         
-        $groupid = (int)\Phpcmf\Service::L('Input')->request('groupid');
+        $groupid = (int)\Phpcmf\Service::L('input')->request('groupid');
         if ($groupid) {
             $p['groupid'] = $groupid;
             $where[] = '`id` IN (select uid from `'.\Phpcmf\Service::M()->dbprefix('member_group_index').'` where gid='.$groupid.')';
@@ -137,7 +137,7 @@ class Member extends \Phpcmf\Table
     public function add() {
         
         if (IS_AJAX_POST) {
-            $post = \Phpcmf\Service::L('Input')->post('data');
+            $post = \Phpcmf\Service::L('input')->post('data');
             if (in_array('username', $this->member_cache['register']['field'])
                 && !\Phpcmf\Service::L('form')->check_username($post['username'])) {
                 $this->_json(0, dr_lang('账号格式不正确'), ['field' => 'username']);
@@ -173,7 +173,7 @@ class Member extends \Phpcmf\Table
 
         if (IS_AJAX_POST) {
 
-            $post = \Phpcmf\Service::L('Input')->post('data', true);
+            $post = \Phpcmf\Service::L('input')->post('data', true);
             if (!$post['all']) {
                 $this->_json(0, dr_lang('用户集未填写'), ['field' => 'all']);
             }
@@ -226,8 +226,8 @@ class Member extends \Phpcmf\Table
     // 后台修改
     public function edit() {
 
-        $uid = intval(\Phpcmf\Service::L('Input')->get('id'));
-        $page = intval(\Phpcmf\Service::L('Input')->get('page'));
+        $uid = intval(\Phpcmf\Service::L('input')->get('id'));
+        $page = intval(\Phpcmf\Service::L('input')->get('page'));
         // 关闭分组字段
         \Phpcmf\Service::L('Field')->is_hide_merge_group();
         $this->_Post($uid);
@@ -247,7 +247,7 @@ class Member extends \Phpcmf\Table
 
         // 删除时同步删除很多内容
         $this->_Del(
-            \Phpcmf\Service::L('Input')->get_post_ids(),
+            \Phpcmf\Service::L('input')->get_post_ids(),
             null,
             function ($rows) {
                 $ids = [];
@@ -266,8 +266,8 @@ class Member extends \Phpcmf\Table
     // 解绑
     public function jb_del() {
 
-        $uid = (int)\Phpcmf\Service::L('Input')->get('id');
-        $tid = dr_safe_filename(\Phpcmf\Service::L('Input')->get('tid'));
+        $uid = (int)\Phpcmf\Service::L('input')->get('id');
+        $tid = dr_safe_filename(\Phpcmf\Service::L('input')->get('tid'));
 
         \Phpcmf\Service::M()->table('member_oauth')->where('uid', $uid)->where('oauth', $tid)->delete();
 
@@ -285,7 +285,7 @@ class Member extends \Phpcmf\Table
     // 登录记录
     public function login_index() {
         
-        $uid = (int)\Phpcmf\Service::L('Input')->get('id');
+        $uid = (int)\Phpcmf\Service::L('input')->get('id');
         $list = \Phpcmf\Service::M()->table('member_login')->where('uid', $uid)->order_by('logintime desc')->getAll();
 
         \Phpcmf\Service::V()->assign([
@@ -298,8 +298,8 @@ class Member extends \Phpcmf\Table
     // 删除用户组
     public function group_del() {
 
-        $gid = (int)\Phpcmf\Service::L('Input')->get('gid');
-        $uid = (int)\Phpcmf\Service::L('Input')->get('uid');
+        $gid = (int)\Phpcmf\Service::L('input')->get('gid');
+        $uid = (int)\Phpcmf\Service::L('input')->get('uid');
 
         \Phpcmf\Service::M('member')->delete_group($uid, $gid);
 
@@ -309,14 +309,14 @@ class Member extends \Phpcmf\Table
     // 设置用户组
     public function group_edit() {
 
-        $uid = (int)\Phpcmf\Service::L('Input')->get('id');
+        $uid = (int)\Phpcmf\Service::L('input')->get('id');
         $groups = \Phpcmf\Service::M('member')->update_group(
             \Phpcmf\Service::M()->table('member')->get($uid),
             \Phpcmf\Service::M()->table('member_group_index')->where('uid', $uid)->getAll()
         );
 
         if (IS_AJAX_POST) {
-            $post = \Phpcmf\Service::L('Input')->post('data');
+            $post = \Phpcmf\Service::L('input')->post('data');
             if (!$post) {
                 $this->_json(0, dr_lang('用户组不存在'));
             } elseif (!$this->member_cache['config']['groups'] && dr_count($groups) > 1) {
@@ -348,10 +348,10 @@ class Member extends \Phpcmf\Table
     // 批量设置用户组
     public function group_all_edit() {
 
-        $ids = \Phpcmf\Service::L('Input')->get_post_ids();
+        $ids = \Phpcmf\Service::L('input')->get_post_ids();
         !$ids && $this->_json(0, dr_lang('所选用户不存在'));
 
-        $gid = \Phpcmf\Service::L('Input')->post('groupid');
+        $gid = \Phpcmf\Service::L('input')->post('groupid');
         !$gid && $this->_json(0, dr_lang('所选用户组不存在'));
 
         $c = 0;
@@ -376,7 +376,7 @@ class Member extends \Phpcmf\Table
      */
     public function alogin_index() {
 
-        $uid = intval(\Phpcmf\Service::L('Input')->get('id'));
+        $uid = intval(\Phpcmf\Service::L('input')->get('id'));
         $code = md5($this->admin['id'].$this->admin['password']);
         
         \Phpcmf\Service::L('cache')->set_data('admin_login_member', $this->admin, 300);
@@ -418,7 +418,7 @@ class Member extends \Phpcmf\Table
         return parent::_Save($id, $data, $old,
             function ($id, $data, $old){
                 // 保存之前的判断
-                $member = \Phpcmf\Service::L('Input')->post('member');
+                $member = \Phpcmf\Service::L('input')->post('member');
                 if ($member['email'] && !\Phpcmf\Service::L('Form')->check_email($member['email'])) {
                     $this->_json(0, dr_lang('邮箱格式不正确'), ['field' => 'email']);
                 } elseif ($member['phone'] && !\Phpcmf\Service::L('Form')->check_phone($member['phone'])) {
@@ -455,14 +455,14 @@ class Member extends \Phpcmf\Table
             function ($id, $data, $old) {
                 // 保存之后
                 // 修改密码
-                $password = \Phpcmf\Service::L('Input')->post('password');
+                $password = \Phpcmf\Service::L('input')->post('password');
                 if ($password) {
                     $member = \Phpcmf\Service::M()->table('member')->get($id);
                     \Phpcmf\Service::M('member')->edit_password($member, $password);
                     defined('UCSSO_API') && ucsso_edit_password($id, $password);
                 }
                 // 审核状态
-                $status = \Phpcmf\Service::L('Input')->post('status');
+                $status = \Phpcmf\Service::L('input')->post('status');
                 $old['is_verify'] == 0 && $status['is_verify'] == 1 && \Phpcmf\Service::M('member')->verify_member($id);
                 return $data;
             }

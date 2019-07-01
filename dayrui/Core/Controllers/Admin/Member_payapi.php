@@ -33,7 +33,7 @@ class Member_payapi extends \Phpcmf\Common
         $data = dr_string2array($data['value']);
 
         if (IS_AJAX_POST) {
-            $post = \Phpcmf\Service::L('Input')->post('data', true);
+            $post = \Phpcmf\Service::L('input')->post('data', true);
             \Phpcmf\Service::M()->db->table('member_setting')->replace([
                 'name' => 'payapi',
                 'value' => dr_array2string($post)

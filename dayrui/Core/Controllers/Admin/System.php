@@ -35,7 +35,7 @@ class System extends \Phpcmf\Common
         }
 
 		if (IS_AJAX_POST) {
-		    $post = \Phpcmf\Service::L('Input')->post('data', true);
+		    $post = \Phpcmf\Service::L('input')->post('data', true);
             $save = [
                 'SYS_DEBUG' => (int)$post['SYS_DEBUG'],
                 'SYS_THEME_ROOT' => (int)$post['SYS_THEME_ROOT'],
@@ -57,11 +57,11 @@ class System extends \Phpcmf\Common
                 strpos($name, 'SYS_CACHE') === 0 && $save[$name] = intval($post[$name]);
             }
 			\Phpcmf\Service::M('System')->save_config($data, $save);
-			\Phpcmf\Service::L('Input')->system_log('设置系统配置参数');
+			\Phpcmf\Service::L('input')->system_log('设置系统配置参数');
 			exit($this->_json(1, dr_lang('操作成功')));
 		}
 
-		$page = (int)\Phpcmf\Service::L('Input')->get('page');
+		$page = (int)\Phpcmf\Service::L('input')->get('page');
 		\Phpcmf\Service::V()->assign([
 			'data' => $data,
 			'page' => $page,

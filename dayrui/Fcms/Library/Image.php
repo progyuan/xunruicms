@@ -1574,9 +1574,7 @@ class Image
 
         if (is_numeric($img)) {
             $attach = \Phpcmf\Service::C()->get_attachment($img);
-            if (!$attach) {
-                return ROOT_THEME_PATH.'assets/images/nopic.gif';
-            } elseif (!in_array($attach['fileext'], ['png', 'jpeg', 'jpg', 'gif'])) {
+            if (!$attach || !in_array($attach['fileext'], ['png', 'jpeg', 'jpg', 'gif'])) {
                 return ROOT_THEME_PATH.'assets/images/nopic.gif';
             }
         } else {
@@ -1598,6 +1596,10 @@ class Image
             if ($attach['remote']) {
                 // 远程图片
                 $remote = \Phpcmf\Service::C()->get_cache('attachment', $attach['remote']);
+                if ($remote['value']['wh_prefix_image']) {
+                    // 输出带尺寸的后缀图
+                    return $attach['url'].str_replace(['{width}', '{height}'], [$width, $height], $remote['value']['wh_prefix_image']);
+                }
                 if ($remote['value']['image']) {
                     // 输出带后缀的图片
                     return $attach['url'].$remote['value']['image'];

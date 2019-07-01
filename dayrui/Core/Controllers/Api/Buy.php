@@ -29,12 +29,12 @@ class Buy extends \Phpcmf\Common {
 
     public function index() {
 
-        $id = (int)\Phpcmf\Service::L('Input')->get('id');
-        $fid = (int)\Phpcmf\Service::L('Input')->get('fid');
+        $id = (int)\Phpcmf\Service::L('input')->get('id');
+        $fid = (int)\Phpcmf\Service::L('input')->get('fid');
         (!$fid || !$id) && exit($this->_msg(0, dr_lang('支付参数不完整')));
 
-        $num = max(1, (int)\Phpcmf\Service::L('Input')->get('num'));
-        $sku = dr_safe_replace(\Phpcmf\Service::L('Input')->get('sku'), 'undefined');
+        $num = max(1, (int)\Phpcmf\Service::L('input')->get('num'));
+        $sku = dr_safe_replace(\Phpcmf\Service::L('input')->get('sku'), 'undefined');
 
         $field = $this->get_cache('table-field', $fid);
         !$field && exit($this->_msg(0, dr_lang('支付字段不存在')));

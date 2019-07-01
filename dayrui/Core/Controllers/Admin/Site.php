@@ -75,7 +75,7 @@ class Site extends \Phpcmf\Table
 		if (IS_AJAX_POST) {
 			$data = \Phpcmf\Service::L('input')->post('data', true);
 			$this->_validation($data);
-			\Phpcmf\Service::L('Input')->system_log('创建网站('.$data['name'].')');
+			\Phpcmf\Service::L('input')->system_log('创建网站('.$data['name'].')');
 			\Phpcmf\Service::M('Site')->create($data);
 			exit($this->_json(1, dr_lang('操作成功，请手动更新缓存')));
 		}
@@ -89,7 +89,7 @@ class Site extends \Phpcmf\Table
 	// 隐藏或者启用
 	public function hidden_edit() {
 
-		$id = (int)\Phpcmf\Service::L('Input')->get('id');
+		$id = (int)\Phpcmf\Service::L('input')->get('id');
 		$row = \Phpcmf\Service::M('Site')->table('site')->get($id);
 		!$row && $this->_json(0, dr_lang('站点数据不存在'));
 
@@ -102,7 +102,7 @@ class Site extends \Phpcmf\Table
 	
 	public function del() {
 
-		$ids = \Phpcmf\Service::L('Input')->get_post_ids();
+		$ids = \Phpcmf\Service::L('input')->get_post_ids();
 		!$ids && exit($this->_json(0, dr_lang('你还没有选择呢')));
 		in_array(1, $ids) && exit($this->_json(0, dr_lang('主站不能删除')));
 
@@ -110,18 +110,18 @@ class Site extends \Phpcmf\Table
 		!$rt['code'] && exit($this->_json(0, $rt['msg']));
 
         \Phpcmf\Service::M('cache')->sync_cache('');
-		\Phpcmf\Service::L('Input')->system_log('批量删除站点: '. @implode(',', $ids));
+		\Phpcmf\Service::L('input')->system_log('批量删除站点: '. @implode(',', $ids));
 
 		exit($this->_json(1, dr_lang('操作成功'), ['ids' => $ids]));
 	}
 
 	public function edit() {
 
-		$ids = \Phpcmf\Service::L('Input')->get_post_ids();
+		$ids = \Phpcmf\Service::L('input')->get_post_ids();
 		!$ids && exit($this->_json(0, dr_lang('你还没有选择呢')));
 
 		$data = \Phpcmf\Service::M()->db->table('site')->whereIn('id', $ids)->get()->getResultArray();
-        $value = \Phpcmf\Service::L('Input')->post('data', true);
+        $value = \Phpcmf\Service::L('input')->post('data', true);
 		foreach ($data as $t) {
 		    $id = $t['id'];
             $t['setting'] = dr_string2array($t['setting']);
@@ -134,7 +134,7 @@ class Site extends \Phpcmf\Table
         }
 
         \Phpcmf\Service::M('cache')->sync_cache('');
-		\Phpcmf\Service::L('Input')->system_log('批量修改站点: '. @implode(',', $ids));
+		\Phpcmf\Service::L('input')->system_log('批量修改站点: '. @implode(',', $ids));
 
 		exit($this->_json(1, dr_lang('操作成功')));
 	}

@@ -49,7 +49,7 @@ abstract class Common extends \CodeIgniter\Controller
     public $is_mobile; // 是否移动端
     public $temp; // 临时数据存储
 
-    private $is_module_init; // 防止模块重复初始化
+    protected $is_module_init; // 防止模块重复初始化
 
 
     /**
@@ -244,7 +244,7 @@ abstract class Common extends \CodeIgniter\Controller
             $auth = \Phpcmf\Service::L('input')->request('api_auth_code');
             if ($auth) {
                 // 通过接口的post认证
-                $this->uid = (int)\Phpcmf\Service::L('Input')->get('api_auth_uid');
+                $this->uid = (int)\Phpcmf\Service::L('input')->get('api_auth_uid');
                 $this->member = \Phpcmf\Service::M('member')->get_member($this->uid);
                 // 表示登录成功
                 if (!$this->member) {
@@ -276,7 +276,7 @@ abstract class Common extends \CodeIgniter\Controller
             \Phpcmf\Service::V()->admin();
             \Phpcmf\Service::V()->assign([
                 'admin' => $this->admin,
-                'is_ajax' => \Phpcmf\Service::L('Input')->get('is_ajax'),
+                'is_ajax' => \Phpcmf\Service::L('input')->get('is_ajax'),
                 'is_mobile' => $this->_is_mobile() ? 1 : 0,
             ]);
             // 权限判断
@@ -305,7 +305,7 @@ abstract class Common extends \CodeIgniter\Controller
         }
 
         // 判断是否存在授权登录
-        if (!IS_ADMIN && $code = \Phpcmf\Service::L('Input')->get_cookie('admin_login_member')) {
+        if (!IS_ADMIN && $code = \Phpcmf\Service::L('input')->get_cookie('admin_login_member')) {
             list($uid, $adminid) = explode('-', $code);
             $uid = (int)$uid;
             if ($this->uid != $uid) {
@@ -383,7 +383,7 @@ abstract class Common extends \CodeIgniter\Controller
 
         if (is_file($file)) {
             $this->load_init[] = $file;
-            require $file;
+            require_once $file;
         }
     }
 
@@ -458,6 +458,9 @@ abstract class Common extends \CodeIgniter\Controller
 
         // 设置模板到模块下
         !IS_SHARE && \Phpcmf\Service::V()->module(MOD_DIR);
+
+        // 初始化加载
+        $this->init_file(MOD_DIR);
     }
 
     /**
@@ -473,7 +476,7 @@ abstract class Common extends \CodeIgniter\Controller
      */
     public function _jsonp($code, $msg, $data = []){
 
-        $callback = dr_safe_replace(\Phpcmf\Service::L('Input')->get('callback'));
+        $callback = dr_safe_replace(\Phpcmf\Service::L('input')->get('callback'));
         !$callback && $callback = 'callback';
 
         if (IS_API_HTTP) {
@@ -502,8 +505,8 @@ abstract class Common extends \CodeIgniter\Controller
      */
     public function _admin_msg($code, $msg, $url = '', $time = 3) {
 
-        \Phpcmf\Service::L('Input')->get('callback') && exit($this->_jsonp($code, $msg));
-        (\Phpcmf\Service::L('Input')->get('is_ajax') || IS_API_HTTP || IS_AJAX) && exit($this->_json($code, $msg));
+        \Phpcmf\Service::L('input')->get('callback') && exit($this->_jsonp($code, $msg));
+        (\Phpcmf\Service::L('input')->get('is_ajax') || IS_API_HTTP || IS_AJAX) && exit($this->_json($code, $msg));
 
         $burl = $url ? $url : (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'php?') !== false ? $_SERVER['HTTP_REFERER'] : '');
 
@@ -524,10 +527,10 @@ abstract class Common extends \CodeIgniter\Controller
         // 不存在URL时进入提示页面
         \Phpcmf\Service::V()->assign([
             'msg' => $msg,
-            'url' => \Phpcmf\Service::L('Input')->xss_clean($url),
+            'url' => \Phpcmf\Service::L('input')->xss_clean($url),
             'time' => $time,
             'mark' => $code,
-            'backurl' => \Phpcmf\Service::L('Input')->xss_clean($backurl),
+            'backurl' => \Phpcmf\Service::L('input')->xss_clean($backurl),
             'is_msg_page' => 1,
         ]);
 
@@ -540,8 +543,8 @@ abstract class Common extends \CodeIgniter\Controller
      */
     public function _msg($code, $msg, $url = '', $time = 3) {
 
-        \Phpcmf\Service::L('Input')->get('callback') && exit($this->_jsonp($code, $msg));
-        (\Phpcmf\Service::L('Input')->get('is_ajax') || IS_API_HTTP || IS_AJAX) && exit($this->_json($code, $msg));
+        \Phpcmf\Service::L('input')->get('callback') && exit($this->_jsonp($code, $msg));
+        (\Phpcmf\Service::L('input')->get('is_ajax') || IS_API_HTTP || IS_AJAX) && exit($this->_json($code, $msg));
 
         if (!$url) {
             $backurl = $_SERVER['HTTP_REFERER'];
@@ -600,15 +603,27 @@ abstract class Common extends \CodeIgniter\Controller
         // 合并变量
         $info = $data + $info;
 
+        $info['file'] = SYS_UPLOAD_PATH.$info['attachment'];
         // 文件真实地址
-        $info['file'] = $info['remote'] && ($remote = $this->get_cache('attachment', $info['remote'])) ? $remote['value']['path'].$info['attachment'] : SYS_UPLOAD_PATH.$info['attachment'];
+        if ($info['remote']) {
+            $remote = $this->get_cache('attachment', $info['remote']);
+            if (!$remote) {
+                // 远程地址无效
+                $info['url'] = $info['file'] = '远程附件的配置已经不存在';
+                return $info;
+            } else {
+                $info['file'] = $remote['value']['path'].$info['attachment'];
+            }
+        }
 
         // 附件属性信息
         $info['attachinfo'] = dr_string2array($info['attachinfo']);
 
         $info['url'] = dr_get_file_url($info);
 
-        SYS_CACHE && SYS_CACHE_ATTACH && \Phpcmf\Service::L('cache')->init()->save('attach-info-'.$id, $info, SYS_CACHE_ATTACH * 3600);
+        if (SYS_CACHE && SYS_CACHE_ATTACH) {
+            \Phpcmf\Service::L('cache')->init()->save('attach-info-'.$id, $info, SYS_CACHE_ATTACH * 3600);
+        }
 
         return $info;
     }
@@ -850,8 +865,8 @@ abstract class Common extends \CodeIgniter\Controller
      */
     protected function _api_auth() {
 
-        $appid = (int)\Phpcmf\Service::L('Input')->request('appid');
-        $appsecret = (string)\Phpcmf\Service::L('Input')->request('appsecret');
+        $appid = (int)\Phpcmf\Service::L('input')->request('appid');
+        $appsecret = (string)\Phpcmf\Service::L('input')->request('appsecret');
 
         // 格式验证
         if (!dr_is_app('httpapi')) {
@@ -915,8 +930,8 @@ abstract class Common extends \CodeIgniter\Controller
      */
     protected function _api_sms_info() {
 
-        $uid = (int)\Phpcmf\Service::L('Input')->get('uid');
-        $key = dr_safe_replace(\Phpcmf\Service::L('Input')->get('key'));
+        $uid = (int)\Phpcmf\Service::L('input')->get('uid');
+        $key = dr_safe_replace(\Phpcmf\Service::L('input')->get('key'));
         if (!$uid || !$key) {
             $this->_json(0, dr_lang('uid或者key不能为空'));
         }
@@ -956,7 +971,7 @@ abstract class Common extends \CodeIgniter\Controller
     // 搜索帮助
     protected function _api_search_help() {
 
-        $kw = dr_safe_replace(\Phpcmf\Service::L('Input')->get('kw'));
+        $kw = dr_safe_replace(\Phpcmf\Service::L('input')->get('kw'));
         $url = 'http://help.phpcmf.net/index.php?c=search&keyword='.$kw.'&is_php7cms=cms';
         \Phpcmf\Service::V()->assign([
             'url' => $url,

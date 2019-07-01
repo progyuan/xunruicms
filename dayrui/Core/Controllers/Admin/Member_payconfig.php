@@ -33,7 +33,7 @@ class Member_payconfig extends \Phpcmf\Common
         $data = dr_string2array($data['value']);
 
         if (IS_AJAX_POST) {
-            $post = \Phpcmf\Service::L('Input')->post('data', true);
+            $post = \Phpcmf\Service::L('input')->post('data', true);
             \Phpcmf\Service::M()->db->table('member_setting')->replace([
                 'name' => 'pay',
                 'value' => dr_array2string($post)
@@ -42,7 +42,7 @@ class Member_payconfig extends \Phpcmf\Common
             $this->_json(1, dr_lang('操作成功'));
         }
 
-        $page = intval(\Phpcmf\Service::L('Input')->get('page'));
+        $page = intval(\Phpcmf\Service::L('input')->get('page'));
 
         \Phpcmf\Service::V()->assign([
             'data' => $data,

@@ -29,11 +29,11 @@ class Login extends \Phpcmf\Common
 
 	public function index() {
 
-		$url = pathinfo(\Phpcmf\Service::L('Input')->get('go') ? urldecode(\Phpcmf\Service::L('Input')->get('go')) :\Phpcmf\Service::L('Router')->url('home'));
+		$url = pathinfo(\Phpcmf\Service::L('input')->get('go') ? urldecode(\Phpcmf\Service::L('input')->get('go')) :\Phpcmf\Service::L('Router')->url('home'));
 		$url = $url['basename'] ? $url['basename'] :\Phpcmf\Service::L('Router')->url('home/index');
 
 		if (IS_AJAX_POST) {
-			$data = \Phpcmf\Service::L('Input')->post('data', true);
+			$data = \Phpcmf\Service::L('input')->post('data', true);
 			if (SYS_ADMIN_CODE && !\Phpcmf\Service::L('form')->check_captcha('code')) {
 				$this->_json(0, dr_lang('验证码不正确'));
 			} elseif (empty($data['username']) || empty($data['password'])) {
@@ -46,11 +46,11 @@ class Login extends \Phpcmf\Common
                     // 登录成功
                     $sync = [];
                     // 写入日志
-                    \Phpcmf\Service::L('Input')->system_log('登录后台成功', 1);
-                    $this->_json(1, 'ok', ['sync' => $sync, 'url' => \Phpcmf\Service::L('Input')->xss_clean($url)]);
+                    \Phpcmf\Service::L('input')->system_log('登录后台成功', 1);
+                    $this->_json(1, 'ok', ['sync' => $sync, 'url' => \Phpcmf\Service::L('input')->xss_clean($url)]);
                 } else {
                     // 写入日志
-                    \Phpcmf\Service::L('Input')->system_log($login['msg'].'（密码'.$data['password'].'）', 1);
+                    \Phpcmf\Service::L('input')->system_log($login['msg'].'（密码'.$data['password'].'）', 1);
                     $this->_json(0, $login['msg']);
                 }
 			}

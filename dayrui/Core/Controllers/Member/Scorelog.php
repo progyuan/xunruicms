@@ -45,7 +45,7 @@ class Scorelog extends \Phpcmf\Table
     // index
     public function index() {
 
-        $tid = (int)\Phpcmf\Service::L('Input')->get('tid');
+        $tid = (int)\Phpcmf\Service::L('input')->get('tid');
         $where = ['`uid`='.$this->uid];
         switch ($tid) {
             case 1: // 收入
@@ -98,7 +98,7 @@ class Scorelog extends \Phpcmf\Table
     {
         if (IS_POST) {
 
-            $value = intval(\Phpcmf\Service::L('Input')->post('value'));
+            $value = intval(\Phpcmf\Service::L('input')->post('value'));
             if (!$this->member_cache['pay']['convert']) {
                 $this->_json(0, dr_lang('系统没有设置兑换比例'));
             } elseif (!$value) {

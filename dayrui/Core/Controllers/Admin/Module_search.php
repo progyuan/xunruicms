@@ -79,7 +79,7 @@ class Module_search extends \Phpcmf\Common
 
         if (IS_POST) {
 
-            $data = \Phpcmf\Service::L('Input')->post('data', true);
+            $data = \Phpcmf\Service::L('input')->post('data', true);
             foreach ($data as $dir => $t) {
                 $module[$dir]['setting']['search'] = $t;
                 \Phpcmf\Service::M()->db->table('module')->where('dirname', $dir)->update([

@@ -14,6 +14,7 @@ lang['send'] = '推送';
 lang['save'] = '保存';
 lang['copy'] = '复制';
 lang['error'] = '系统错误';
+lang['error_admin'] = '系统崩溃，请检查错误日志';
 lang['member'] = '用户信息';
 lang['paylog'] = '交易记录';
 lang['todoing'] = '执行结果';

@@ -52,7 +52,7 @@ class Mform extends \Phpcmf\Table
         // 模块显示名称
         $this->name = dr_lang('内容模块[%s]表单（%s）', APP_DIR, $this->form['name']);
         // 获取父级内容
-         $this->cid = intval(\Phpcmf\Service::L('Input')->get('cid'));
+         $this->cid = intval(\Phpcmf\Service::L('input')->get('cid'));
          $this->cid && $this->index = $this->content_model->get_row( $this->cid);
         // 自定义条件
         $where = $this->is_verify ? 'status=0' : 'status=1';
@@ -123,7 +123,7 @@ class Mform extends \Phpcmf\Table
 
         ! $this->cid && $this->_admin_msg(0, dr_lang('缺少cid参数'));
 
-        $id = intval(\Phpcmf\Service::L('Input')->get('id'));
+        $id = intval(\Phpcmf\Service::L('input')->get('id'));
         list($tpl, $data) = $this->_Post($id);
 
         !$data && $this->_admin_msg(0, dr_lang('数据不存在: '.$id));
@@ -141,7 +141,7 @@ class Mform extends \Phpcmf\Table
 
         ! $this->cid && $this->_admin_msg(0, dr_lang('缺少cid参数'));
 
-        $id = intval(\Phpcmf\Service::L('Input')->get('id'));
+        $id = intval(\Phpcmf\Service::L('input')->get('id'));
         list($tpl, $data) = $this->_Show($id);
 
         !$data && $this->_admin_msg(0, dr_lang('数据不存在: '.$id));
@@ -157,15 +157,15 @@ class Mform extends \Phpcmf\Table
     // 后台批量保存排序值
     protected function _Admin_Order() {
         $this->_Display_Order(
-            intval(\Phpcmf\Service::L('Input')->get('id')),
-            intval(\Phpcmf\Service::L('Input')->get('value'))
+            intval(\Phpcmf\Service::L('input')->get('id')),
+            intval(\Phpcmf\Service::L('input')->get('value'))
         );
     }
 
     // 后台删除内容
     protected function _Admin_Del() {
         $this->_Del(
-            \Phpcmf\Service::L('Input')->get_post_ids(),
+            \Phpcmf\Service::L('input')->get_post_ids(),
             null,
             function ($rows) {
                 // 对应删除提醒
@@ -181,7 +181,7 @@ class Mform extends \Phpcmf\Table
     // 后台批量审核
     protected function _Admin_Status() {
 
-        $ids = \Phpcmf\Service::L('Input')->get_post_ids();
+        $ids = \Phpcmf\Service::L('input')->get_post_ids();
         !$ids && $this->_json(0, dr_lang('所选数据不存在'));
 
         // 格式化

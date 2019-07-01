@@ -82,7 +82,7 @@ class Member_oauth extends \Phpcmf\Table
 
     // 删除
     public function del() {
-        $this->_Del(\Phpcmf\Service::L('Input')->get_post_ids());
+        $this->_Del(\Phpcmf\Service::L('input')->get_post_ids());
     }
     
 }

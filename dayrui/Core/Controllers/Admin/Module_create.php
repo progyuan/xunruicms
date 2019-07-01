@@ -34,7 +34,7 @@ class Module_create extends \Phpcmf\Common
 
         if (IS_AJAX_POST) {
 
-            $data = \Phpcmf\Service::L('Input')->post('data', true);
+            $data = \Phpcmf\Service::L('input')->post('data', true);
 
             // 参数判断
             if (!$data['name']) {
@@ -58,7 +58,9 @@ class Module_create extends \Phpcmf\Common
             // 开始复制到指定目录
             $path = APPSPATH.ucfirst($data['dirname']).'/';
             \Phpcmf\Service::L('File')->copy_file(FCPATH.'Temp/Module/', $path);
-            !is_file($path.'Config/App.php') && $this->_json(0, dr_lang('目录创建失败，请检查文件权限'), ['field' => 'dirname']);
+            if (!is_file($path.'Config/App.php')) {
+                $this->_json(0, dr_lang('目录创建失败，请检查文件权限'), ['field' => 'dirname']);
+            }
 
             // 替换模块配置文件
             $app = file_get_contents($path.'Config/App.php');

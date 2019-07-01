@@ -45,7 +45,7 @@ class Notice extends \Phpcmf\Table
     // index
     public function index() {
 
-        $tid = (int)\Phpcmf\Service::L('Input')->get('tid');
+        $tid = (int)\Phpcmf\Service::L('input')->get('tid');
         $where = ['`uid`='.$this->uid];
         $tid && $where[] = '`type`='.$tid;
         
@@ -77,7 +77,7 @@ class Notice extends \Phpcmf\Table
 
     public function go() {
 
-        $id = (int)\Phpcmf\Service::L('Input')->get('id');
+        $id = (int)\Phpcmf\Service::L('input')->get('id');
         $data = \Phpcmf\Service::M()->table('member_notice')->where('id', $id)->where('uid', $this->uid)->getRow();
         if (!$data) {
             $this->_msg(0, dr_lang('此消息不存在'));

@@ -129,7 +129,7 @@ class Member_paylog extends \Phpcmf\Table
 
     // edit
     public function edit() {
-        list($tpl, $data) = $this->_Post((int)\Phpcmf\Service::L('Input')->get('id'), [], 1);
+        list($tpl, $data) = $this->_Post((int)\Phpcmf\Service::L('input')->get('id'), [], 1);
         !$data && $this->_admin_msg(0, dr_lang('支付记录不存在'));
         \Phpcmf\Service::V()->assign([
             'menu' => \Phpcmf\Service::M('auth')->_admin_menu(
@@ -145,7 +145,7 @@ class Member_paylog extends \Phpcmf\Table
     // 系统回收
     public function system_edit() {
 
-        $id = (int)\Phpcmf\Service::L('Input')->get('id');
+        $id = (int)\Phpcmf\Service::L('input')->get('id');
         $data =  \Phpcmf\Service::M('Pay')->table('member_paylog')->get($id);
         !$data && $this->_json(0, dr_lang('支付记录不存在'));
         1 != $data['status'] && $this->_json(0, dr_lang('支付记录不满足回收条件'));
@@ -156,7 +156,7 @@ class Member_paylog extends \Phpcmf\Table
         !$user && $this->_json(0, dr_lang('用户记录不存在'));
 
         if (IS_AJAX_POST) {
-            $post = \Phpcmf\Service::L('Input')->post('data');
+            $post = \Phpcmf\Service::L('input')->post('data');
             $user['money'] - $data['value'] < 0 && $this->_json(0, dr_lang('付款账号余额不足'));
             !$post['note'] && $this->_json(0, dr_lang('回收备注一定要填写'), ['field' => 'note']);
             // 扣除付款方的钱
@@ -192,7 +192,7 @@ class Member_paylog extends \Phpcmf\Table
     // 短信催付
     public function notice_del() {
 
-        $ids = \Phpcmf\Service::L('Input')->get_post_ids();
+        $ids = \Phpcmf\Service::L('input')->get_post_ids();
         !$ids && $this->_json(0, dr_lang('所选数据不存在'));
 
         $sql = 'select phone from `'.\Phpcmf\Service::M()->dbprefix('member').'` where `id` in (select `uid` from `'.\Phpcmf\Service::M()->dbprefix('member_paylog').'` where `id` in ('.implode(',', $ids).') )';
@@ -213,7 +213,7 @@ class Member_paylog extends \Phpcmf\Table
     // 删除
     public function del() {
         $this->_Del(
-            \Phpcmf\Service::L('Input')->get_post_ids(),
+            \Phpcmf\Service::L('input')->get_post_ids(),
             null,
             null,
             \Phpcmf\Service::M()->dbprefix($this->init['table'])

@@ -209,6 +209,22 @@ class Cache extends \Phpcmf\Model
                 if ($rt) {
                     $this->_error_msg('站点['.$t['domain'].']: '.$rt);
                 }
+                $path = rtrim($t['setting']['webpath'], '/').'/';
+            } else {
+                $path = WEBPATH;
+            }
+            if ($t['setting']['client']) {
+                foreach ($t['setting']['client'] as $c) {
+                    if ($c['name'] && $c['domain']) {
+                        $rt = $this->update_webpath('Client', $path.$c['name'].'/', [
+                            'CLIENT' => $c['name'],
+                            'SITE_ID' => $t['id'],
+                        ]);
+                        if ($rt) {
+                            $this->_error_msg('站点['.$t['domain'].']的终端['.$c['name'].']: '.$rt);
+                        }
+                    }
+                }
             }
             $site[] = $t['id'];
         }
@@ -242,6 +258,8 @@ class Cache extends \Phpcmf\Model
 
         if (!$path) {
             return '目录为空';
+        } elseif (strpos($path, ' ') === 0) {
+            return '不能用空格开头';
         }
 
         $path = dr_get_dir_path($path);
@@ -256,17 +274,20 @@ class Cache extends \Phpcmf\Model
         foreach ([
                      'admin.php',
                      'index.php',
-                     'mobile/index.php'
+                     'api.php',
+                     'mobile/api.php',
+                     'mobile/index.php',
                  ] as $file) {
             if (is_file(FCPATH.'Temp/'.$name.'/'.$file)) {
                 $dst = $path.$file;
                 dr_mkdirs(dirname($dst));
                 $size = file_put_contents($dst, str_replace([
+                    '{CLIENT}',
                     '{ROOTPATH}',
                     '{MOD_DIR}',
                     '{SITE_ID}'
-
                 ], [
+                    $value['CLIENT'],
                     ROOTPATH,
                     $value['MOD_DIR'],
                     $value['SITE_ID']

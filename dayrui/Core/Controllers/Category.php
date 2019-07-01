@@ -29,9 +29,9 @@ class Category extends \Phpcmf\Home\Module
 
 	public function index() {
 
-		$id = (int)\Phpcmf\Service::L('Input')->get('id');
-		$dir = dr_safe_replace(\Phpcmf\Service::L('Input')->get('dir'));
-		$page = max(1, (int)\Phpcmf\Service::L('Input')->get('page'));
+		$id = (int)\Phpcmf\Service::L('input')->get('id');
+		$dir = dr_safe_replace(\Phpcmf\Service::L('input')->get('dir'));
+		$page = max(1, (int)\Phpcmf\Service::L('input')->get('page'));
 
 		$module = \Phpcmf\Service::L('cache')->get('module-'.SITE_ID.'-share');
 		if (!$module) {

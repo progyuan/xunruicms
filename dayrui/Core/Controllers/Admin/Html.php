@@ -122,20 +122,22 @@ class Html extends \Phpcmf\Common
 
         $this->member_cache['auth_site'][SITE_ID]['home'] && $this->_json(0, '当前网站设置了访问权限，无法生成静态');
 
-        $app = \Phpcmf\Service::L('Input')->get('app');
+        $app = \Phpcmf\Service::L('input')->get('app');
+        $ids = \Phpcmf\Service::L('input')->get('catids');
 
         \Phpcmf\Service::V()->assign([
-            'todo_url' => '/index.php?'.($app ? 's='.$app.'&' : '').'c=html&m=show',
-            'count_url' =>\Phpcmf\Service::L('Router')->url('html/show_count_index', ['app' => $app, 'date_to' => \Phpcmf\Service::L('Input')->get('date_to'), 'date_form' => \Phpcmf\Service::L('Input')->get('date_form')]),
+            'todo_url' => '/index.php?'.($app ? 's='.$app.'&' : '').'c=html&m=show&catids='.$ids,
+            'count_url' =>\Phpcmf\Service::L('Router')->url('html/show_count_index', ['app' => $app, 'catids' => $ids, 'date_to' => \Phpcmf\Service::L('input')->get('date_to'), 'date_form' => \Phpcmf\Service::L('input')->get('date_form')]),
         ]);
         \Phpcmf\Service::V()->display('html_bfb.html');exit;
     }
 
     // 内容数量统计
     public function show_count_index() {
-        \Phpcmf\Service::L('html')->get_show_data(\Phpcmf\Service::L('Input')->get('app'), [
-            'date_to' => \Phpcmf\Service::L('Input')->get('date_to'),
-            'date_form' => \Phpcmf\Service::L('Input')->get('date_form')
+        \Phpcmf\Service::L('html')->get_show_data(\Phpcmf\Service::L('input')->get('app'), [
+            'catids' => \Phpcmf\Service::L('input')->get('catids'),
+            'date_to' => \Phpcmf\Service::L('input')->get('date_to'),
+            'date_form' => \Phpcmf\Service::L('input')->get('date_form')
         ]);
     }
 

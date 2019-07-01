@@ -101,7 +101,7 @@ class Html
         }
 
         $data = dr_save_bfb_data($data);
-        !dr_count($data) && $this->_json(0, '没有可用生成的栏目数据');
+        !dr_count($data) && \Phpcmf\Service::C()->_json(0, '没有可用生成的栏目数据');
 
         $name = 'category-'.$app.'-html-file';
         \Phpcmf\Service::L('cache')->init()->save($name, $data, 3600);
@@ -112,18 +112,62 @@ class Html
     public function get_show_data($app, $param) {
 
         // 获取生成栏目
-        !$app && \Phpcmf\Service::C()->_json(0, '模块参数不存在');
-
-        $db = \Phpcmf\Service::M()->db->table(SITE_ID.'_'.$app)->select('id,catid,title,url');
-        if (isset($param['date_form']) && $param['date_form']) {
-            $db->where('`updatetime` BETWEEN ' . strtotime($param['date_form'].' 00:00:00') . ' AND ' . ($param['date_to'] ? strtotime($param['date_to'].' 23:59:59') : SYS_TIME));
-        } elseif (isset($param['date_to']) && $param['date_to']) {
-            $db->where('`updatetime` BETWEEN 0 AND ' . strtotime($param['date_to'].' 23:59:59'));
+        $cids = [];
+        $mids = [];
+        if ($param['catids']) {
+            $catids = explode(',', $param['catids']);
+            if ($catids) {
+                $cats = \Phpcmf\Service::C()->get_cache('module-'.SITE_ID.'-'.($app ? $app : 'share'), 'category');
+                foreach ($catids as $id) {
+                    if ($cats[$id]) {
+                        $cids = dr_array2array($cids, explode(',', $cats[$id]['childids']));
+                        $cats[$id]['mid'] && $mids[$cats[$id]['mid']] = $cats[$id]['mid'];
+                    }
+                }
+                $cids = array_unique($cids);
+            }
         }
-        $data = $db->get()->getResultArray(); // 获取需要生成的内容索引
+
+        if (!$app) {
+            if ($cids) {
+                if (!$mids) {
+                    \Phpcmf\Service::C()->_json(0, '没有可用生成的内容模块');
+                }
+                $data = [];
+                foreach ($mids as $mid) {
+                    $db = \Phpcmf\Service::M()->db->table(SITE_ID.'_'.$mid)->select('id,catid,title,url');
+                    if (isset($param['date_form']) && $param['date_form']) {
+                        $db->where('`updatetime` BETWEEN ' . strtotime($param['date_form'].' 00:00:00') . ' AND ' . ($param['date_to'] ? strtotime($param['date_to'].' 23:59:59') : SYS_TIME));
+                    } elseif (isset($param['date_to']) && $param['date_to']) {
+                        $db->where('`updatetime` BETWEEN 0 AND ' . strtotime($param['date_to'].' 23:59:59'));
+                    }
+                    $db->where('catid IN ('. implode(',', $cids).')');
+                    $rows = $db->get()->getResultArray(); // 获取需要生成的内容索引
+                    if ($rows) {
+                        foreach ($rows as $r) {
+                            $r['is_module_dirname'] = $mid;
+                            $data[] = $r;
+                        }
+                    }
+                }
+            } else {
+                \Phpcmf\Service::C()->_json(0, '模块参数app不存在');
+            }
+        } else {
+            $db = \Phpcmf\Service::M()->db->table(SITE_ID.'_'.$app)->select('id,catid,title,url');
+            if (isset($param['date_form']) && $param['date_form']) {
+                $db->where('`updatetime` BETWEEN ' . strtotime($param['date_form'].' 00:00:00') . ' AND ' . ($param['date_to'] ? strtotime($param['date_to'].' 23:59:59') : SYS_TIME));
+            } elseif (isset($param['date_to']) && $param['date_to']) {
+                $db->where('`updatetime` BETWEEN 0 AND ' . strtotime($param['date_to'].' 23:59:59'));
+            }
+            if ($cids) {
+                $db->where('catid IN ('. implode(',', $cids).')');
+            }
+            $data = $db->get()->getResultArray(); // 获取需要生成的内容索引
+        }
 
         $data = dr_save_bfb_data($data);
-        !dr_count($data) && $this->_json(0, '没有可用生成的栏目数据');
+        !dr_count($data) && \Phpcmf\Service::C()->_json(0, '没有可用生成的内容数据');
 
         \Phpcmf\Service::L('cache')->init()->save('show-'.$app.'-html-file', $data, 3600);
         \Phpcmf\Service::C()->_json(1, 'ok');

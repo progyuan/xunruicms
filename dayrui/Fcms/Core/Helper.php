@@ -135,8 +135,12 @@ function dr_content_link($tags, $content, $num = 0) {
 
     foreach ($tags as $name => $url) {
         if ($name && $url) {
-            $preg = "/(?!<[^>]*)(".preg_quote($name, '/').")(?![^<]*>)/siU";
-            $content = $num ? @preg_replace($preg, '<a href="'.$url.'" target="_blank">'.$name.'</a>', $content, $num) : @preg_replace($preg, '<a href="'.$url.'" target="_blank">'.$name.'</a>', $content);
+            $url = '<a href="'.$url.'" target="_blank">'.$name.'</a>';
+            $content = @preg_replace('\'(?!((<.*?)|(<a.*?)|(<strong.*?)))('.str_replace(array("'", '-'), array("\'", '\-'), preg_quote($name)).')(?!(([^<>]*?)>)|([^>]*?</a>)|([^>]*?</strong>))\'si',
+                $url,
+                $content,
+                $num
+            );
         }
     }
 
@@ -145,9 +149,8 @@ function dr_content_link($tags, $content, $num = 0) {
 
 
 // 内容加内链
-function dr_neilian($html, $blank = 1, $num = 1)
-{
-    if (!$html) return '';
+function dr_neilian($content, $blank = 1, $num = 1) {
+    if (!$content) return '';
 
     $tags = \Phpcmf\Service::L('cache')->get('tag-'.SITE_ID);
     if ($tags) {
@@ -156,9 +159,9 @@ function dr_neilian($html, $blank = 1, $num = 1)
             if ($data) {
                 foreach ($data as $name) {
                     $url = '<a href="'.$t['url'].'" '.($blank ? 'target="_blank"' : '').'>'.$name.'</a>';
-                    $html = @preg_replace('\'(?!((<.*?)|(<a.*?)|(<strong.*?)))('.str_replace(array("'", '-'), array("\'", '\-'), preg_quote($name)).')(?!(([^<>]*?)>)|([^>]*?</a>)|([^>]*?</strong>))\'si',
+                    $content = @preg_replace('\'(?!((<.*?)|(<a.*?)|(<strong.*?)))('.str_replace(array("'", '-'), array("\'", '\-'), preg_quote($name)).')(?!(([^<>]*?)>)|([^>]*?</a>)|([^>]*?</strong>))\'si',
                         $url,
-                        $html,
+                        $content,
                         $num
                     );
                 }
@@ -166,7 +169,7 @@ function dr_neilian($html, $blank = 1, $num = 1)
         }
     }
 
-    return $html;
+    return $content;
 }
 
 // 星级显示

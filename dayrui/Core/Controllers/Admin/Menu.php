@@ -86,15 +86,15 @@ class Menu extends \Phpcmf\Common
 	
 	public function add() {
 
-		$pid = intval(\Phpcmf\Service::L('Input')->get('pid'));
+		$pid = intval(\Phpcmf\Service::L('input')->get('pid'));
 		$top = \Phpcmf\Service::M('Menu')->get_top('admin');
 		$type = $pid ? (isset($top[$pid]) ? 2 : 3) : 1;
 
 		if (IS_AJAX_POST) {
-			$data = \Phpcmf\Service::L('Input')->post('data');
+			$data = \Phpcmf\Service::L('input')->post('data');
 			$this->_validation($type, $data);
             \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
-			\Phpcmf\Service::L('Input')->system_log('添加后台菜单: '.$data['name']);
+			\Phpcmf\Service::L('input')->system_log('添加后台菜单: '.$data['name']);
 			\Phpcmf\Service::M('Menu')->_add('admin', $pid, $data) ? exit($this->_json(1, dr_lang('操作成功'))) : exit($this->_json(0, dr_lang('操作失败')));
 		}
 
@@ -108,7 +108,7 @@ class Menu extends \Phpcmf\Common
 
 	public function edit() {
 
-		$id = intval(\Phpcmf\Service::L('Input')->get('id'));
+		$id = intval(\Phpcmf\Service::L('input')->get('id'));
 		$data = \Phpcmf\Service::M('Menu')->getRowData('admin', $id);
 		!$data && exit($this->_json(0, dr_lang('数据#%s不存在', $id)));
 
@@ -117,11 +117,11 @@ class Menu extends \Phpcmf\Common
 		$type = $pid ? (isset($top[$pid]) ? 2 : 3) : 1;
 
 		if (IS_AJAX_POST) {
-			$data = \Phpcmf\Service::L('Input')->post('data');
+			$data = \Phpcmf\Service::L('input')->post('data');
 			$this->_validation($type, $data);
 			\Phpcmf\Service::M('Menu')->_update('admin', $id, $data);
             \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
-			\Phpcmf\Service::L('Input')->system_log('修改后台菜单: '.$data['name']);
+			\Phpcmf\Service::L('input')->system_log('修改后台菜单: '.$data['name']);
 			exit($this->_json(1, dr_lang('操作成功')));
 		}
 
@@ -137,12 +137,12 @@ class Menu extends \Phpcmf\Common
 
 	public function del() {
 
-		$ids = \Phpcmf\Service::L('Input')->get_post_ids();
+		$ids = \Phpcmf\Service::L('input')->get_post_ids();
 		!$ids && exit($this->_json(0, dr_lang('你还没有选择呢')));
 
 		\Phpcmf\Service::M('Menu')->_delete('admin', $ids);
         \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
-		\Phpcmf\Service::L('Input')->system_log('批量删除后台菜单: '. @implode(',', $ids));
+		\Phpcmf\Service::L('input')->system_log('批量删除后台菜单: '. @implode(',', $ids));
 		exit($this->_json(1, dr_lang('操作成功'), ['ids' => $ids]));
 	}
 	
@@ -152,7 +152,7 @@ class Menu extends \Phpcmf\Common
 
 		\Phpcmf\Service::M('Menu')->init('admin');
 
-		\Phpcmf\Service::L('Input')->system_log('初始化后台菜单');
+		\Phpcmf\Service::L('input')->system_log('初始化后台菜单');
         \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
 		exit($this->_json(1, dr_lang('初始化菜单成功，请按F5刷新整个页面')));
 	}
@@ -160,11 +160,11 @@ class Menu extends \Phpcmf\Common
 	// 隐藏或者启用
 	public function use_edit() {
 
-		$i = intval(\Phpcmf\Service::L('Input')->get('id'));
+		$i = intval(\Phpcmf\Service::L('input')->get('id'));
 		$v = \Phpcmf\Service::M('Menu')->_uesd('admin', $i);
 		$v == -1 && exit($this->_json(0, dr_lang('数据#%s不存在', $i), ['value' => $v]));
         \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
-		\Phpcmf\Service::L('Input')->system_log('修改后台菜单状态: '. $i);
+		\Phpcmf\Service::L('input')->system_log('修改后台菜单状态: '. $i);
 		exit($this->_json(1, dr_lang($v ? '此菜单已被隐藏' : '此菜单已被启用'), ['value' => $v]));
 
 	}
@@ -172,16 +172,16 @@ class Menu extends \Phpcmf\Common
 	// 保存数据
 	public function save_edit() {
 
-		$i = intval(\Phpcmf\Service::L('Input')->get('id'));
+		$i = intval(\Phpcmf\Service::L('input')->get('id'));
 		\Phpcmf\Service::M('Menu')->_save(
 			'admin',
 			$i,
-			dr_safe_replace(\Phpcmf\Service::L('Input')->get('name')),
-			dr_safe_replace(\Phpcmf\Service::L('Input')->get('value'))
+			dr_safe_replace(\Phpcmf\Service::L('input')->get('name')),
+			dr_safe_replace(\Phpcmf\Service::L('input')->get('value'))
 		);
 
         \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
-		\Phpcmf\Service::L('Input')->system_log('修改后台菜单信息: '. $i);
+		\Phpcmf\Service::L('input')->system_log('修改后台菜单信息: '. $i);
 		exit($this->_json(1, dr_lang('更改成功')));
 	}
 

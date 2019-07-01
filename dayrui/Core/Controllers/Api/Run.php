@@ -121,7 +121,7 @@ class Run extends \Phpcmf\Common
      */
 	public function cron() {
 
-        $file = WRITEPATH.'thread/'.dr_safe_filename(\Phpcmf\Service::L('Input')->get('auth')).'.auth';
+        $file = WRITEPATH.'thread/'.dr_safe_filename(\Phpcmf\Service::L('input')->get('auth')).'.auth';
         if (!is_file($file)) {
             log_message('error', '线程任务auth文件不存在：'.FC_NOW_URL);
             exit('线程任务auth文件不存在'.$file);
@@ -135,11 +135,11 @@ class Run extends \Phpcmf\Common
             exit('线程任务auth过期');
         }
 
-        switch (\Phpcmf\Service::L('Input')->get('action')) {
+        switch (\Phpcmf\Service::L('input')->get('action')) {
 
             case 'oauth_down_avatar': // 快捷登录下载头像
 
-                $id = intval(\Phpcmf\Service::L('Input')->get('id'));
+                $id = intval(\Phpcmf\Service::L('input')->get('id'));
                 $oauth = \Phpcmf\Service::M()->table('member_oauth')->get($id);
                 !$oauth && exit;
                 !$oauth['uid'] && exit;
@@ -157,7 +157,7 @@ class Run extends \Phpcmf\Common
 
             case 'cron': // 队列任务
 
-                $id = intval(\Phpcmf\Service::L('Input')->get('id'));
+                $id = intval(\Phpcmf\Service::L('input')->get('id'));
                 $rt = \Phpcmf\Service::M('cron')->do_cron_id($id);
                 if (!$rt['code']) {
                     log_message('error', '任务查询失败（'.$rt['msg'].'）：'.FC_NOW_URL);

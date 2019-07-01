@@ -193,6 +193,14 @@ class Site extends \Phpcmf\Model
         $data['site_domains'] = $site['config']['SITE_DOMAINS'];
         $data['mobile_domain'] = $site['mobile']['domain'];
 
+        if ($site['client']) {
+            foreach ($site['client'] as $c) {
+                if ($c['name'] && $c['domain']) {
+                    $data['client_'.$c['name']] = $c['domain'];
+                }
+            }
+        }
+
         // 用户中心域名
         /*
         if (dr_is_app('member')) {
@@ -220,6 +228,7 @@ class Site extends \Phpcmf\Model
             $cfg = require APPSPATH.ucfirst($t['dirname']).'/Config/App.php';
             $t['site'] = dr_string2array($t['site']);
             $my[$t['dirname']] = [
+                'share' => $t['share'],
                 'name' => dr_lang($cfg['name']),
                 'error' => '',
             ];

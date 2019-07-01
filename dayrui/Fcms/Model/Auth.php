@@ -88,8 +88,8 @@ class Auth extends \Phpcmf\Model {
         // 保存会话
         \Phpcmf\Service::C()->session()->set('uid', $uid);
         \Phpcmf\Service::C()->session()->set('admin', $uid);
-        \Phpcmf\Service::L('Input')->set_cookie('member_uid', $uid, SITE_LOGIN_TIME);
-        \Phpcmf\Service::L('Input')->set_cookie('member_cookie', substr(md5(SYS_KEY . $data['password']), 5, 20), SITE_LOGIN_TIME);
+        \Phpcmf\Service::L('input')->set_cookie('member_uid', $uid, SITE_LOGIN_TIME);
+        \Phpcmf\Service::L('input')->set_cookie('member_cookie', substr(md5(SYS_KEY . $data['password']), 5, 20), SITE_LOGIN_TIME);
 
         return dr_return_data($uid);
     }
@@ -115,7 +115,7 @@ class Auth extends \Phpcmf\Model {
      */
     private function _login_log($uid) {
 
-        $ip = \Phpcmf\Service::L('Input')->ip_address();
+        $ip = \Phpcmf\Service::L('input')->ip_address();
         if (!$ip || !$uid) {
             return;
         }
@@ -399,7 +399,7 @@ class Auth extends \Phpcmf\Model {
                 $w = isset($t[2]) ? $t[2] : '';
                 $h = isset($t[3]) ? $t[3] : '';
                 $uri = substr($uri, 4);
-                $url = 'javascript:dr_iframe(\'add\', \'' . \Phpcmf\Service::L('router')->url($uri, $p) . '\', \'' . $w . '\',\'' . $h . '\');';
+                $url = 'javascript:dr_iframe(\''.dr_lang($name).'\', \'' . \Phpcmf\Service::L('router')->url($uri, $p) . '\', \'' . $w . '\',\'' . $h . '\');';
             }elseif (strpos($uri, 'show:') === 0) {
                 $w = isset($t[2]) ? $t[2] : '';
                 $h = isset($t[3]) ? $t[3] : '';

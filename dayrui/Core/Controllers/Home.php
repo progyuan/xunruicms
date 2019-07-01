@@ -85,7 +85,7 @@ class Home extends \Phpcmf\Common
 	 * 404 页面
 	 */
 	public function s404() {
-		$uri = \Phpcmf\Service::L('Input')->get('uri', true);
+		$uri = \Phpcmf\Service::L('input')->get('uri', true);
 		$this->goto_404_page('没有找到这个页面: '.$uri);
 	}
 

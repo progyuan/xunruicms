@@ -88,7 +88,7 @@ class Error_php extends \Phpcmf\Common
 			'list' => $list,
 			'time' => $time,
 			'total' => $total,
-			'mypages'	=> \Phpcmf\Service::L('Input')->page(\Phpcmf\Service::L('Router')->url(\Phpcmf\Service::L('Router')->class.'/index', ['time' => $time]), $total, 'admin')
+			'mypages'	=> \Phpcmf\Service::L('input')->page(\Phpcmf\Service::L('Router')->url(\Phpcmf\Service::L('Router')->class.'/index', ['time' => $time]), $total, 'admin')
 		));
 		\Phpcmf\Service::V()->display('error_index.html');
 	}

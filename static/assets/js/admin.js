@@ -984,15 +984,28 @@ function dr_url_module_search_page() {
 }
 
 function dr_help(id) {
-    layer.open({
-        type: 2,
-        title: '<i class="fa fa-question-circle"></i> 在线帮助',
-        shadeClose: true,
-        scrollbar: false,
-        shade: 0,
-        area: ['80%', '90%'],
-        content: 'http://help.phpcmf.net/index.php?c=show&id='+id+'&is_php7cms=cms'
-    });
+    if ('https:' == document.location.protocol) {
+        layer.open({
+            type: 1,
+            title: '<i class="fa fa-question-circle"></i> 在线帮助',
+            shadeClose: true,
+            scrollbar: false,
+            shade: 0,
+            area: ['80%', '90%'],
+            content: '<div style="padding: 20px;text-align: center"><p>由于你的服务器启用了HTTPS安全认证，需要单击下发链接进行访问该页面</p>'+'<p><a style="color: red;" href="http://help.phpcmf.net/index.php?c=show&id='+id+'&is_phpcmf=cms" target="_blank">单击访问手册文档</a></p></div>'
+        });
+    } else {
+        layer.open({
+            type: 2,
+            title: '<i class="fa fa-question-circle"></i> 在线帮助',
+            shadeClose: true,
+            scrollbar: false,
+            shade: 0,
+            area: ['80%', '90%'],
+            content: 'http://help.phpcmf.net/index.php?c=show&id='+id+'&is_phpcmf=cms'
+        });
+    }
+
 }
 
 function dr_search_help() {

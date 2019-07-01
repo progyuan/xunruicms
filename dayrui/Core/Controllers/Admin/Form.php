@@ -94,9 +94,9 @@ class Form extends \Phpcmf\Common
 	public function add() {
 
 		if (IS_AJAX_POST) {
-			$data = \Phpcmf\Service::L('Input')->post('data', true);
+			$data = \Phpcmf\Service::L('input')->post('data', true);
 			$this->_validation(0, $data);
-			\Phpcmf\Service::L('Input')->system_log('创建网站表单('.$data['name'].')');
+			\Phpcmf\Service::L('input')->system_log('创建网站表单('.$data['name'].')');
 			$rt = \Phpcmf\Service::M('Form')->create($data);
 			!$rt['code'] && $this->_json(0, $rt['msg']);
             \Phpcmf\Service::M('cache')->sync_cache('form', '', 1); // 自动更新缓存
@@ -112,7 +112,7 @@ class Form extends \Phpcmf\Common
 
 	public function edit() {
 
-		$id = intval(\Phpcmf\Service::L('Input')->get('id'));
+		$id = intval(\Phpcmf\Service::L('input')->get('id'));
 		$data = \Phpcmf\Service::M('Form')->get($id);
 		!$data && $this->_admin_msg(0, dr_lang('网站表单（%s）不存在', $id));
 		$data['setting'] = dr_string2array($data['setting']);
@@ -141,7 +141,7 @@ class Form extends \Phpcmf\Common
 		];
 
 		if (IS_AJAX_POST) {
-			$data = \Phpcmf\Service::L('Input')->post('data', true);
+			$data = \Phpcmf\Service::L('input')->post('data', true);
 			\Phpcmf\Service::M('Form')->update($id,
 				[
 					'name' => $data['name'],
@@ -149,7 +149,7 @@ class Form extends \Phpcmf\Common
 				]
 			);
             \Phpcmf\Service::M('cache')->sync_cache('form', '', 1); // 自动更新缓存
-			\Phpcmf\Service::L('Input')->system_log('修改网站表单('.$data['name'].')配置');
+			\Phpcmf\Service::L('input')->system_log('修改网站表单('.$data['name'].')配置');
 			exit($this->_json(1, dr_lang('操作成功')));
 		}
 
@@ -163,7 +163,7 @@ class Form extends \Phpcmf\Common
 						->get()->getResultArray();
 		$sys_field = \Phpcmf\Service::L('field')->sys_field(['author', 'inputtime']);
 		sort($sys_field);
-        $page = intval(\Phpcmf\Service::L('Input')->get('page'));
+        $page = intval(\Phpcmf\Service::L('input')->get('page'));
 
 		\Phpcmf\Service::V()->assign([
 			'data' => $data,
@@ -177,14 +177,14 @@ class Form extends \Phpcmf\Common
 
 	public function del() {
 
-		$ids = \Phpcmf\Service::L('Input')->get_post_ids();
+		$ids = \Phpcmf\Service::L('input')->get_post_ids();
 		!$ids && exit($this->_json(0, dr_lang('你还没有选择呢')));
 
 		$rt = \Phpcmf\Service::M('Form')->delete_form($ids);
 		!$rt['code'] && exit($this->_json(0, $rt['msg']));
 
         \Phpcmf\Service::M('cache')->sync_cache('form', '', 1); // 自动更新缓存
-		\Phpcmf\Service::L('Input')->system_log('批量删除网站表单: '. @implode(',', $ids));
+		\Phpcmf\Service::L('input')->system_log('批量删除网站表单: '. @implode(',', $ids));
 
 		exit($this->_json(1, dr_lang('操作成功'), ['ids' => $ids]));
 	}
@@ -200,7 +200,7 @@ class Form extends \Phpcmf\Common
 	// 导出
     public function export() {
 
-        $id = intval(\Phpcmf\Service::L('Input')->get('id'));
+        $id = intval(\Phpcmf\Service::L('input')->get('id'));
         $data = \Phpcmf\Service::M('Form')->get($id);
         !$data && $this->_admin_msg(0, dr_lang('网站表单（%s）不存在', $id));
 
@@ -232,7 +232,7 @@ class Form extends \Phpcmf\Common
     public function import_add() {
 
         if (IS_AJAX_POST) {
-            $data = \Phpcmf\Service::L('Input')->post('code', true);
+            $data = \Phpcmf\Service::L('input')->post('code', true);
             $data = dr_string2array($data);
             if (!is_array($data)) {
                 $this->_json(0, dr_lang('导入信息验证失败'));
@@ -246,7 +246,7 @@ class Form extends \Phpcmf\Common
             $rt = \Phpcmf\Service::M('Form')->import($data);
             !$rt['code'] && $this->_json(0, $rt['msg']);
             \Phpcmf\Service::M('cache')->sync_cache('form', '', 1); // 自动更新缓存
-            \Phpcmf\Service::L('Input')->system_log('导入网站表单('.$data['name'].')');
+            \Phpcmf\Service::L('input')->system_log('导入网站表单('.$data['name'].')');
             exit($this->_json(1, dr_lang('操作成功')));
         }
 

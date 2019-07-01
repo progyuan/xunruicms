@@ -187,14 +187,14 @@ class Urlrule extends \Phpcmf\Table
 
     // 后台修改url内容
     public function edit() {
-        $this->_Post(intval(\Phpcmf\Service::L('Input')->get('id')));
+        $this->_Post(intval(\Phpcmf\Service::L('input')->get('id')));
         \Phpcmf\Service::V()->display('urlrule_add.html');
     }
 
     // 复制url
     public function copy_edit() {
 
-        $id = intval(\Phpcmf\Service::L('Input')->get('id'));
+        $id = intval(\Phpcmf\Service::L('input')->get('id'));
         $data = \Phpcmf\Service::M()->db->table('urlrule')->where('id', $id)->get()->getRowArray();
         !$data && $this->_josn(0, dr_lang('数据#%s不存在', $id));
 
@@ -213,10 +213,10 @@ class Urlrule extends \Phpcmf\Table
     protected function _Save($id = 0, $data = [], $old = [], $func = null, $func2 = null) {
         return parent::_Save($id, $data, $old, function($id, $data){
             // 保存前的格式化
-            $type = (int)\Phpcmf\Service::L('Input')->post('type');
-            $value = \Phpcmf\Service::L('Input')->post('value');
+            $type = (int)\Phpcmf\Service::L('input')->post('type');
+            $value = \Phpcmf\Service::L('input')->post('value');
             $data[1]['type'] = $type;
-            $value[$type]['catjoin'] = \Phpcmf\Service::L('Input')->post('catjoin') ? \Phpcmf\Service::L('Input')->post('catjoin') : '/';
+            $value[$type]['catjoin'] = \Phpcmf\Service::L('input')->post('catjoin') ? \Phpcmf\Service::L('input')->post('catjoin') : '/';
             $data[1]['value'] = dr_array2string($value[$type]);
             return dr_return_data(1, 'ok', $data);
         }, function ($id, $data, $old) {
@@ -239,7 +239,7 @@ class Urlrule extends \Phpcmf\Table
     // 后台删除url内容
     public function del() {
         $this->_Del(
-            \Phpcmf\Service::L('Input')->get_post_ids(),
+            \Phpcmf\Service::L('input')->get_post_ids(),
             null,
             function ($r) {
                 \Phpcmf\Service::M('cache')->sync_cache('urlrule');

@@ -89,7 +89,7 @@ class Member_apply extends \Phpcmf\Table
     // edit
     public function edit() {
 
-        list($tpl, $data) = $this->_Post((int)\Phpcmf\Service::L('Input')->get('id'), [], 1);
+        list($tpl, $data) = $this->_Post((int)\Phpcmf\Service::L('input')->get('id'), [], 1);
         !$data && $this->_admin_msg(0, dr_lang('申请记录不存在'));
 
         $my = dr_string2array($data['content']);
@@ -137,7 +137,7 @@ class Member_apply extends \Phpcmf\Table
 
         \Phpcmf\Service::M('member')->todo_admin_notice('member_apply/edit:id/'.$id);
 
-        $post = \Phpcmf\Service::L('Input')->post('data');
+        $post = \Phpcmf\Service::L('input')->post('data');
         $member = \Phpcmf\Service::M('member')->member_info($old['uid']);
         $member['verify_group'] = $this->member_cache['group'][$old['gid']]['name'];
         $member['verify_status'] = $post['status'] ? dr_lang('成功') : dr_lang('被拒绝');
@@ -185,7 +185,7 @@ class Member_apply extends \Phpcmf\Table
 
     // 删除
     public function del() {
-        $this->_Del(\Phpcmf\Service::L('Input')->get_post_ids(), null, function($rows) {
+        $this->_Del(\Phpcmf\Service::L('input')->get_post_ids(), null, function($rows) {
             foreach ($rows as $t) {
                 // 删除审核提醒
                 \Phpcmf\Service::M('member')->delete_admin_notice('member_apply/edit:id/'.$t['id'], SITE_ID);

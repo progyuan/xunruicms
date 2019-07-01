@@ -47,17 +47,19 @@ class Comment extends \Phpcmf\Table
         // 模块显示名称
         $this->name = dr_lang('内容模块[%s]评论', APP_DIR);
         // 获取父级内容
-         $this->cid = intval(\Phpcmf\Service::L('Input')->get('cid'));
+         $this->cid = intval(\Phpcmf\Service::L('input')->get('cid'));
          $this->cid && $this->index = $this->content_model->get_row( $this->cid);
         // 自定义字段
-        !$this->module['setting']['comment_list_field'] && $this->module['setting']['comment_list_field'] = [
-            'content' => [
-                'use' => 1,
-                'name' => dr_lang('内容'),
-                'func' => 'comment',
-                'width' => 0,
-            ],
-        ];
+        if (!$this->module['setting']['comment_list_field']) {
+            $this->module['setting']['comment_list_field'] = [
+                'content' => [
+                    'use' => 1,
+                    'name' => dr_lang('内容'),
+                    'func' => 'comment',
+                    'width' => 0,
+                ],
+            ];
+        }
         $this->module['comment']['field'] = dr_array22array(
             [
                 'content' => [
@@ -149,7 +151,7 @@ class Comment extends \Phpcmf\Table
 
         ! $this->cid && $this->_admin_msg(0, dr_lang('缺少cid参数'));
 
-        $id = intval(\Phpcmf\Service::L('Input')->get('id'));
+        $id = intval(\Phpcmf\Service::L('input')->get('id'));
         list($tpl, $data) = $this->_Post($id);
 
         !$data && $this->_admin_msg(0, dr_lang('数据不存在: '.$id));
@@ -178,7 +180,7 @@ class Comment extends \Phpcmf\Table
 
         ! $this->cid && $this->_admin_msg(0, dr_lang('缺少cid参数'));
 
-        $id = intval(\Phpcmf\Service::L('Input')->get('id'));
+        $id = intval(\Phpcmf\Service::L('input')->get('id'));
         list($tpl, $data) = $this->_Show($id);
 
         !$data && $this->_admin_msg(0, dr_lang('数据不存在: '.$id));
@@ -190,7 +192,7 @@ class Comment extends \Phpcmf\Table
     // 后台批量审核
     protected function _Admin_Status() {
 
-        $ids = \Phpcmf\Service::L('Input')->get_post_ids();
+        $ids = \Phpcmf\Service::L('input')->get_post_ids();
         !$ids && $this->_json(0, dr_lang('所选数据不存在'));
 
         // 格式化
@@ -213,7 +215,7 @@ class Comment extends \Phpcmf\Table
     // 后台删除内容
     protected function _Admin_Del() {
         $this->_Del(
-            \Phpcmf\Service::L('Input')->get_post_ids(),
+            \Phpcmf\Service::L('input')->get_post_ids(),
             null,
             function ($rows) {
                 // 对应删除提醒
@@ -262,7 +264,7 @@ class Comment extends \Phpcmf\Table
             $data[1]['orderid'] = 0;
         }
 
-        $review = \Phpcmf\Service::L('Input')->post('review');
+        $review = \Phpcmf\Service::L('input')->post('review');
         if ($review) {
             foreach ($review as $i => $v) {
                 $data[1]['sort'.$i] = $v;

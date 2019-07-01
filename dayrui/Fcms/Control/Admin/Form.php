@@ -89,7 +89,7 @@ class Form extends \Phpcmf\Table
 
     // 后台修改表单内容
     protected function _Admin_Edit() {
-        $id = intval(\Phpcmf\Service::L('Input')->get('id'));
+        $id = intval(\Phpcmf\Service::L('input')->get('id'));
         list($tpl, $data) = $this->_Post($id);
         !$data && $this->_admin_msg(0, dr_lang('数据不存在: '.$id));
         $this->is_verify && $data['status'] && $this->_admin_msg(0, dr_lang('已经通过了审核'));
@@ -98,7 +98,7 @@ class Form extends \Phpcmf\Table
 
     // 后台查看表单内容
     protected function _Admin_Show() {
-        list($tpl, $data) = $this->_Show(intval(\Phpcmf\Service::L('Input')->get('id')));
+        list($tpl, $data) = $this->_Show(intval(\Phpcmf\Service::L('input')->get('id')));
         !$data && $this->_admin_msg(0, dr_lang('数据#%s不存在', $_GET['id']));
         \Phpcmf\Service::V()->display($tpl);
     }
@@ -112,7 +112,7 @@ class Form extends \Phpcmf\Table
     // 后台删除表单内容
     protected function _Admin_Del() {
         $this->_Del(
-            \Phpcmf\Service::L('Input')->get_post_ids(),
+            \Phpcmf\Service::L('input')->get_post_ids(),
             null,
             function ($rows) {
                 // 对应删除提醒
@@ -130,7 +130,7 @@ class Form extends \Phpcmf\Table
     // 后台批量审核
     protected function _Admin_Status() {
 
-        $ids = \Phpcmf\Service::L('Input')->get_post_ids();
+        $ids = \Phpcmf\Service::L('input')->get_post_ids();
         !$ids && $this->_json(0, dr_lang('所选数据不存在'));
 
         // 格式化
@@ -153,8 +153,8 @@ class Form extends \Phpcmf\Table
     // 后台批量保存排序值
     protected function _Admin_Order() {
         $this->_Display_Order(
-            intval(\Phpcmf\Service::L('Input')->get('id')),
-            intval(\Phpcmf\Service::L('Input')->get('value'))
+            intval(\Phpcmf\Service::L('input')->get('id')),
+            intval(\Phpcmf\Service::L('input')->get('value'))
         );
     }
 

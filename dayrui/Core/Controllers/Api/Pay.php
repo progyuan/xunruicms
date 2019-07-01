@@ -31,7 +31,7 @@ class Pay extends \Phpcmf\Common
 	// 付款
 	public function index() {
 
-		$id = (int)\Phpcmf\Service::L('Input')->get('id');
+		$id = (int)\Phpcmf\Service::L('input')->get('id');
 		$data = \Phpcmf\Service::M('pay')->table('member_paylog')->get($id);
 		if (!$data) {
 			$this->_msg(0, dr_lang('该账单不存在'));exit;
@@ -74,7 +74,7 @@ class Pay extends \Phpcmf\Common
 	 */
 	public function ajax() {
 
-		$id = (int)\Phpcmf\Service::L('Input')->get('id');
+		$id = (int)\Phpcmf\Service::L('input')->get('id');
 		$data = \Phpcmf\Service::M()->table('member_paylog')->get($id);
 		!$data && $this->_jsonp(0, dr_lang('支付记录不存在'));
 		$data['status'] && $this->_jsonp(1, dr_lang('已经支付完成'));
@@ -100,7 +100,7 @@ class Pay extends \Phpcmf\Common
      */
     public function call() {
 
-        $id = (int)\Phpcmf\Service::L('Input')->get('id');
+        $id = (int)\Phpcmf\Service::L('input')->get('id');
         $data = \Phpcmf\Service::M()->table('member_paylog')->get($id);
         !$data && $this->_msg(0, dr_lang('支付记录不存在'));
 

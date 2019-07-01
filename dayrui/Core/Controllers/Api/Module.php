@@ -36,9 +36,9 @@ class Module extends \Phpcmf\Common
     public function __construct(...$params) {
         parent::__construct(...$params);
         // 初始化模块
-        $this->siteid = (int)\Phpcmf\Service::L('Input')->get('siteid');
+        $this->siteid = (int)\Phpcmf\Service::L('input')->get('siteid');
         !$this->siteid && $this->siteid = SITE_ID;
-        $this->dirname = dr_safe_replace(\Phpcmf\Service::L('Input')->get('app'));
+        $this->dirname = dr_safe_replace(\Phpcmf\Service::L('input')->get('app'));
         if (!$this->dirname || !dr_is_app_dir(($this->dirname))) {
             $this->_msg(0, dr_lang('模块目录[%s]不存在', $this->dirname));
             exit;
@@ -57,7 +57,7 @@ class Module extends \Phpcmf\Common
      */
     public function hits() {
 
-        $id = (int)\Phpcmf\Service::L('Input')->get('id');
+        $id = (int)\Phpcmf\Service::L('input')->get('id');
         !$id && $this->_jsonp(0, dr_lang('阅读统计: id参数不完整'));
 
         $data = \Phpcmf\Service::M()->db->table($this->tablename)->where('id', $id)->select('hits,updatetime')->get()->getRowArray();
@@ -104,7 +104,7 @@ class Module extends \Phpcmf\Common
             $this->_json(0, dr_lang('插件[模块内容收藏]未安装到本模块[%s]', $this->dirname));
         }
 
-        $id = (int)\Phpcmf\Service::L('Input')->get('id');
+        $id = (int)\Phpcmf\Service::L('input')->get('id');
 
         !$this->uid && $this->_json(0, dr_lang('还没有登录'));
         !$id && $this->_json(0, dr_lang('id参数不完整'));
@@ -147,7 +147,7 @@ class Module extends \Phpcmf\Common
             $this->_json(0, dr_lang('插件[模块内容收藏]未安装到本模块[%s]', $this->dirname));
         }
 
-        $id = (int)\Phpcmf\Service::L('Input')->get('id');
+        $id = (int)\Phpcmf\Service::L('input')->get('id');
 
         !$this->uid && $this->_json(0, dr_lang('还没有登录'));
         !$id && $this->_json(0, dr_lang('id参数不完整'));
@@ -177,8 +177,8 @@ class Module extends \Phpcmf\Common
             $this->_json(0, dr_lang('插件[模块内容点赞]未安装到本模块[%s]', $this->dirname));
         }
 
-        $id = (int)\Phpcmf\Service::L('Input')->get('id');
-        $value = (int)\Phpcmf\Service::L('Input')->get('value');
+        $id = (int)\Phpcmf\Service::L('input')->get('id');
+        $value = (int)\Phpcmf\Service::L('input')->get('value');
 
         !$this->uid && $this->_json(0, dr_lang('还没有登录'));
         !$id && $this->_json(0, dr_lang('id参数不完整'));

@@ -71,13 +71,13 @@ class Api extends \Phpcmf\Home\Api
      */
     public function search() {
 
-        $dir = dr_safe_replace(\Phpcmf\Service::L('Input')->get('dir'));
+        $dir = dr_safe_replace(\Phpcmf\Service::L('input')->get('dir'));
         if (!$dir) {
             $this->_msg(0, dr_lang('模块参数不能为空'));
         } elseif (!dr_is_module($dir)) {
             $this->_msg(0, dr_lang('模块[%s]未安装', $dir));
         }
-        $keyword = dr_safe_replace(\Phpcmf\Service::L('Input')->get('keyword'));
+        $keyword = dr_safe_replace(\Phpcmf\Service::L('input')->get('keyword'));
         // 跳转url
         dr_redirect(\Phpcmf\Service::L('Router')->search_url([], 'keyword', $keyword, $dir));
     }
@@ -88,9 +88,9 @@ class Api extends \Phpcmf\Home\Api
     public function checktitle() {
 
         // 获取参数
-        $id = (int)\Phpcmf\Service::L('Input')->get('id');
-        $title = dr_safe_replace(\Phpcmf\Service::L('Input')->get('title'));
-        $module = dr_safe_replace(\Phpcmf\Service::L('Input')->get('module'));
+        $id = (int)\Phpcmf\Service::L('input')->get('id');
+        $title = dr_safe_replace(\Phpcmf\Service::L('input')->get('title'));
+        $module = dr_safe_replace(\Phpcmf\Service::L('input')->get('module'));
 
         // 判断参数
         (!$title || !$module) && exit('');
@@ -108,7 +108,7 @@ class Api extends \Phpcmf\Home\Api
      */
     public function getkeywords() {
 
-        $kw = dr_get_keywords(dr_safe_replace(\Phpcmf\Service::L('Input')->get('title')));
+        $kw = dr_get_keywords(dr_safe_replace(\Phpcmf\Service::L('input')->get('title')));
         exit($kw);
     }
 
@@ -118,8 +118,8 @@ class Api extends \Phpcmf\Home\Api
     public function save_form_data() {
 
         $rt = \Phpcmf\Service::L('cache')->init('file')->save(
-            dr_safe_filename(\Phpcmf\Service::L('Input')->get('name')),
-            \Phpcmf\Service::L('Input')->post('data'),
+            dr_safe_filename(\Phpcmf\Service::L('input')->get('name')),
+            \Phpcmf\Service::L('input')->post('data'),
             7200
         );
         var_dump($rt);
@@ -130,7 +130,7 @@ class Api extends \Phpcmf\Home\Api
      * 删除临时表单内容
      */
     public function delete_form_data() {
-        \Phpcmf\Service::L('cache')->init('file')->delete(dr_safe_filename(\Phpcmf\Service::L('Input')->get('name', true)));
+        \Phpcmf\Service::L('cache')->init('file')->delete(dr_safe_filename(\Phpcmf\Service::L('input')->get('name', true)));
         $this->_json(1, dr_lang('清除成功'));
         exit;
     }
@@ -149,7 +149,7 @@ class Api extends \Phpcmf\Home\Api
      * 汉字转换拼音
      */
     public function pinyin() {
-        $name = dr_safe_replace(\Phpcmf\Service::L('Input')->get('name'));
+        $name = dr_safe_replace(\Phpcmf\Service::L('input')->get('name'));
         !$name && exit('');
         $py = \Phpcmf\Service::L('pinyin')->result($name);
         if (strlen($py) > 12) {
@@ -166,8 +166,8 @@ class Api extends \Phpcmf\Home\Api
      */
     public function linkage() {
 
-        $pid = (int)\Phpcmf\Service::L('Input')->get('parent_id');
-        $code = dr_safe_replace(\Phpcmf\Service::L('Input')->get('code'));
+        $pid = (int)\Phpcmf\Service::L('input')->get('parent_id');
+        $code = dr_safe_replace(\Phpcmf\Service::L('input')->get('code'));
         $linkage = \Phpcmf\Service::L('cache')->get('linkage-'.SITE_ID.'-'.$code);
 
         $json = array();
@@ -185,13 +185,13 @@ class Api extends \Phpcmf\Home\Api
      */
     public function field() {
 
-        $id = (int)\Phpcmf\Service::L('Input')->get('id');
-        $app = dr_safe_replace(\Phpcmf\Service::L('Input')->get('app'));
-        $type = dr_safe_replace(\Phpcmf\Service::L('Input')->get('type'));
+        $id = (int)\Phpcmf\Service::L('input')->get('id');
+        $app = dr_safe_replace(\Phpcmf\Service::L('input')->get('app'));
+        $type = dr_safe_replace(\Phpcmf\Service::L('input')->get('type'));
 
         // 关联表
-        \Phpcmf\Service::M('field')->relatedid = dr_safe_replace(\Phpcmf\Service::L('Input')->get('relatedid'));
-        \Phpcmf\Service::M('field')->relatedname = dr_safe_replace(\Phpcmf\Service::L('Input')->get('relatedname'));
+        \Phpcmf\Service::M('field')->relatedid = dr_safe_replace(\Phpcmf\Service::L('input')->get('relatedid'));
+        \Phpcmf\Service::M('field')->relatedname = dr_safe_replace(\Phpcmf\Service::L('input')->get('relatedname'));
 
         // 获取全部字段
         $all = \Phpcmf\Service::M('field')->get_all();
@@ -251,7 +251,7 @@ class Api extends \Phpcmf\Home\Api
         !$this->uid && $this->_json(0, dr_lang('会话超时，请重新登录'));
 
         // 参数判断
-        $dirname = dr_safe_filename(\Phpcmf\Service::L('Input')->get('module'));
+        $dirname = dr_safe_filename(\Phpcmf\Service::L('input')->get('module'));
         !$dirname && $this->_json(0, dr_lang('module参数不存在'));
 
         // 站点选择
@@ -285,7 +285,7 @@ class Api extends \Phpcmf\Home\Api
 
 
         if (IS_POST) {
-            $ids = \Phpcmf\Service::L('Input')->get_post_ids();
+            $ids = \Phpcmf\Service::L('input')->get_post_ids();
             !$ids && $this->_json(0, dr_lang('没有选择项'));
             $id = array();
             foreach ($ids as $i) {
@@ -370,9 +370,9 @@ class Api extends \Phpcmf\Home\Api
      */
     public function client() {
 
-        $at = \Phpcmf\Service::L('Input')->get('at');
+        $at = \Phpcmf\Service::L('input')->get('at');
         if ($at == 'select') {
-            $url = urldecode(\Phpcmf\Service::L('Input')->get('url'));
+            $url = urldecode(\Phpcmf\Service::L('input')->get('url'));
             !is_file(WRITEPATH.'config/domain_client.php') && $this->_json(0, dr_lang('配置文件domain_client不存在'));
 
             $domain = require WRITEPATH.'config/domain_client.php';
@@ -390,7 +390,7 @@ class Api extends \Phpcmf\Home\Api
                 !isset($domain[$host]) && $this->_json(0, dr_lang('域名%s切换失败', $host));
                 $value = 1;
             }
-            \Phpcmf\Service::L('Input')->set_cookie('is_mobile', $value, $value ? 3600 : -3600);
+            \Phpcmf\Service::L('input')->set_cookie('is_mobile', $value, $value ? 3600 : -3600);
             $url = str_replace($host, $domain[$host], $url);
             //$url = '';
             $sync = [];
@@ -400,8 +400,8 @@ class Api extends \Phpcmf\Home\Api
             }
             $this->_json(1, dr_lang('正在切换: %s', $url), ['sso' => $sync, 'url' => $url]);
         } else {
-            $value = (int)\Phpcmf\Service::L('Input')->get('value');
-            \Phpcmf\Service::L('Input')->set_cookie('is_mobile', $value, $value ? 3600 : -3600);
+            $value = (int)\Phpcmf\Service::L('input')->get('value');
+            \Phpcmf\Service::L('input')->set_cookie('is_mobile', $value, $value ? 3600 : -3600);
             $this->_jsonp(1, 'ok');
         }
         exit;

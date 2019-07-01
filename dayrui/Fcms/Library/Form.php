@@ -352,7 +352,7 @@ class Form
     // 验证码类
     public function check_captcha($id) {
 
-        $data = \Phpcmf\Service::L('Input')->post($id);
+        $data = \Phpcmf\Service::L('input')->post($id);
         if (!$data) {
             return false;
         }

@@ -35,7 +35,7 @@ class Login extends \Phpcmf\Common
         strpos($url, 'login') !== false && $url = MEMBER_URL;
         
         if (IS_AJAX_POST) {
-            $post = \Phpcmf\Service::L('Input')->post('data', true);
+            $post = \Phpcmf\Service::L('input')->post('data', true);
             // 支付回调钩子
             \Phpcmf\Hooks::trigger('member_login_before', $post);
             if ($this->member_cache['login']['code']
@@ -47,7 +47,7 @@ class Login extends \Phpcmf\Common
                 $rt = \Phpcmf\Service::M('member')->login($post['username'], $post['password'], (int)$_POST['remember']);
                 if ($rt['code']) {
                     // 登录成功
-                    $rt['data']['url'] = urldecode(\Phpcmf\Service::L('Input')->xss_clean($_POST['back'] ? $_POST['back'] : MEMBER_URL));
+                    $rt['data']['url'] = urldecode(\Phpcmf\Service::L('input')->xss_clean($_POST['back'] ? $_POST['back'] : MEMBER_URL));
                     $this->_json(1, 'ok', $rt['data']);
                 } else {
                     $this->_json(0, $rt['msg']);
@@ -73,7 +73,7 @@ class Login extends \Phpcmf\Common
         strpos($url, 'login') !== false && $url = MEMBER_URL;
 
         if (IS_AJAX_POST) {
-            $post = \Phpcmf\Service::L('Input')->post('data', true);
+            $post = \Phpcmf\Service::L('input')->post('data', true);
             if ($this->member_cache['login']['code']
                 && !\Phpcmf\Service::L('Form')->check_captcha('code')) {
                 $this->_json(0, dr_lang('验证码不正确'));
@@ -91,7 +91,7 @@ class Login extends \Phpcmf\Common
                     $rt = \Phpcmf\Service::M('member')->login_sms($post['phone'], (int)$_POST['remember']);
                     if ($rt['code']) {
                         // 登录成功
-                        $rt['data']['url'] = urldecode(\Phpcmf\Service::L('Input')->xss_clean($_POST['back'] ? $_POST['back'] : MEMBER_URL));
+                        $rt['data']['url'] = urldecode(\Phpcmf\Service::L('input')->xss_clean($_POST['back'] ? $_POST['back'] : MEMBER_URL));
                         $this->_json(1, 'ok', $rt['data']);
                     } else {
                         $this->_json(0, $rt['msg']);
@@ -137,14 +137,14 @@ class Login extends \Phpcmf\Common
                 $sso.= '<script src="'.$url.'"></script>';
             }
             
-            $this->_msg(1, dr_lang('%s，欢迎回来', dr_html2emoji($oauth['nickname'])).$sso, \Phpcmf\Service::L('Input')->xss_clean($goto_url), 0);
+            $this->_msg(1, dr_lang('%s，欢迎回来', dr_html2emoji($oauth['nickname'])).$sso, \Phpcmf\Service::L('input')->xss_clean($goto_url), 0);
         } else {
             
             // 用户组判断
             !$this->member_cache['register']['group'] && $this->_msg(0, dr_lang('系统没有可注册的用户组'));
 
             // 验证用户组
-            $groupid = (int)\Phpcmf\Service::L('Input')->get('groupid');
+            $groupid = (int)\Phpcmf\Service::L('input')->get('groupid');
             !$groupid && $groupid = (int)@current($this->member_cache['register']['group']);
             !$groupid && $this->_msg(0, dr_lang('无效的用户组'));
             !$this->member_cache['group'][$groupid]['register'] && $this->_msg(0, dr_lang('该用户组不允许注册'));
@@ -161,13 +161,13 @@ class Login extends \Phpcmf\Common
             if ($this->member_cache['oauth']['login']) {
                 // 直接登录
                 if (IS_POST) {
-                    $groupid = (int)\Phpcmf\Service::L('Input')->post('groupid');
+                    $groupid = (int)\Phpcmf\Service::L('input')->post('groupid');
                     !$this->member_cache['group'][$groupid]['register'] && $this->_json(0, dr_lang('该用户组不允许注册'));
                     // 注册
                     $rt = \Phpcmf\Service::M('member')->register_oauth($groupid, $oauth);
                     if ($rt['code']) {
                         // 登录成功
-                        $rt['data']['url'] = \Phpcmf\Service::L('Input')->xss_clean($goto_url);
+                        $rt['data']['url'] = \Phpcmf\Service::L('input')->xss_clean($goto_url);
                         $this->_json(1, 'ok', $rt['data']);
                     } else {
                         $this->_json(0, $rt['msg']);
@@ -181,13 +181,13 @@ class Login extends \Phpcmf\Common
                 \Phpcmf\Service::V()->display('login_select.html');
             } else {
                 // 绑定账号
-                $type = intval(\Phpcmf\Service::L('Input')->get('type'));
+                $type = intval(\Phpcmf\Service::L('input')->get('type'));
                 if (IS_POST) {
-                    $post = \Phpcmf\Service::L('Input')->post('data');
-                    !\Phpcmf\Service::L('Input')->post('is_protocol') && $this->_json(0, dr_lang('你没有同意注册协议'));
+                    $post = \Phpcmf\Service::L('input')->post('data');
+                    !\Phpcmf\Service::L('input')->post('is_protocol') && $this->_json(0, dr_lang('你没有同意注册协议'));
                     if ($type) {
                         // 注册绑定
-                        $groupid = (int)\Phpcmf\Service::L('Input')->post('groupid');
+                        $groupid = (int)\Phpcmf\Service::L('input')->post('groupid');
                         if (!$this->member_cache['group'][$groupid]['register']) {
                             $this->_json(0, dr_lang('该用户组不允许注册'));
                         } elseif (in_array('username', $this->member_cache['register']['field'])
@@ -212,7 +212,7 @@ class Login extends \Phpcmf\Common
                             ]);
                             if ($rt['code']) {
                                 // 注册绑定成功
-                                $rt['data']['url'] = \Phpcmf\Service::L('Input')->xss_clean($goto_url);
+                                $rt['data']['url'] = \Phpcmf\Service::L('input')->xss_clean($goto_url);
                                 $this->_json(1, 'ok', $rt['data']);
                             } else {
                                 $this->_json(0, $rt['msg'], ['field' => $rt['data']['field']]);
@@ -226,7 +226,7 @@ class Login extends \Phpcmf\Common
                             $rt = \Phpcmf\Service::M('member')->login($post['username'], $post['password'], (int)$_POST['remember']);
                             if ($rt['code']) {
                                 // 登录成功
-                                $rt['data']['url'] = \Phpcmf\Service::L('Input')->xss_clean($goto_url);
+                                $rt['data']['url'] = \Phpcmf\Service::L('input')->xss_clean($goto_url);
                                 // 更改状态
                                 \Phpcmf\Service::M()->db->table('member_oauth')->where('id', $oauth['id'])->update(['uid' => $rt['data']['member']['id']]);
                                 dr_is_app('weixin') && $oauth['oauth'] == 'wechat' && \Phpcmf\Service::M()->db->table('weixin_user')->where('openid', $oauth['oid'])->update([
@@ -260,7 +260,7 @@ class Login extends \Phpcmf\Common
 
         if (IS_POST) {
 
-            $post = \Phpcmf\Service::L('Input')->post('data', true);
+            $post = \Phpcmf\Service::L('input')->post('data', true);
             $value = dr_safe_replace($post['value']);
             if (strpos($value, '@') !== false) {
                 // 邮箱模式
@@ -310,7 +310,7 @@ class Login extends \Phpcmf\Common
         }
         
         $this->_json(1, dr_lang('您的账号已退出系统'), [
-            'url' => \Phpcmf\Service::L('Input')->xss_clean(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : SITE_URL),
+            'url' => \Phpcmf\Service::L('input')->xss_clean(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : SITE_URL),
             'sso' => \Phpcmf\Service::M('member')->logout(),
         ]);
     }

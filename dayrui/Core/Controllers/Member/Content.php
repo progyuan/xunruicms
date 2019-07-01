@@ -37,7 +37,7 @@ class Content extends \Phpcmf\Table
             $this->_msg(0, dr_lang('系统还没有可用的内容模块'));
             exit;
         }
-        $dir = \Phpcmf\Service::L('Input')->get('module');
+        $dir = \Phpcmf\Service::L('input')->get('module');
         if (!$dir || !isset($this->module[$dir])) {
             $one = reset($this->module);
             $this->my_module = $one['dirname'];

@@ -115,10 +115,10 @@ class Member extends \Phpcmf\Common
 
         if (IS_AJAX_POST) {
 
-            $at = \Phpcmf\Service::L('Input')->get('at');
+            $at = \Phpcmf\Service::L('input')->get('at');
             !$at && $this->_json(0, dr_lang('参数错误'));
 
-            $id = \Phpcmf\Service::L('Input')->post('id');
+            $id = \Phpcmf\Service::L('input')->post('id');
             switch ($at) {
 
                 case 'category':
@@ -187,13 +187,13 @@ class Member extends \Phpcmf\Common
     // 复制栏目权限
     public function edit() {
 
-        $catid = (int)\Phpcmf\Service::L('Input')->get('catid');
+        $catid = (int)\Phpcmf\Service::L('input')->get('catid');
         if (IS_AJAX_POST) {
 
             $auth = $this->auth[SITE_ID][MOD_DIR]['category'][$catid];
             !$auth && $this->_json(0, dr_lang('当前栏目没有配置权限规则'));
 
-            $catids = \Phpcmf\Service::L('Input')->post('catid');
+            $catids = \Phpcmf\Service::L('input')->post('catid');
             !$catids && $this->_json(0, dr_lang('你还没有选择栏目呢'));
 
             $c = 0;
@@ -236,7 +236,7 @@ class Member extends \Phpcmf\Common
     // 清空栏目权限
     public function del() {
 
-        $catid = (int)\Phpcmf\Service::L('Input')->get('catid');
+        $catid = (int)\Phpcmf\Service::L('input')->get('catid');
 
         if (IS_AJAX) {
 

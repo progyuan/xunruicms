@@ -359,10 +359,7 @@ class Content extends \Phpcmf\Model {
         $save[1]['status'] = 9;
         $save[1]['link_id'] = 0;
         $save[1]['comments'] = 0;
-        $save[1]['favorites'] = 0;
         $save[1]['avgsort'] = 0;
-        $save[1]['oppose'] = 0;
-        $save[1]['donation'] = 0;
 
         $time = min(SYS_TIME, $row['posttime']);
         !$time && $time = SYS_TIME;
@@ -551,8 +548,8 @@ class Content extends \Phpcmf\Model {
     public function save_post_time($id, $data, $time) {
 
         $post = $data[0] ? array_merge($data[0], $data[1]) : $data[1];
-        $post['flag'] = \Phpcmf\Service::L('Input')->post('flag');
-        $post['sync_weibo'] = \Phpcmf\Service::L('Input')->post('sync_weibo');
+        $post['flag'] = \Phpcmf\Service::L('input')->post('flag');
+        $post['sync_weibo'] = \Phpcmf\Service::L('input')->post('sync_weibo');
 
         $save = [
             'uid' => $this->uid,
@@ -1206,7 +1203,7 @@ class Content extends \Phpcmf\Model {
         $insert['author'] = $value['member']['uid'] ? $value['member']['username'] : '游客';
         $insert['content'] = $data['content'];
         $insert['support'] = $insert['oppose'] = $insert['avgsort'] = 0;
-        $insert['inputip'] = \Phpcmf\Service::L('Input')->ip_address();
+        $insert['inputip'] = \Phpcmf\Service::L('input')->ip_address();
         $insert['inputtime'] = SYS_TIME;
         $insert['orderid'] = (int)$value['orderid'];
 
@@ -1304,7 +1301,7 @@ class Content extends \Phpcmf\Model {
     }
 
     // 获取评论列表
-    public function get_comment_result($cid, $order, $page, $pagesize, $total) {
+    public function get_comment_result($cid, $order, $page, $pagesize, $total, $field) {
 
         if (!$cid) {
             return [];
@@ -1317,11 +1314,22 @@ class Content extends \Phpcmf\Model {
             ->get()->getResultArray();
 
         if ($list) {
+            $dfield = \Phpcmf\Service::L('Field')->app($this->dirname);
             foreach ($list as $i => $t) {
-                $list[$i]['rlist'] = !$t['in_reply'] ? [] : $this->db->table($this->mytable.'_comment')
+                $reply = !$t['in_reply'] ? [] : $this->db->table($this->mytable.'_comment')
                     ->where('cid', $cid)->where('reply', $t['id'])->where('status', 1)
                     ->orderBy('id asc')
                     ->get()->getResultArray();
+                if ($field) {
+                    // 格式化显示自定义字段内容
+                    $list[$i] = $dfield->format_value($field, $t, 1);
+                    if ($reply) {
+                        foreach ($reply as $b => $v) {
+                            $reply[$b] = $dfield->format_value($field, $v, 1);
+                        }
+                    }
+                }
+                $list[$i]['rlist'] = $reply;
             }
         }
 

@@ -36,7 +36,7 @@ class Api extends \Phpcmf\Common
     // 测试字段回调方法
     public function field_call() {
 
-        $call = dr_safe_replace(\Phpcmf\Service::L('Input')->get('name'));
+        $call = dr_safe_replace(\Phpcmf\Service::L('input')->get('name'));
         if (!$call) {
             $this->_json(0, dr_lang('没有填写函数方法'));
         }
@@ -59,7 +59,7 @@ class Api extends \Phpcmf\Common
     // 通知跳转
     public function notice() {
 
-        $id = (int)\Phpcmf\Service::L('Input')->get('id');
+        $id = (int)\Phpcmf\Service::L('input')->get('id');
         $data = \Phpcmf\Service::M()->table('admin_notice')->get($id);
         !$data && $this->_admin_msg(0, dr_lang('该数据不存在'));
 
@@ -99,7 +99,7 @@ class Api extends \Phpcmf\Common
                 $this->_json(0, dr_lang('验证码不正确'), ['field' => 'code']);
             }
 			$menu = [];
-			$data = \Phpcmf\Service::L('Input')->post('data');
+			$data = \Phpcmf\Service::L('input')->post('data');
 			if ($data['usermenu']) {
 				foreach ($data['usermenu']['name'] as $id => $v) {
 					$v && $data['usermenu']['url'][$id] && $menu[$id] = [
@@ -111,7 +111,7 @@ class Api extends \Phpcmf\Common
 				}
 			}
 			// 修改密码
-			$password = dr_safe_password(\Phpcmf\Service::L('Input')->post('password'));
+			$password = dr_safe_password(\Phpcmf\Service::L('input')->post('password'));
 			$password && \Phpcmf\Service::M('member')->edit_password($this->member, $password);
 
 			\Phpcmf\Service::M()->db->table('admin')->where('uid', $this->admin['id'])->update([
@@ -152,7 +152,7 @@ class Api extends \Phpcmf\Common
 	// 加入菜单
 	public function menu() {
 
-		$url = urldecode(dr_safe_replace(\Phpcmf\Service::L('Input')->get('v')));
+		$url = urldecode(dr_safe_replace(\Phpcmf\Service::L('input')->get('v')));
 		$arr = parse_url($url);
 		$queryParts = explode('&', $arr['query']);
 		$params = [];
@@ -245,7 +245,7 @@ class Api extends \Phpcmf\Common
 	public function domain() {
 
 	    $html = '';
-	    $post = \Phpcmf\Service::L('Input')->post('data');
+	    $post = \Phpcmf\Service::L('input')->post('data');
 		if ($post) {
 		    $my = [];
             foreach ($this->site_domain as $name => $sid) {
@@ -281,7 +281,7 @@ class Api extends \Phpcmf\Common
 	public function mtotal() {
 
 		$t1 = $t2 = $t3 = $t4 = $t5 =0;
-		$dir = dr_safe_filename(\Phpcmf\Service::L('Input')->get('dir'));
+		$dir = dr_safe_filename(\Phpcmf\Service::L('input')->get('dir'));
 		if (is_dir(APPSPATH.ucfirst($dir))) {
 			$t1 = \Phpcmf\Service::M()->db->table(SITE_ID.'_'.$dir.'_index')->where('status=9')->where('DATEDIFF(from_unixtime(inputtime),now())=0')->countAllResults();
 			$t2 = \Phpcmf\Service::M()->db->table(SITE_ID.'_'.$dir.'_index')->where('status=9')->countAllResults();
@@ -321,7 +321,7 @@ class Api extends \Phpcmf\Common
 
 		!SYS_EMAIL && $this->_json(0, dr_lang('系统邮箱没有设置'));
 
-		$id = intval(\Phpcmf\Service::L('Input')->get('id'));
+		$id = intval(\Phpcmf\Service::L('input')->get('id'));
 		$data = \Phpcmf\Service::M()->table('mail_smtp')->get($id);
 		!$data && $this->_json(0, dr_lang('数据#%s不存在', $id));
 
@@ -345,7 +345,7 @@ class Api extends \Phpcmf\Common
 	 */
 	public function site() {
 
-        $id = intval(\Phpcmf\Service::L('Input')->get('id'));
+        $id = intval(\Phpcmf\Service::L('input')->get('id'));
         !$this->site_info[$id] && $this->_admin_msg(0, dr_lang('站点不存在'));
         !$this->admin && $this->_admin_msg(0, dr_lang('你还没有登录'));
 
@@ -388,7 +388,7 @@ class Api extends \Phpcmf\Common
 	 */
 	public function test_attach() {
 
-	    $data = \Phpcmf\Service::L('Input')->post('data');
+	    $data = \Phpcmf\Service::L('input')->post('data');
         $type = intval($data['type']);
         $value = $data['value'][$type];
         !$value && $this->_json(0, dr_lang('参数不存在'));
@@ -418,7 +418,7 @@ class Api extends \Phpcmf\Common
 	 */
 	public function test_mobile() {
 
-	    $data = \Phpcmf\Service::L('Input')->post('data');
+	    $data = \Phpcmf\Service::L('input')->post('data');
 
         $method = 'my_sendsms_code';
         if (function_exists($method)) {
@@ -489,12 +489,12 @@ class Api extends \Phpcmf\Common
 	 */
 	public function export_field() {
 
-        $table = dr_safe_replace(\Phpcmf\Service::L('Input')->get('table'));
+        $table = dr_safe_replace(\Phpcmf\Service::L('input')->get('table'));
         !$table && $this->_json(0, '表【'.$table.'】不存在');
 
         if (IS_AJAX_POST) {
 
-            $post = \Phpcmf\Service::L('Input')->post('data');
+            $post = \Phpcmf\Service::L('input')->post('data');
             !$post && $this->_json(0, dr_lang('存储内容不正确'));
 
             \Phpcmf\Service::M('Table')->save_export_field_name($table, $post);
@@ -520,7 +520,7 @@ class Api extends \Phpcmf\Common
         $sql = str_replace('+', ' ', dr_authcode(urldecode($_GET['sql'])));
         $db = \Phpcmf\Service::M()->db->query($sql);
         $list = $db ? $db->getResultArray() : [];
-        $table = dr_safe_replace(\Phpcmf\Service::L('Input')->get('table'));
+        $table = dr_safe_replace(\Phpcmf\Service::L('input')->get('table'));
         $field = \Phpcmf\Service::M('Table')->get_export_field_name($table, 1);
 
         \Phpcmf\Service::V()->assign([
@@ -536,7 +536,7 @@ class Api extends \Phpcmf\Common
 	 */
 	public function member() {
 
-		$name = dr_safe_replace(\Phpcmf\Service::L('Input')->get('name'));
+		$name = dr_safe_replace(\Phpcmf\Service::L('input')->get('name'));
 		$data = \Phpcmf\Service::M('member')->get_member(0, $name);
 		!$data && $this->_json(0, dr_lang('此账号%s不存在', $name));
 
@@ -552,9 +552,11 @@ class Api extends \Phpcmf\Common
      */
     public function test_dir() {
 
-        $v = \Phpcmf\Service::L('Input')->get('v');
+        $v = \Phpcmf\Service::L('input')->get('v');
         if (!$v) {
             $this->_json(0, dr_lang('目录为空'));
+        } elseif (strpos($v, ' ') === 0) {
+            $this->_json(0, dr_lang('不能用空格开头'));
         }
         $path = dr_get_dir_path($v);
         if (is_dir($path)) {

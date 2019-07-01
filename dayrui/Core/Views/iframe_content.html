@@ -1,10 +1,10 @@
 {template "header.html"}
 
 {if \Phpcmf\Service::_is_mobile()}
-<div class="module-content">
-    <div style="text-align: center; margin: 20px 0 0 0;">
+<div class="module-content" style="margin-top: -55px;">
+    <div style="text-align: center;">
         <div class="btn-group">
-            <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"> {$module[$dirname]['name']}
+            <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"> {dr_lang('选择栏目')}
                 <i class="fa fa-angle-down"></i>
             </button>
             <ul class="dropdown-menu my-left-content2" role="menu">

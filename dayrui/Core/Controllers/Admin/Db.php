@@ -49,7 +49,7 @@ class Db extends \Phpcmf\Common
 	}
 
 	public function check_index() {
-        $table = dr_safe_replace(\Phpcmf\Service::L('Input')->get('id'));
+        $table = dr_safe_replace(\Phpcmf\Service::L('input')->get('id'));
         !$table && $this->_json(0, dr_lang('表错误'));
         $data = \Phpcmf\Service::M()->db->query('CHECK TABLE `'.$table.'`')->getRowArray();
         !$data && $this->_json(0, dr_lang('表信息读取失败'));
@@ -58,7 +58,7 @@ class Db extends \Phpcmf\Common
 
 	public function show_index() {
 
-	    $table = dr_safe_replace(\Phpcmf\Service::L('Input')->get('id'));
+	    $table = dr_safe_replace(\Phpcmf\Service::L('input')->get('id'));
         $list = \Phpcmf\Service::M()->db->query('SHOW FULL COLUMNS FROM `'.$table.'`')->getResultArray();
 
 		\Phpcmf\Service::V()->assign([
@@ -71,8 +71,8 @@ class Db extends \Phpcmf\Common
 	// 批量操作
 	public function all() {
 
-	    $at = \Phpcmf\Service::L('Input')->get('at');
-        $ids = \Phpcmf\Service::L('Input')->get_post_ids();
+	    $at = \Phpcmf\Service::L('input')->get('at');
+        $ids = \Phpcmf\Service::L('input')->get_post_ids();
         !$ids && $this->_json(0, dr_lang('没有选择表'));
 
         foreach ($ids as $table) {

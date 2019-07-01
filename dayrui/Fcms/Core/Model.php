@@ -565,10 +565,10 @@ class Model {
     // 分页
     public function limit_page($size = SYS_ADMIN_PAGESIZE) {
 
-        $page = max(1, (int)\Phpcmf\Service::L('Input')->get('page'));
-        $total = (int)\Phpcmf\Service::L('Input')->get('total');
+        $page = max(1, (int)\Phpcmf\Service::L('input')->get('page'));
+        $total = (int)\Phpcmf\Service::L('input')->get('total');
 
-        $param = \Phpcmf\Service::L('Input')->get();
+        $param = \Phpcmf\Service::L('input')->get();
         unset($param['s'], $param['c'], $param['m'], $param['d'], $param['page']);
         if (isset($param['keyword']) && $param['keyword']) {
             $param['keyword'] = urldecode($param['keyword']);

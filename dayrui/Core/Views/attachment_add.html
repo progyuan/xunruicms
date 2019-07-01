@@ -140,6 +140,13 @@
                             </div>
                         </div>
                         <div class="form-group r r2">
+                            <label class="col-md-2 control-label">{dr_lang('带尺寸的图片后缀')}</label>
+                            <div class="col-md-7">
+                                <input class="form-control " type="text" name="data[value][2][wh_prefix_image]" value="{$data['value']['wh_prefix_image']}" />
+                                <span class="help-block"> {dr_lang('与通用图片后缀功能一样，这个能根据参数来匹配，填写格式：{width}x{height}')} </span>
+                            </div>
+                        </div>
+                        <div class="form-group r r2">
                             <label class="col-md-2 control-label">{dr_lang('OSS域名')}</label>
                             <div class="col-md-7">
                                 <input class="form-control " type="text" name="data[value][2][endpoint]" value="{$data['value']['endpoint']}" />
@@ -185,6 +192,13 @@
                             </div>
                         </div>
                         <div class="form-group r r3">
+                            <label class="col-md-2 control-label">{dr_lang('带尺寸的图片后缀')}</label>
+                            <div class="col-md-7">
+                                <input class="form-control " type="text" name="data[value][3][wh_prefix_image]" value="{$data['value']['wh_prefix_image']}" />
+                                <span class="help-block"> {dr_lang('与通用图片后缀功能一样，这个能根据参数来匹配，填写格式：{width}x{height}')} </span>
+                            </div>
+                        </div>
+                        <div class="form-group r r3">
                             <label class="col-md-2 control-label">{dr_lang('域名设置')}</label>
                             <div class="col-md-7">
                                 <input class="form-control " type="text" name="data[value][3][host]" value="{$data['value']['host']}" />
@@ -218,6 +232,13 @@
                             </div>
                         </div>
                         <div class="form-group r r4">
+                            <label class="col-md-2 control-label">{dr_lang('带尺寸的图片后缀')}</label>
+                            <div class="col-md-7">
+                                <input class="form-control " type="text" name="data[value][4][wh_prefix_image]" value="{$data['value']['wh_prefix_image']}" />
+                                <span class="help-block"> {dr_lang('与通用图片后缀功能一样，这个能根据参数来匹配，填写格式：{width}x{height}')} </span>
+                            </div>
+                        </div>
+                        <div class="form-group r r4">
                             <label class="col-md-2 control-label">{dr_lang('BOS官方域名')}</label>
                             <div class="col-md-7">
                                 <input class="form-control " type="text" name="data[value][4][host]" value="{$data['value']['host']}" />
@@ -244,10 +265,17 @@
                             </div>
                         </div>
                         <div class="form-group r r5">
-                            <label class="col-md-2 control-label">{dr_lang('图片后缀')}</label>
+                            <label class="col-md-2 control-label">{dr_lang('通用图片后缀')}</label>
                             <div class="col-md-7">
                                 <input class="form-control " type="text" name="data[value][5][image]" value="{$data['value']['image']}" />
                                 <span class="help-block"> {dr_lang('使用dr_thumb函数或者编辑器中的远程图片，会自动加上此处设置的后缀字符串')} </span>
+                            </div>
+                        </div>
+                        <div class="form-group r r5">
+                            <label class="col-md-2 control-label">{dr_lang('带尺寸的图片后缀')}</label>
+                            <div class="col-md-7">
+                                <input class="form-control " type="text" name="data[value][5][wh_prefix_image]" value="{$data['value']['wh_prefix_image']}" />
+                                <span class="help-block"> {dr_lang('与通用图片后缀功能一样，这个能根据参数来匹配，填写格式：{width}x{height}')} </span>
                             </div>
                         </div>
                         <div class="form-group r r5">

@@ -168,7 +168,7 @@ class View {
 
         if (IS_API_HTTP) {
             // 如果是来自api就不解析模板，直接输出变量
-            $call = \Phpcmf\Service::L('Input')->request('api_call_function');
+            $call = \Phpcmf\Service::L('input')->request('api_call_function');
             if ($call) {
                 $call = dr_safe_replace($call);
                 if (method_exists(\Phpcmf\Service::L('http'), $call)) {
@@ -624,7 +624,7 @@ class View {
         $params = explode(' ', $_params);
         in_array($params[0], $this->action) &&  $params[0] = 'action='.$params[0];
 
-        $sysadj = array('IN', 'BEWTEEN', 'BETWEEN', 'LIKE', 'NOTIN', 'NOT', 'BW');
+        $sysadj = array('IN', 'BEWTEEN', 'BETWEEN', 'LIKE', 'NOTIN', 'NOT', 'BW', 'GT', 'EGT', 'LT', 'ELT');
         foreach ($params as $t) {
             $var = substr($t, 0, strpos($t, '='));
             $val = substr($t, strpos($t, '=') + 1);
@@ -1193,7 +1193,7 @@ class View {
                     $fields['inputtime'] = array('fieldtype' => 'Date');
                     $dfield = \Phpcmf\Service::L('Field')->app('form');
                     foreach ($data as $i => $t) {
-                        $data[$i] = $dfield->format_value($fields, $t, 1, 'form');
+                        $data[$i] = $dfield->format_value($fields, $t, 1);
                     }
                     $cache = $system['cache'] ? \Phpcmf\Service::L('cache')->set_data($name, $data, $system['cache']) : $data;
                 }
@@ -1279,7 +1279,7 @@ class View {
                     $fields['inputtime'] = array('fieldtype' => 'Date');
                     $dfield = \Phpcmf\Service::L('Field')->app($dirname);
                     foreach ($data as $i => $t) {
-                        $data[$i] = $dfield->format_value($fields, $t, 1, 'form');
+                        $data[$i] = $dfield->format_value($fields, $t, 1);
                     }
                     $cache = $system['cache'] ? \Phpcmf\Service::L('cache')->set_data($name, $data, $system['cache']) : $data;
                 }
@@ -1393,7 +1393,7 @@ class View {
                     // 格式化显示自定义字段内容
                     $dfield = \Phpcmf\Service::L('Field')->app('member');
                     foreach ($data as $i => $t) {
-                        $data[$i] = $dfield->format_value($fields, $t, 1, 'member');
+                        $data[$i] = $dfield->format_value($fields, $t, 1);
                     }
                     $cache = $system['cache'] ? \Phpcmf\Service::L('cache')->set_data($name, $data, $system['cache']) : $data;
                 }
@@ -1436,7 +1436,7 @@ class View {
                     // 格式化显示自定义字段内容
                     $dfield = \Phpcmf\Service::L('Field')->app($module['dirname']);
                     $data['url'] = dr_url_prefix($data['url'], $dirname);
-                    $data = $dfield->format_value($fields, $data, 1, $module['dirname']);
+                    $data = $dfield->format_value($fields, $data, 1);
                     $cache = $system['cache'] ? \Phpcmf\Service::L('cache')->set_data($name, $data, $system['cache']) : $data;
                 }
 
@@ -1690,7 +1690,7 @@ class View {
                     $dfield = \Phpcmf\Service::L('Field')->app($module['dirname']);
                     foreach ($data as $i => $t) {
                         $t['url'] = dr_url_prefix($t['url'], $dirname);
-                        $data[$i] = $dfield->format_value($fields, $t, 1, $module['dirname']);
+                        $data[$i] = $dfield->format_value($fields, $t, 1);
                     }
                     $cache = $system['cache'] ? \Phpcmf\Service::L('cache')->set_data($name, $data, $system['cache']) : $data;
                 }
@@ -1784,6 +1784,7 @@ class View {
                     continue;
                 }
                 $join = $string ? ' AND' : '';
+                //
                 switch ($t['adj']) {
                     case 'LIKE':
                         $string.= $join." {$t['name']} LIKE \"".dr_safe_replace($t['value'])."\"";
@@ -1809,6 +1810,22 @@ class View {
                         $string.= $join." {$t['name']} BETWEEN ".str_replace(',', ' AND ', $t['value'])."";
                         break;
 
+                    case 'GT':
+                        $string.= $join." {$t['name']} > ".intval($t['value'])."";
+                        break;
+
+                    case 'EGT':
+                        $string.= $join." {$t['name']} >= ".intval($t['value'])."";
+                        break;
+
+                    case 'LT':
+                        $string.= $join." {$t['name']} < ".intval($t['value'])."";
+                        break;
+
+                    case 'ELT':
+                        $string.= $join." {$t['name']} <= ".intval($t['value'])."";
+                        break;
+
                     case 'BW':
                         $string.= $join." {$t['name']} BETWEEN ".str_replace(',', ' AND ', $t['value'])."";
                         break;
@@ -1816,6 +1833,7 @@ class View {
                     case 'SQL':
                         $string.= $join.' '.$t['value'];
                         break;
+
 
                     default:
                         if (strpos($t['name'], '`thumb`')) {

@@ -624,6 +624,19 @@ class Category extends \Phpcmf\Table
         }
     }
 
+    // 生成内容静态
+    public function scjt2_edit() {
+
+        $ids = \Phpcmf\Service::L('input')->get_post_ids();
+        !$ids && $this->_json(0, dr_lang('没有选择任何栏目'));
+
+        if (IS_SHARE) {
+            $this->_json(1, dr_url('html/show_index', ['app' => '', 'catids' => implode(',', $ids)]));
+        } else {
+            $this->_json(1, dr_url('html/show_index', ['app' => APP_DIR, 'catids' => implode(',', $ids)]));
+        }
+    }
+
     // 编辑单页内容
     public function content_edit() {
 

@@ -46,7 +46,7 @@ class Sms_log extends \Phpcmf\Common
 			$data = explode(PHP_EOL, str_replace(array(chr(13), chr(10)), PHP_EOL, $file));
 			$data = $data ? array_reverse($data) : [];
 			unset($data[0]);
-			$page = max(1, (int)\Phpcmf\Service::L('Input')->get('page'));
+			$page = max(1, (int)\Phpcmf\Service::L('input')->get('page'));
 			$limit = ($page - 1) * SYS_ADMIN_PAGESIZE;
 			$i = $j = 0;
 			foreach ($data as $v) {
@@ -63,7 +63,7 @@ class Sms_log extends \Phpcmf\Common
 		\Phpcmf\Service::V()->assign(array(
 			'list' => $list,
 			'total' => $total,
-			'mypages'	=> \Phpcmf\Service::L('Input')->page(\Phpcmf\Service::L('Router')->url('sms_log/lindex'), $total, 'admin')
+			'mypages'	=> \Phpcmf\Service::L('input')->page(\Phpcmf\Service::L('Router')->url('sms_log/lindex'), $total, 'admin')
 		));
 		\Phpcmf\Service::V()->display('sms_log.html');
 	}

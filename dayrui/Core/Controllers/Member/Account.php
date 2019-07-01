@@ -52,7 +52,7 @@ class Account extends \Phpcmf\Common
         }
 
         if (IS_POST) {
-            $post = \Phpcmf\Service::L('Input')->post('data');
+            $post = \Phpcmf\Service::L('input')->post('data');
             !$post['name'] && $this->_json(0, dr_lang('姓名没有填写'), ['field' => 'name']);
             strlen($post['name']) > 20 && $this->_json(0, dr_lang('姓名太长了'), ['field' => 'name']);
             list($data, $return, $attach) = \Phpcmf\Service::L('form')->validation($post, null, $field, $this->member);
@@ -143,7 +143,7 @@ class Account extends \Phpcmf\Common
     public function password() {
 
         if (IS_POST) {
-            $post = \Phpcmf\Service::L('Input')->post('data');
+            $post = \Phpcmf\Service::L('input')->post('data');
             $password = dr_safe_password($post['password']);
             if ((empty($post['password2']) || empty($post['password3']))) {
                 $this->_json(0, dr_lang('密码不能为空'), ['field' => 'password2']);
@@ -180,7 +180,7 @@ class Account extends \Phpcmf\Common
         //$is_mobile && $this->member['phone'] && $is_update = 0;
 
         if (IS_POST) {
-            $post = \Phpcmf\Service::L('Input')->post('data');
+            $post = \Phpcmf\Service::L('input')->post('data');
             $value = dr_safe_replace($post['phone']);
             $cache = $this->session()->get('member-mobile-code-'.$this->member['randcode']);
             if (!$this->member['randcode']) {
@@ -232,7 +232,7 @@ class Account extends \Phpcmf\Common
 
         // 是否允许更新手机号码
         ($this->member_cache['config']['edit_mobile'] || !$this->member['phone'])
-        && $value = dr_safe_replace(\Phpcmf\Service::L('Input')->get('value'));
+        && $value = dr_safe_replace(\Phpcmf\Service::L('input')->get('value'));
 
         // 是否需要认证手机号码
         !$value && $this->member['phone'] && $this->member_cache['config']['mobile'] && !$this->member['is_mobile']
@@ -269,7 +269,7 @@ class Account extends \Phpcmf\Common
      */
     public function oauth_delete() {
 
-        $name = dr_safe_replace(\Phpcmf\Service::L('Input')->get('name'));
+        $name = dr_safe_replace(\Phpcmf\Service::L('input')->get('name'));
         \Phpcmf\Service::M()->db->table('member_oauth')->where('uid', $this->uid)->where('oauth', $name)->delete();
         $this->_json(1, dr_lang('操作成功'), ['url' =>\Phpcmf\Service::L('Router')->member_url('account/oauth')]);
     }

@@ -62,9 +62,9 @@ class Role extends \Phpcmf\Common
 	public function add() {
 
 		if (IS_AJAX_POST) {
-			$data = \Phpcmf\Service::L('Input')->post('data');
+			$data = \Phpcmf\Service::L('input')->post('data');
 			$this->_validation($data);
-			\Phpcmf\Service::L('Input')->system_log('添加角色组('.$data['name'].')');
+			\Phpcmf\Service::L('input')->system_log('添加角色组('.$data['name'].')');
 			if (\Phpcmf\Service::M('auth')->add_role($data)) {
                 \Phpcmf\Service::M('cache')->sync_cache('auth');
 			    exit($this->_json(1, dr_lang('操作成功')));
@@ -82,16 +82,16 @@ class Role extends \Phpcmf\Common
 
 	public function edit() {
 
-		$id = intval(\Phpcmf\Service::L('Input')->get('id'));
+		$id = intval(\Phpcmf\Service::L('input')->get('id'));
 		$data = \Phpcmf\Service::M('auth')->get_role($id);
 		!$data && exit($this->_json(0, dr_lang('数据#%s不存在', $id)));
 
 		if (IS_AJAX_POST) {
-			$data = \Phpcmf\Service::L('Input')->post('data');
+			$data = \Phpcmf\Service::L('input')->post('data');
 			$this->_validation($data);
 			\Phpcmf\Service::M('auth')->update_role($id, $data);
             \Phpcmf\Service::M('cache')->sync_cache('auth');
-			\Phpcmf\Service::L('Input')->system_log('修改角色组('.$data['name'].')');
+			\Phpcmf\Service::L('input')->system_log('修改角色组('.$data['name'].')');
 			exit($this->_json(1, dr_lang('操作成功')));
 		}
 
@@ -105,25 +105,25 @@ class Role extends \Phpcmf\Common
 
 	public function edit_auth() {
 
-		$id = intval(\Phpcmf\Service::L('Input')->get('id'));
+		$id = intval(\Phpcmf\Service::L('input')->get('id'));
 		$data = \Phpcmf\Service::M('auth')->get_role($id);
 		!$data && $this->_admin_msg(0, dr_lang('角色组（%s）不存在', $id));
 		
 		if (IS_AJAX_POST) {
-			$data = \Phpcmf\Service::L('Input')->post('data');
-			$module = \Phpcmf\Service::L('Input')->post('module');
+			$data = \Phpcmf\Service::L('input')->post('data');
+			$module = \Phpcmf\Service::L('input')->post('module');
 			\Phpcmf\Service::M('auth')->table('admin_role')->update($id, [
 			    'system' => dr_array2string($data),
 			    'module' => dr_array2string($module),
             ]);
             \Phpcmf\Service::M('cache')->sync_cache('auth');
-			\Phpcmf\Service::L('Input')->system_log('设置角色组('.$data['name'].')权限');
+			\Phpcmf\Service::L('input')->system_log('设置角色组('.$data['name'].')权限');
 			exit($this->_json(1, dr_lang('操作成功')));
 		}
 		//print_r($data);
 		#print_r($this->_M('Menu')->gets('admin'));
 
-		$page = intval(\Phpcmf\Service::L('Input')->get('page'));
+		$page = intval(\Phpcmf\Service::L('input')->get('page'));
         $module = \Phpcmf\Service::M()->db->table('module')->get()->getResultArray();
         $module_auth = [];
         if ($module) {
@@ -168,15 +168,15 @@ class Role extends \Phpcmf\Common
 	
 	public function edit_site() {
 
-		$id = intval(\Phpcmf\Service::L('Input')->get('id'));
+		$id = intval(\Phpcmf\Service::L('input')->get('id'));
 		$data = \Phpcmf\Service::M('auth')->get_role($id);
 		!$data && $this->_admin_msg(0, dr_lang('角色组（%s）不存在', $id));
 		
 		if (IS_AJAX_POST) {
-			$data = \Phpcmf\Service::L('Input')->post('data');
+			$data = \Phpcmf\Service::L('input')->post('data');
 			\Phpcmf\Service::M('auth')->table('admin_role')->update($id, ['site' => dr_array2string($data)]);
             \Phpcmf\Service::M('cache')->sync_cache('auth');
-			\Phpcmf\Service::L('Input')->system_log('设置角色组('.$data['name'].')站点权限');
+			\Phpcmf\Service::L('input')->system_log('设置角色组('.$data['name'].')站点权限');
 			exit($this->_json(1, dr_lang('操作成功')));
 		}
 
@@ -189,13 +189,13 @@ class Role extends \Phpcmf\Common
 
 	public function del() {
 
-		$ids = \Phpcmf\Service::L('Input')->get_post_ids();
+		$ids = \Phpcmf\Service::L('input')->get_post_ids();
 		!$ids && exit($this->_json(0, dr_lang('你还没有选择呢')));
 		in_array(1, $ids) && exit($this->_json(0, dr_lang('超级管理员角色组不能删除')));
 
 		\Phpcmf\Service::M('auth')->delete_role($ids);
         \Phpcmf\Service::M('cache')->sync_cache('auth');
-		\Phpcmf\Service::L('Input')->system_log('批量删除角色组: '. @implode(',', $ids));
+		\Phpcmf\Service::L('input')->system_log('批量删除角色组: '. @implode(',', $ids));
 
 		exit($this->_json(1, dr_lang('操作成功'), ['ids' => $ids]));
 	}

@@ -90,7 +90,7 @@ class Member_cash extends \Phpcmf\Table
     // edit
     public function edit() {
 
-        list($tpl, $data) = $this->_Post((int)\Phpcmf\Service::L('Input')->get('id'), [], 1);
+        list($tpl, $data) = $this->_Post((int)\Phpcmf\Service::L('input')->get('id'), [], 1);
         !$data && $this->_admin_msg(0, dr_lang('申请记录不存在'));
 
         \Phpcmf\Service::V()->display('member_cash_post.html');
@@ -108,7 +108,7 @@ class Member_cash extends \Phpcmf\Table
 
         \Phpcmf\Service::M('member')->todo_admin_notice('member_cash/edit:id/'.$id);
 
-        $post = \Phpcmf\Service::L('Input')->post('data');
+        $post = \Phpcmf\Service::L('input')->post('data');
         if ($post['status']) {
             // 提现成功
             $rt =  \Phpcmf\Service::M('Pay')->cash_successs($id, $post, $old);
@@ -132,7 +132,7 @@ class Member_cash extends \Phpcmf\Table
 
     // 删除
     public function del() {
-        $this->_Del(\Phpcmf\Service::L('Input')->get_post_ids());
+        $this->_Del(\Phpcmf\Service::L('input')->get_post_ids());
     }
     
 }

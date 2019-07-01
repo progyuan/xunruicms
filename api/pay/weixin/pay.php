@@ -133,7 +133,7 @@ if (IS_API_HTTP) {
             $return = dr_return_data(1, 'ok', $html);
         }
     }
-} elseif (\Phpcmf\Service::IS_MOBILE()) {
+} elseif (\Phpcmf\Service::C()->_is_mobile()) {
     // 手机端H5支付
     $input = new WxPayUnifiedOrder();
     $input->SetBody($data['title']);

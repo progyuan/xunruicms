@@ -142,10 +142,10 @@ class Attachments extends \Phpcmf\Table
 
     public function del() {
 
-        $ids = \Phpcmf\Service::L('Input')->get_post_ids();
+        $ids = \Phpcmf\Service::L('input')->get_post_ids();
         !$ids && $this->_json(0, dr_lang('你还没有选择呢'));
 
-        $table = \Phpcmf\Service::L('Input')->post('table');
+        $table = \Phpcmf\Service::L('input')->post('table');
         $table != 'data' && $table = 'unused';
 
         $data = \Phpcmf\Service::M()->db->table('attachment_'.$table)->whereIn('id', $ids)->get()->getResultArray();
@@ -172,7 +172,7 @@ class Attachments extends \Phpcmf\Table
     // 强制归档
     public function edit() {
 
-        $ids = \Phpcmf\Service::L('Input')->get_post_ids();
+        $ids = \Phpcmf\Service::L('input')->get_post_ids();
         !$ids && $this->_json(0, dr_lang('你还没有选择呢'));
 
         $data = \Phpcmf\Service::M()->db->table('attachment_unused')->whereIn('id', $ids)->get()->getResultArray();

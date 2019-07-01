@@ -40,6 +40,7 @@ class Check extends \Phpcmf\Common
         '09' => '网站安全性检测',
         '10' => '数据负载优化检测',
         '11' => '域名绑定检测',
+        '12' => '表单form最大提交数',
 
     ];
 
@@ -319,28 +320,47 @@ class Check extends \Phpcmf\Common
                 // 域名检测
                 list($module, $data) = \Phpcmf\Service::M('Site')->domain();
                 if ($data) {
-
-                    if (isset($data['mobile_domain']) && $data['mobile_domain']) {
-                        $url = dr_http_prefix($data['mobile_domain']) . '/api.php';
-                        if (!function_exists('stream_context_create')) {
-                            $this->halt('函数没有被启用：stream_context_create', 0);
-                        }
-                        $context = stream_context_create(array(
-                            'http' => array(
-                                'timeout' => 5 //超时时间，单位为秒
-                            )
-                        ));
-                        $code = file_get_contents($url, 0, $context);
-                        if ($code != 'phpcmf ok') {
-                            $this->halt('手机域名绑定异常，无法访问：' . $url . '，可以尝试手动访问此地址，如果提示phpcmf ok就表示成功', 0);
-                        }
-                    } else {
-                        $this->halt('当前站点没有绑定手机域名，可能无法使用移动端界面', 0);
+                    if (!function_exists('stream_context_create')) {
+                        $this->halt('函数没有被启用：stream_context_create', 0);
                     }
-                    foreach ($data as $domain) {
-                        if (strpos($domain, '/') !== false) {
-                            $this->halt('域名【'.$domain.'】格式不对，请不要带/符号', 0);
+
+                    $tips = [];
+                    foreach ($data as $name => $domain) {
+                        $url = '';
+                        if ($name == 'mobile_domain') {
+                            if ($domain) {
+                                $url = dr_http_prefix($domain) . '/api.php';
+                            } else {
+                                $tips[] = '当前站点没有绑定手机域名，可能无法使用移动端界面';
+                            }
+                        } elseif (strpos($name, 'module_') === 0) {
+                            // 模块
+                            if ($domain) {
+                                $url = dr_http_prefix($domain) . '/api.php';
+                            }
+                        } elseif (strpos($name, 'client_') === 0) {
+                            // 终端
+                            if ($domain) {
+                                $url = dr_http_prefix($domain) . '/api.php';
+                            }
                         }
+
+                        if ($url) {
+                            $context = stream_context_create(array(
+                                'http' => array(
+                                    'timeout' => 5 //超时时间，单位为秒
+                                )
+                            ));
+                            $code = file_get_contents($url, 0, $context);
+                            if ($code != 'phpcmf ok') {
+                                $tips[] = '域名绑定异常，无法访问：' . $url . '，可以尝试手动访问此地址，如果提示phpcmf ok就表示成功';
+                            }
+                        }
+                    }
+
+                    if ($tips) {
+
+                        $this->_json(0,implode('<br>', $tips));
                     }
                 }
                 $this->_json(1,'通过');
@@ -348,6 +368,13 @@ class Check extends \Phpcmf\Common
                 break;
 
             case '12':
+
+                $value = @ini_get("max_input_vars");
+                if ($value < 3000) {
+                    $this->_json(1,$value.'，建议调整到10000');
+                } else {
+                    $this->_json(1, $value);
+                }
                 break;
 
             case '13':

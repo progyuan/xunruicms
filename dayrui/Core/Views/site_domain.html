@@ -79,6 +79,7 @@
                     <div class="form-body form">
 
                         {loop $module $dir $t}
+                        {if !$t.share}
                         <div class="form-group">
                             <label class="col-md-2 control-label">{dr_lang('%s电脑域名', $t.name)}</label>
                             <div class="col-md-9">
@@ -116,6 +117,7 @@
                                 {/if}
                             </div>
                         </div>
+                        {/if}
                         {/loop}
 
                     </div>

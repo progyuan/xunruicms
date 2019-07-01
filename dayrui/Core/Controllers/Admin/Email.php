@@ -85,9 +85,9 @@ class Email extends \Phpcmf\Common
 	public function add() {
 
 		if (IS_AJAX_POST) {
-			$data = \Phpcmf\Service::L('Input')->post('data', true);
+			$data = \Phpcmf\Service::L('input')->post('data', true);
 			$this->_validation($data);
-			\Phpcmf\Service::L('Input')->system_log('添加SMTP服务器: '.$data['name']);
+			\Phpcmf\Service::L('input')->system_log('添加SMTP服务器: '.$data['name']);
 			$data['displayorder'] = intval($data['displayorder']);
 			\Phpcmf\Service::M()->table('mail_smtp')->insert($data);
             // 自动更新缓存
@@ -105,15 +105,15 @@ class Email extends \Phpcmf\Common
 
 	public function edit() {
 
-		$id = intval(\Phpcmf\Service::L('Input')->get('id'));
+		$id = intval(\Phpcmf\Service::L('input')->get('id'));
 		$data = \Phpcmf\Service::M()->table('mail_smtp')->get($id);
 		!$data && exit($this->_json(0, dr_lang('数据#%s不存在', $id)));
 
 		if (IS_AJAX_POST) {
-			$data = \Phpcmf\Service::L('Input')->post('data', true);
+			$data = \Phpcmf\Service::L('input')->post('data', true);
 			$this->_validation($data);
 			\Phpcmf\Service::M()->table('mail_smtp')->update($id, $data);
-			\Phpcmf\Service::L('Input')->system_log('修改SMTP服务器: '.$data['name']);
+			\Phpcmf\Service::L('input')->system_log('修改SMTP服务器: '.$data['name']);
 
             \Phpcmf\Service::M('cache')->sync_cache('email'); // 自动更新缓存
 			exit($this->_json(1, dr_lang('操作成功')));
@@ -130,26 +130,26 @@ class Email extends \Phpcmf\Common
 	// 保存数据
 	public function save_edit() {
 
-		$i = intval(\Phpcmf\Service::L('Input')->get('id'));
+		$i = intval(\Phpcmf\Service::L('input')->get('id'));
 		\Phpcmf\Service::M()->table('mail_smtp')->save(
 			$i,
-			dr_safe_replace(\Phpcmf\Service::L('Input')->get('name')),
-			dr_safe_replace(\Phpcmf\Service::L('Input')->get('value'))
+			dr_safe_replace(\Phpcmf\Service::L('input')->get('name')),
+			dr_safe_replace(\Phpcmf\Service::L('input')->get('value'))
 		);
 
-		\Phpcmf\Service::L('Input')->system_log('修改SMTP服务器排序值: '. $i);
+		\Phpcmf\Service::L('input')->system_log('修改SMTP服务器排序值: '. $i);
         \Phpcmf\Service::M('cache')->sync_cache('email'); // 自动更新缓存
 		exit($this->_json(1, dr_lang('更改成功')));
 	}
 
 	public function del() {
 
-		$ids = \Phpcmf\Service::L('Input')->get_post_ids();
+		$ids = \Phpcmf\Service::L('input')->get_post_ids();
 		!$ids && exit($this->_json(0, dr_lang('你还没有选择呢')));
 
 		\Phpcmf\Service::M()->table('mail_smtp')->deleteAll($ids);
         \Phpcmf\Service::M('cache')->sync_cache('email'); // 自动更新缓存
-		\Phpcmf\Service::L('Input')->system_log('批量删除SMTP服务器: '. @implode(',', $ids));
+		\Phpcmf\Service::L('input')->system_log('批量删除SMTP服务器: '. @implode(',', $ids));
 		exit($this->_json(1, dr_lang('操作成功'), ['ids' => $ids]));
 	}
 

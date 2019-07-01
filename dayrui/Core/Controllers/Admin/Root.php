@@ -80,7 +80,7 @@ class Root extends \Phpcmf\Table
     // 登录记录
     public function login_index() {
 
-        $uid = (int)\Phpcmf\Service::L('Input')->get('id');
+        $uid = (int)\Phpcmf\Service::L('input')->get('id');
         $this->_init([
             'table' => 'admin_login',
             'order_by' => 'logintime desc',
@@ -105,7 +105,7 @@ class Root extends \Phpcmf\Table
     public function add() {
 
         if (IS_AJAX_POST) {
-            $post = \Phpcmf\Service::L('Input')->post('data');
+            $post = \Phpcmf\Service::L('input')->post('data');
             $name = dr_safe_replace($post['username']);
             !$name && $this->_json(0, dr_lang('账号不能为空'), ['field' => 'username']);
             !$post['role'] && $this->_json(0, dr_lang('至少要选择一个角色组'), ['field' => 'role']);
@@ -157,7 +157,7 @@ class Root extends \Phpcmf\Table
 
     public function edit() {
 
-        $id = intval(\Phpcmf\Service::L('Input')->get('id'));
+        $id = intval(\Phpcmf\Service::L('input')->get('id'));
         $data = \Phpcmf\Service::M()->db->table('admin')->where('uid', $id)->get()->getRowArray();
         !$data && $this->_admin_msg(0, dr_lang('账号不存在'));
 
@@ -165,7 +165,7 @@ class Root extends \Phpcmf\Table
         !$member && $this->_admin_msg(0, dr_lang('账号不存在'));
 
         if (IS_AJAX_POST) {
-            $post = \Phpcmf\Service::L('Input')->post('data');
+            $post = \Phpcmf\Service::L('input')->post('data');
             !$post['role'] && $this->_json(0, dr_lang('至少要选择一个角色组'), ['field' => 'role']);
             if (!\Phpcmf\Service::L('Form')->check_email($post['email'])) {
                 $this->_json(0, dr_lang('邮箱格式不正确'), ['field' => 'email']);
@@ -211,7 +211,7 @@ class Root extends \Phpcmf\Table
     // 后台删除url内容
     public function del() {
 
-        $ids = \Phpcmf\Service::L('Input')->get_post_ids();
+        $ids = \Phpcmf\Service::L('input')->get_post_ids();
         in_array(1, $ids) && $this->_json(0, dr_lang('创始人账号不能删除'));
         in_array($this->uid, $ids) && $this->_json(0, dr_lang('不能删除自己'));
 

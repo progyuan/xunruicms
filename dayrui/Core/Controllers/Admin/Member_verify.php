@@ -116,8 +116,8 @@ class Member_verify extends \Phpcmf\Table
     public function index() {
 
         $p = [];
-        $name = \Phpcmf\Service::L('Input')->request('field');
-        $value = \Phpcmf\Service::L('Input')->request('keyword');
+        $name = \Phpcmf\Service::L('input')->request('field');
+        $value = \Phpcmf\Service::L('input')->request('keyword');
 
         $where = [
             '`id` IN (select id from `'.\Phpcmf\Service::M()->dbprefix('member_data').'` where `is_verify`=0)',
@@ -128,7 +128,7 @@ class Member_verify extends \Phpcmf\Table
             $where[] = '`'.$name.'` LIKE "%'.$value.'%"';
         }
         
-        $groupid = (int)\Phpcmf\Service::L('Input')->request('groupid');
+        $groupid = (int)\Phpcmf\Service::L('input')->request('groupid');
         if ($groupid) {
             $p['groupid'] = $groupid;
             $where[] = '`id` IN (select uid from `'.\Phpcmf\Service::M()->dbprefix('member_group_index').'` where id='.$groupid.')';
@@ -148,7 +148,7 @@ class Member_verify extends \Phpcmf\Table
     // 审核
     public function edit() {
 
-        $ids = \Phpcmf\Service::L('Input')->get_post_ids();
+        $ids = \Phpcmf\Service::L('input')->get_post_ids();
         !$ids && $this->_json(0, dr_lang('所选用户不存在'));
 
         foreach ($ids as $id) {

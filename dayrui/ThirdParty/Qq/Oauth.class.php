@@ -100,7 +100,7 @@ class Oauth{
         }
 
         $user = json_decode($response, true);
-        if(isset($userp['error'])){
+        if(isset($user['error'])){
             return $user['error_description'];
         }
 

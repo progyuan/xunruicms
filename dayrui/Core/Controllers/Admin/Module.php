@@ -34,7 +34,7 @@ class Module extends \Phpcmf\Common
     public function __construct(...$params) {
         parent::__construct(...$params);
 
-        $this->dir = dr_safe_replace(\Phpcmf\Service::L('Input')->get('dir'));
+        $this->dir = dr_safe_replace(\Phpcmf\Service::L('input')->get('dir'));
 
         $menu = [
             '内容模块' => [\Phpcmf\Service::L('Router')->class.'/index', 'fa fa-cogs'],
@@ -80,8 +80,8 @@ class Module extends \Phpcmf\Common
     // 安装模块
     public function install() {
 
-        $dir = dr_safe_replace(\Phpcmf\Service::L('Input')->get('dir'));
-        $type = (int)\Phpcmf\Service::L('Input')->get('type');
+        $dir = dr_safe_replace(\Phpcmf\Service::L('input')->get('dir'));
+        $type = (int)\Phpcmf\Service::L('input')->get('type');
 
         !preg_match('/^[a-z]+$/U', $dir) && $this->_json(0, dr_lang('模块目录[%s]格式不正确', $dir));
         in_array($dir, $this->jname) && $this->_json(0, dr_lang('模块目录[%s]名称是系统保留名称，请重命名', $dir));
@@ -103,7 +103,7 @@ class Module extends \Phpcmf\Common
     // 卸载模块
     public function uninstall() {
 
-        $dir = dr_safe_replace(\Phpcmf\Service::L('Input')->get('dir'));
+        $dir = dr_safe_replace(\Phpcmf\Service::L('input')->get('dir'));
         !preg_match('/^[a-z]+$/U', $dir) && $this->_json(0, dr_lang('模块目录[%s]格式不正确', $dir));
 
         $path = dr_get_app_dir($dir);
@@ -169,23 +169,23 @@ class Module extends \Phpcmf\Common
     public function displayorder_edit() {
 
         // 查询数据
-        $id = (int)\Phpcmf\Service::L('Input')->get('id');
+        $id = (int)\Phpcmf\Service::L('input')->get('id');
         $row = \Phpcmf\Service::M('Module')->table('module')->get($id);
         !$row && $this->_json(0, dr_lang('数据#%s不存在', $id));
 
-        $value = (int)\Phpcmf\Service::L('Input')->get('value');
+        $value = (int)\Phpcmf\Service::L('input')->get('value');
         $rt = \Phpcmf\Service::M('Module')->table('module')->save($id, 'displayorder', $value);
         !$rt['code'] && $this->_json(0, $rt['msg']);
 
         \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
-        \Phpcmf\Service::L('Input')->system_log('修改模块('.$row['dirname'].')的排序值为'.$value);
+        \Phpcmf\Service::L('input')->system_log('修改模块('.$row['dirname'].')的排序值为'.$value);
         $this->_json(1, dr_lang('操作成功'));
     }
 
     // 隐藏或者启用
     public function hidden_edit() {
 
-        $id = (int)\Phpcmf\Service::L('Input')->get('id');
+        $id = (int)\Phpcmf\Service::L('input')->get('id');
         $row = \Phpcmf\Service::M('Module')->table('module')->get($id);
         !$row && $this->_json(0, dr_lang('数据#%s不存在', $id));
 
@@ -199,7 +199,7 @@ class Module extends \Phpcmf\Common
     // 模块配置
     public function edit() {
 
-        $id = (int)\Phpcmf\Service::L('Input')->get('id');
+        $id = (int)\Phpcmf\Service::L('input')->get('id');
         $data = \Phpcmf\Service::M()->table('module')->get($id);
         !$data && $this->_admin_msg(0, dr_lang('数据#%s不存在', $id));
 
@@ -268,7 +268,7 @@ class Module extends \Phpcmf\Common
 
 
         if (IS_AJAX_POST) {
-            $post = \Phpcmf\Service::L('Input')->post('data', true);
+            $post = \Phpcmf\Service::L('input')->post('data', true);
             $rt = \Phpcmf\Service::M('Module')->config($data, $post);
             if ($rt['code']) {
                 \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
@@ -301,7 +301,7 @@ class Module extends \Phpcmf\Common
         $comment_field = dr_array2array($sys_field, $comment_field);
 
 
-        $page = intval(\Phpcmf\Service::L('Input')->get('page'));
+        $page = intval(\Phpcmf\Service::L('input')->get('page'));
         $config = require dr_get_app_dir($data['dirname']).'Config/App.php';
 
         if (!$data['site'][SITE_ID]['title']) {
@@ -323,7 +323,7 @@ class Module extends \Phpcmf\Common
     // 推荐位
     public function flag_edit() {
 
-        $id = (int)\Phpcmf\Service::L('Input')->get('id');
+        $id = (int)\Phpcmf\Service::L('input')->get('id');
         $data = \Phpcmf\Service::M('Module')->table('module')->get($id);
         !$data && $this->_admin_msg(0, dr_lang('数据#%s不存在', $id));
 
@@ -331,7 +331,7 @@ class Module extends \Phpcmf\Common
         $data['setting'] = dr_string2array($data['setting']);
 
         if (IS_AJAX_POST) {
-            $post = \Phpcmf\Service::L('Input')->post('flag', true);
+            $post = \Phpcmf\Service::L('input')->post('flag', true);
             $rt = \Phpcmf\Service::M('Module')->config($data, null, [
                 'flag' => $post,
             ]);
@@ -363,9 +363,9 @@ class Module extends \Phpcmf\Common
     public function form_add() {
 
         if (IS_AJAX_POST) {
-            $data = \Phpcmf\Service::L('Input')->post('data', true);
+            $data = \Phpcmf\Service::L('input')->post('data', true);
             $this->_validation(0, $data);
-            \Phpcmf\Service::L('Input')->system_log('创建模块['.$this->dir.']表单('.$data['name'].')');
+            \Phpcmf\Service::L('input')->system_log('创建模块['.$this->dir.']表单('.$data['name'].')');
             $rt = \Phpcmf\Service::M('Module')->create_form($this->dir, $data);
             if ($rt['code']) {
                 \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
@@ -385,7 +385,7 @@ class Module extends \Phpcmf\Common
     // 修改模块表单
     public function form_edit() {
 
-        $id = intval(\Phpcmf\Service::L('Input')->get('id'));
+        $id = intval(\Phpcmf\Service::L('input')->get('id'));
         $data = \Phpcmf\Service::M()->table('module_form')->get($id);
         !$data && $this->_admin_msg(0, dr_lang('模块表单（%s）不存在', $id));
 
@@ -415,7 +415,7 @@ class Module extends \Phpcmf\Common
         ];
 
         if (IS_AJAX_POST) {
-            $data = \Phpcmf\Service::L('Input')->post('data', true);
+            $data = \Phpcmf\Service::L('input')->post('data', true);
             \Phpcmf\Service::M('Module')->table('module_form')->update($id,
                 [
                     'name' => $data['name'],
@@ -424,7 +424,7 @@ class Module extends \Phpcmf\Common
             );
 
             \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
-            \Phpcmf\Service::L('Input')->system_log('修改模块['.$this->dir.']表单('.$data['name'].')配置');
+            \Phpcmf\Service::L('input')->system_log('修改模块['.$this->dir.']表单('.$data['name'].')配置');
             exit($this->_json(1, dr_lang('操作成功')));
         }
 
@@ -439,7 +439,7 @@ class Module extends \Phpcmf\Common
         $sys_field = \Phpcmf\Service::L('Field')->sys_field(['author', 'inputtime']);
         sort($sys_field);
 
-        $page = intval(\Phpcmf\Service::L('Input')->get('page'));
+        $page = intval(\Phpcmf\Service::L('input')->get('page'));
 
         \Phpcmf\Service::V()->assign([
             'data' => $data,
@@ -453,14 +453,14 @@ class Module extends \Phpcmf\Common
     // 删除表单
     public function form_del() {
 
-        $ids = \Phpcmf\Service::L('Input')->get_post_ids();
+        $ids = \Phpcmf\Service::L('input')->get_post_ids();
         !$ids && exit($this->_json(0, dr_lang('你还没有选择呢')));
 
         $rt = \Phpcmf\Service::M('Module')->delete_form($ids);
         !$rt['code'] && exit($this->_json(0, $rt['msg']));
 
         \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
-        \Phpcmf\Service::L('Input')->system_log('批量删除模块表单: '. @implode(',', $ids));
+        \Phpcmf\Service::L('input')->system_log('批量删除模块表单: '. @implode(',', $ids));
 
         exit($this->_json(1, dr_lang('操作成功'), ['ids' => $ids]));
     }

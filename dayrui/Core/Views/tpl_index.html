@@ -18,6 +18,7 @@
             </th>
             {/if}
             <th>{dr_lang('文件名')}</th>
+            <th>{dr_lang('别名')}</th>
             <th style="text-align:center" width="100">{dr_lang('大小')}</th>
             <th width="166">{dr_lang('修改日期')}</th>
             <th>{dr_lang('操作')}</th>
@@ -38,7 +39,13 @@
                 <a href="{$t.url}">
                     <img src="{$t.icon}" style="width:30px;margin-right:10px">{$t.name}
                 </a>
+                {if $is_root && $t.thumb}
+                <a href="javascript:dr_preview_image('{$t.thumb}');" style="margin-left: 10px;">
+                    <img src="{$t.thumb}" style="width:30px;">
+                </a>
+                {/if}
             </td>
+            <td><a href="{$t.cname_edit}">{$t.cname}</a></td>
             <td style="text-align:center">{$t.size}</td>
             <td>{$t.time}</td>
             <td>

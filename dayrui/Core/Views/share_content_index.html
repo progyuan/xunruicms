@@ -40,7 +40,7 @@
                                         <label> {dr_lang('替换范围')} </label>
                                     </div>
                                     <div class="form-group">
-                                        <input type="checkbox" name="thumb" value="1" checked data-on-text="{dr_lang('空图')}" data-off-text="{dr_lang('全部')}" data-on-color="success" data-off-color="danger" class="make-switch" data-size="small">
+                                        <input type="checkbox" name="thumb" value="1" checked data-on-text="{dr_lang('只替换空图')}" data-off-text="{dr_lang('替换全部')}" data-on-color="success" data-off-color="danger" class="make-switch" data-size="small">
                                     </div>
                                 </div>
                                 <div class="col-md-6" style="text-align:right;padding-top:25px">
@@ -73,10 +73,10 @@
                             <div class="row">
                                 <div class="col-md-6" style="text-align:left">
                                     <div class="form-group" style="margin-bottom:5px">
-                                        <label> {dr_lang('替换范围')} </label>
+                                        <label> {dr_lang('提取范围')} </label>
                                     </div>
                                     <div class="form-group">
-                                        <input type="checkbox" name="keyword" value="1" checked data-on-text="{dr_lang('空词')}" data-off-text="{dr_lang('全部')}" data-on-color="success" data-off-color="danger" class="make-switch" data-size="small">
+                                        <input type="checkbox" name="keyword" value="1" checked data-on-text="{dr_lang('只提取空词的内容')}" data-off-text="{dr_lang('重新提取全部内容')}" data-on-color="success" data-off-color="danger" class="make-switch" data-size="small">
                                     </div>
                                 </div>
                                 <div class="col-md-6" style="text-align:right;padding-top:25px">
@@ -106,23 +106,20 @@
             <div class="form-body">
 
                 <div class="form-group row">
-                    <label class="col-md-2 control-label"> {dr_lang('选择表')} </label>
+                    <label class="col-md-2 control-label"> {dr_lang('表名称')} </label>
                     <div class="col-md-9">
-                        <div class="mt-radio-inline" style="margin-top: -10px">
-                            {loop $bm $i $n}
-                            <label class="mt-radio">
-                                <input type="radio" name="bm" value="{$n.table}" {if $i==0}checked=""{/if}>{$n.name}
-                                <span></span>
-                            </label>
+                        <label><select name="bm" class="form-control" onchange="dr_fd(this.value)">
+                            <option value="0">{dr_lang('选择表')}</option>
+                            {loop $tables $t}
+                            <option value="{$t.Name}">{$t.Name}{if $t.Comment}（{$t.Comment}）{/if}</option>
                             {/loop}
-                        </div>
+                        </select></label>
                     </div>
                 </div>
                 <div class="form-group row">
                     <label class="col-md-2 control-label">{dr_lang('待替换字段')}</label>
                     <div class="col-md-9">
-                        <label><input class="form-control" type="text" name="fd"></label>
-                        <span class="help-block">{dr_lang('填写一个正确有效的字段英文名称')}</span>
+                        <label id="dr_fd"></label>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -152,6 +149,22 @@
     </div>
 </div>
 
-
+<script>
+    function dr_fd(v) {
+        $.ajax({type: "POST",dataType:"json", url: "{dr_url('content/field_index')}&table="+v,
+            success: function(json) {
+                if (json.code == 1) {
+                    $('#dr_fd').html(json.msg);
+                } else {
+                    dr_cmf_tips(0, json.msg);
+                }
+                return false;
+            },
+            error: function(HttpRequest, ajaxOptions, thrownError) {
+                dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError)
+            }
+        });
+    }
+</script>
 
 {template "footer.html"}

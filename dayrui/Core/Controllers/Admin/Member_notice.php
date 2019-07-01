@@ -67,8 +67,8 @@ class Member_notice extends \Phpcmf\Table
             'table' => 'member_notice',
             'field' => $this->my_field,
         ];
-        $name = dr_safe_replace(\Phpcmf\Service::L('Input')->request('field'));
-        $value = dr_safe_replace(\Phpcmf\Service::L('Input')->request('keyword'));
+        $name = dr_safe_replace(\Phpcmf\Service::L('input')->request('field'));
+        $value = dr_safe_replace(\Phpcmf\Service::L('input')->request('keyword'));
         if ($name == 'username' && $value) {
             unset($param['field']['username']);
             $param['where_list'] = '`uid` IN (select id from `'.\Phpcmf\Service::M()->dbprefix('member').'` where username="'.$value.'")';
@@ -90,7 +90,7 @@ class Member_notice extends \Phpcmf\Table
         $this->_init([
             'table' => 'member_notice',
         ]);
-        $this->_Del(\Phpcmf\Service::L('Input')->get_post_ids());
+        $this->_Del(\Phpcmf\Service::L('input')->get_post_ids());
     }
 
     // 发送
@@ -106,7 +106,7 @@ class Member_notice extends \Phpcmf\Table
         }
 
         if (IS_AJAX_POST) {
-            $post = \Phpcmf\Service::L('Input')->post('data');
+            $post = \Phpcmf\Service::L('input')->post('data');
 
             $this->_json(1, dr_lang('操作成功'));
         }

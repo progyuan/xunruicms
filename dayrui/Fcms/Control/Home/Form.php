@@ -81,7 +81,7 @@ class Form extends \Phpcmf\Table
         // seo
         \Phpcmf\Service::V()->assign(\Phpcmf\Service::L('Seo')->form_list(
             $this->form,
-            max(1, (int)\Phpcmf\Service::L('Input')->get('page'))
+            max(1, (int)\Phpcmf\Service::L('input')->get('page'))
         ));
 
         \Phpcmf\Service::V()->assign([
@@ -142,7 +142,7 @@ class Form extends \Phpcmf\Table
             return;
         }
 
-        $id = intval(\Phpcmf\Service::L('Input')->get('id'));
+        $id = intval(\Phpcmf\Service::L('input')->get('id'));
         $name = 'from_'.$this->form['table'].'_show_id_'.$id;
         $cache = \Phpcmf\Service::L('cache')->init()->get($name);
         if (!$cache) {
@@ -154,7 +154,14 @@ class Form extends \Phpcmf\Table
                 $data
             ];
             // 缓存结果
-            $data['uid'] != $this->uid && \Phpcmf\Service::L('cache')->init()->save($name, $cache, SYS_CACHE_SHOW * 3600);
+            if ($data['uid'] != $this->uid && SYS_CACHE) {
+                if ($this->member && $this->member['is_admin']) {
+                    // 管理员时不进行缓存
+                    \Phpcmf\Service::L('cache')->init()->delete($name);
+                } else {
+                    \Phpcmf\Service::L('cache')->init()->save($name, $cache, SYS_CACHE_SHOW * 3600);
+                }
+            }
         } else {
             list($tpl, $data) = $cache;
         }
@@ -214,7 +221,7 @@ class Form extends \Phpcmf\Table
         // 默认数据
         $data[0]['uid'] = $data[1]['uid'] = (int)$this->member['uid'];
         $data[1]['author'] = $this->member['username'] ? $this->member['username'] : 'guest';
-        $data[1]['inputip'] = \Phpcmf\Service::L('Input')->ip_address();
+        $data[1]['inputip'] = \Phpcmf\Service::L('input')->ip_address();
         $data[1]['inputtime'] = SYS_TIME;
         $data[1]['tableid'] = 0;
         $data[1]['displayorder'] = 0;

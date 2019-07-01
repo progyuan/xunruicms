@@ -40,7 +40,7 @@ class Register extends \Phpcmf\Common
         }
 
         // 验证用户组
-        $groupid = (int)\Phpcmf\Service::L('Input')->get('groupid');
+        $groupid = (int)\Phpcmf\Service::L('input')->get('groupid');
         !$groupid && $groupid = (int)$this->member_cache['register']['groupid'];
         if (!$groupid) {
             $this->_msg(0, dr_lang('无效的用户组'));
@@ -65,8 +65,8 @@ class Register extends \Phpcmf\Common
         }
 
         if (IS_AJAX_POST) {
-            $post = \Phpcmf\Service::L('Input')->post('data');
-            if (!\Phpcmf\Service::L('Input')->post('is_protocol')) {
+            $post = \Phpcmf\Service::L('input')->post('data');
+            if (!\Phpcmf\Service::L('input')->post('is_protocol')) {
                 $this->_json(0, dr_lang('你没有同意注册协议'));
             } elseif ($this->member_cache['register']['code']
                 && !\Phpcmf\Service::L('Form')->check_captcha('code')) {
@@ -125,7 +125,7 @@ class Register extends \Phpcmf\Common
                         \Phpcmf\Service::M()->db->table('member_data')->where('id', $this->member['id'])->update(['is_mobile' => 1]);
                     }
                     $this->_json(1, 'ok', [
-                        'url' => urldecode(\Phpcmf\Service::L('Input')->xss_clean($_POST['back'] ? $_POST['back'] : MEMBER_URL)),
+                        'url' => urldecode(\Phpcmf\Service::L('input')->xss_clean($_POST['back'] ? $_POST['back'] : MEMBER_URL)),
                         'sso' => \Phpcmf\Service::M('member')->sso($this->member, $remember),
                         'member' => $this->member,
                     ]);

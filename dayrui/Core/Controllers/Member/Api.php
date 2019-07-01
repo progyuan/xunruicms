@@ -32,7 +32,7 @@ class Api extends \Phpcmf\Common
      * 头像更新
      */
     public function avatar() {
-        \Phpcmf\Service::L('Thread')->cron(['action' => 'oauth_down_avatar', 'id' => intval(\Phpcmf\Service::L('Input')->get('id')) ]);
+        \Phpcmf\Service::L('Thread')->cron(['action' => 'oauth_down_avatar', 'id' => intval(\Phpcmf\Service::L('input')->get('id')) ]);
         exit;
     }
 
@@ -93,7 +93,7 @@ class Api extends \Phpcmf\Common
         $this->member_cache['register']['verify'] == 'admin' && $this->_msg(0, dr_lang('请等待管理员的审核'));
 
         if (IS_POST) {
-            $value = dr_safe_replace(\Phpcmf\Service::L('Input')->post('value'));
+            $value = dr_safe_replace(\Phpcmf\Service::L('input')->post('value'));
             if (!\Phpcmf\Service::L('Form')->check_captcha('code')) {
                 $this->_json(0, dr_lang('验证码不正确'), ['field' => 'code']);
             } elseif (empty($value)) {
@@ -207,7 +207,7 @@ class Api extends \Phpcmf\Common
 
         !$this->member && $this->_json(0, dr_lang('账号未登录'));
         !$this->member['randcode'] && $this->_json(0, dr_lang('验证码已过期'));
-        \Phpcmf\Service::L('Input')->get('code') != $this->member['randcode'] && $this->_json(0, dr_lang('验证码不正确'));
+        \Phpcmf\Service::L('input')->get('code') != $this->member['randcode'] && $this->_json(0, dr_lang('验证码不正确'));
         \Phpcmf\Service::M()->db->table('member')->where('id', $this->member['id'])->update(['randcode' => 0]);
 
         \Phpcmf\Service::M('member')->verify_member($this->member['id']);
@@ -222,7 +222,7 @@ class Api extends \Phpcmf\Common
      */
     public function find_code() {
 
-        $value = dr_safe_replace(\Phpcmf\Service::L('Input')->get('value'));
+        $value = dr_safe_replace(\Phpcmf\Service::L('input')->get('value'));
         !$value && $this->_json(0, dr_lang('账号凭证不能为空'));
 
         // 验证操作间隔
@@ -258,7 +258,7 @@ class Api extends \Phpcmf\Common
      */
     public function register_code() {
 
-        $phone = dr_safe_replace(\Phpcmf\Service::L('Input')->get('id'));
+        $phone = dr_safe_replace(\Phpcmf\Service::L('input')->get('id'));
         if (!\Phpcmf\Service::L('Form')->check_phone($phone)) {
             $this->_json(0, dr_lang('手机号码格式不正确'), ['field' => 'phone']);
         } elseif (\Phpcmf\Service::M()->db->table('member')->where('phone', $phone)->countAllResults()) {
@@ -282,7 +282,7 @@ class Api extends \Phpcmf\Common
      */
     public function login_code() {
 
-        $phone = dr_safe_replace(\Phpcmf\Service::L('Input')->get('id'));
+        $phone = dr_safe_replace(\Phpcmf\Service::L('input')->get('id'));
         if (!\Phpcmf\Service::L('Form')->check_phone($phone)) {
             $this->_json(0, dr_lang('手机号码格式不正确'), ['field' => 'phone']);
         } elseif (!\Phpcmf\Service::M()->db->table('member')->where('phone', $phone)->countAllResults()) {

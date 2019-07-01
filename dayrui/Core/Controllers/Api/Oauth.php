@@ -33,9 +33,9 @@ class Oauth extends \Phpcmf\Common
 	 */
 	public function index() {
 
-		$name = dr_safe_replace(\Phpcmf\Service::L('Input')->get('name'));
-		$type = dr_safe_replace(\Phpcmf\Service::L('Input')->get('type'));
-		$action = dr_safe_replace(\Phpcmf\Service::L('Input')->get('action'));
+		$name = dr_safe_replace(\Phpcmf\Service::L('input')->get('name'));
+		$type = dr_safe_replace(\Phpcmf\Service::L('input')->get('type'));
+		$action = dr_safe_replace(\Phpcmf\Service::L('input')->get('action'));
 
 		// 非授权登录时必须验证登录状态
 		$type != 'login' && !$this->uid && exit($this->_msg(0, dr_lang('你还没有登录')));

@@ -44,7 +44,7 @@ class Sms extends \Phpcmf\Common
 
 		if (IS_AJAX_POST) {
 
-			$data = \Phpcmf\Service::L('Input')->post('data', true);
+			$data = \Phpcmf\Service::L('input')->post('data', true);
 			strlen($data['note']) > 30 && $this->_json(0, dr_lang('短信签名超出了范围'));
 
 			if ($_POST['aa'] == 0) {
@@ -53,7 +53,7 @@ class Sms extends \Phpcmf\Common
 
 			!\Phpcmf\Service::L('Config')->file($file, '短信配置文件')->to_require_one($data) && $this->_json(0, dr_lang('配置文件写入失败'));
 
-			\Phpcmf\Service::L('Input')->system_log('配置短信接口'); // 记录日志
+			\Phpcmf\Service::L('input')->system_log('配置短信接口'); // 记录日志
 			$this->_json(1, dr_lang('操作成功'));
 		}
 
@@ -70,13 +70,13 @@ class Sms extends \Phpcmf\Common
 		
 		if (IS_AJAX_POST) {
 
-			$data = \Phpcmf\Service::L('Input')->post('data');
+			$data = \Phpcmf\Service::L('input')->post('data');
 			strlen($data['content']) > 150 && exit($this->_json(0, dr_lang('短信内容过长，不得超过70个汉字')));
 
 			$mobile = trim(str_replace(',,', ',', str_replace(array(PHP_EOL, chr(13), chr(10)), ',', $data['mobiles'])), ',');
 			substr_count($mobile, ',') > 40 && exit($this->_json(0, dr_lang('群发一次不得超过40个，数量过多时请分批发送')));
 			
-			\Phpcmf\Service::L('Input')->system_log('发送系统短信'); // 记录日志
+			\Phpcmf\Service::L('input')->system_log('发送系统短信'); // 记录日志
 			
 			$rt = \Phpcmf\Service::M('member')->sendsms_text($mobile, $data['content']);
             exit($this->_json($rt['code'], $rt['msg']));

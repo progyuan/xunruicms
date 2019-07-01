@@ -8,7 +8,7 @@ declare(strict_types=1);
 header('Content-Type: text/html; charset=utf-8');
 
 // 是否是开发者模式
-define('IS_DEV', 1);
+define('IS_DEV', 0);
 
 // 是否允许后台修改模板文件
 define('IS_EDIT_TPL', 0);

@@ -32,15 +32,15 @@ class Site_param extends \Phpcmf\Common
 			$rt = \Phpcmf\Service::M('Site')->config(
 			    SITE_ID,
                 'param',
-                \Phpcmf\Service::L('Input')->post('data', true)
+                \Phpcmf\Service::L('input')->post('data', true)
             );
             !is_array($rt) && $this->_json(0, dr_lang('网站信息(#%s)不存在', SITE_ID));
-			\Phpcmf\Service::L('Input')->system_log('设置网站自定义参数');
+			\Phpcmf\Service::L('input')->system_log('设置网站自定义参数');
             \Phpcmf\Service::M('cache')->sync_cache('');
 			exit($this->_json(1, dr_lang('操作成功')));
 		}
 
-		$page = intval(\Phpcmf\Service::L('Input')->get('page'));
+		$page = intval(\Phpcmf\Service::L('input')->get('page'));
 		$data = \Phpcmf\Service::M('Site')->config(SITE_ID);
 
 		\Phpcmf\Service::V()->assign([

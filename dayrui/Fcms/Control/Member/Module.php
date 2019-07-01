@@ -78,8 +78,8 @@ class Module extends \Phpcmf\Table
     protected function _Member_Add() {
 
         $id = 0;
-        $did = intval(\Phpcmf\Service::L('Input')->get('did'));
-        $catid = intval(\Phpcmf\Service::L('Input')->get('catid'));
+        $did = intval(\Phpcmf\Service::L('input')->get('did'));
+        $catid = intval(\Phpcmf\Service::L('input')->get('catid'));
 
         $did && $this->auto_save = 0; // 草稿数据时不加载
         $draft = $did ? $this->content_model->get_draft($did) : [];
@@ -133,12 +133,12 @@ class Module extends \Phpcmf\Table
     // 修改内容
     protected function _Member_Edit() {
 
-        $id = intval(\Phpcmf\Service::L('Input')->get('id'));
-        $this->is_get_catid = intval(\Phpcmf\Service::L('Input')->get('catid'));
+        $id = intval(\Phpcmf\Service::L('input')->get('id'));
+        $this->is_get_catid = intval(\Phpcmf\Service::L('input')->get('catid'));
         if (defined('IS_MODULE_VERIFY')) {
             $draft = [];
         } else {
-            $did = intval(\Phpcmf\Service::L('Input')->get('did'));
+            $did = intval(\Phpcmf\Service::L('input')->get('did'));
             $did && $this->auto_save = 0; // 草稿数据时不加载
             $draft = $did ? $this->content_model->get_draft($did) : [];
         }
@@ -186,7 +186,7 @@ class Module extends \Phpcmf\Table
     // 删除内容
     protected function _Member_Del() {
 
-        $id = (int)\Phpcmf\Service::L('Input')->get('id');
+        $id = (int)\Phpcmf\Service::L('input')->get('id');
         !$id && $this->_json(0, dr_lang('id不存在'));
 
         $row = \Phpcmf\Service::M()->table(SITE_ID.'_'.$this->module['dirname'].'_index')->get($id);
@@ -247,7 +247,7 @@ class Module extends \Phpcmf\Table
         $this->delete_where = 'uid='.$this->uid;
 
         // 执行删除
-        $this->_Del(\Phpcmf\Service::L('Input')->get_post_ids(), null, function($rows) {
+        $this->_Del(\Phpcmf\Service::L('input')->get_post_ids(), null, function($rows) {
             foreach ($rows as $t) {
                 // 删除索引
                 $t['isnew'] && \Phpcmf\Service::M()->table(SITE_ID.'_'.$this->module['dirname'].'_index')->delete($t['id']);
@@ -291,7 +291,7 @@ class Module extends \Phpcmf\Table
         $this->delete_where = 'uid='.$this->uid;
 
         // 执行删除
-        $this->_Del(\Phpcmf\Service::L('Input')->get_post_ids());
+        $this->_Del(\Phpcmf\Service::L('input')->get_post_ids());
     }
 
 
@@ -350,7 +350,7 @@ class Module extends \Phpcmf\Table
     protected function _Format_Data($id, $data, $old) {
 
         // 验证栏目   验证码
-        $catid = (int)\Phpcmf\Service::L('Input')->post('catid');
+        $catid = (int)\Phpcmf\Service::L('input')->post('catid');
         if (!$this->module['category'][$catid] && !$this->is_hcategory) {
             $this->_json(0, dr_lang('栏目[%s]不存在', $catid), ['field' => 'catid']);
         }
@@ -363,7 +363,7 @@ class Module extends \Phpcmf\Table
 
         // 第一次保存初始化信息
         if (!$id) {
-            $data[1]['inputip'] = \Phpcmf\Service::L('Input')->ip_address();
+            $data[1]['inputip'] = \Phpcmf\Service::L('input')->ip_address();
             $data[1]['inputtime'] = SYS_TIME;
             $data[1]['displayorder'] = 0;
         }
@@ -396,8 +396,8 @@ class Module extends \Phpcmf\Table
      * */
     protected function _Save($id = 0, $data = [], $old = [], $func = null, $func2 = null) {
 
-        $did = intval(\Phpcmf\Service::L('Input')->get('did'));
-        $is_draft = intval(\Phpcmf\Service::L('Input')->post('is_draft'));
+        $did = intval(\Phpcmf\Service::L('input')->get('did'));
+        $is_draft = intval(\Phpcmf\Service::L('input')->post('is_draft'));
         if (!defined('IS_MODULE_VERIFY') && $is_draft) {
             // 草稿箱存储
             $data[1]['id'] = $id;
@@ -489,7 +489,7 @@ class Module extends \Phpcmf\Table
             }
             $this->_json(1, dr_lang('操作成功'), ['id' => $data[1]['id'], 'catid' => $data[1]['catid'], 'htmlfile' => $html, 'listfile' => $list]);
         } else {
-            \Phpcmf\Service::L('Input')->post('is_draft') ? $this->_json(1, dr_lang('操作成功，已存储到草稿箱')) : $this->_json(1, dr_lang('操作成功，等待管理员审核'), ['id' => $data[1]['id'], 'catid' => $data[1]['catid']]);
+            \Phpcmf\Service::L('input')->post('is_draft') ? $this->_json(1, dr_lang('操作成功，已存储到草稿箱')) : $this->_json(1, dr_lang('操作成功，等待管理员审核'), ['id' => $data[1]['id'], 'catid' => $data[1]['catid']]);
         }
     }
 }

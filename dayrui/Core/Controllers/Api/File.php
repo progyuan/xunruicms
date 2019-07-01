@@ -43,14 +43,14 @@ class File extends \Phpcmf\Common
         $rt = \Phpcmf\Service::M('Attachment')->check($this->member, $this->siteid);
         !$rt['code'] && exit(json_encode($rt));
 
-        $fid = (int)\Phpcmf\Service::L('Input')->get('fid');
+        $fid = (int)\Phpcmf\Service::L('input')->get('fid');
         $field = \Phpcmf\Service::C()->get_cache('table-field', $fid);
         if (!$field) {
             $is_admin = 0;
             if ($this->member['is_admin']) {
                 // 本是管理员
                 $is_admin = 1;
-            } elseif ($cookie = \Phpcmf\Service::L('Input')->get_cookie('admin_login_member')) {
+            } elseif ($cookie = \Phpcmf\Service::L('input')->get_cookie('admin_login_member')) {
                 // 授权登录
                 list($uid, $aid) = explode('-', $cookie);
                 if ($uid == $this->uid) {
@@ -63,7 +63,7 @@ class File extends \Phpcmf\Common
 
             if ($is_admin) {
                 // 管理员不验证字段
-                $p = dr_string2array(dr_authcode(\Phpcmf\Service::L('Input')->get('p'), 'DECODE'));
+                $p = dr_string2array(dr_authcode(\Phpcmf\Service::L('input')->get('p'), 'DECODE'));
                 !$p && $this->_json(0, dr_lang('字段参数有误'));
                 return $p;
             }
@@ -81,12 +81,14 @@ class File extends \Phpcmf\Common
     // 验证权限脚本
     private function _check_upload_auth() {
         // 判断权限
-        if (!$this->_member_auth_value($this->member_authid, 'uploadfile')) {
+        if ($this->member && $this->member['is_admin']) {
+            return;
+        } elseif (!$this->_member_auth_value($this->member_authid, 'uploadfile')) {
             $this->_json(0, dr_lang('您的用户组不允许上传文件'));
         } elseif (dr_is_app('mfile') && \Phpcmf\Service::M('mfile', 'mfile')->check_upload($this->uid)) {
             $this->_json(0, '用户存储空间已满');
         }
-
+        return;
     }
 
     /**
@@ -133,7 +135,7 @@ class File extends \Phpcmf\Common
 
         if (IS_AJAX_POST) {
 
-            $post = \Phpcmf\Service::L('Input')->post('data');
+            $post = \Phpcmf\Service::L('input')->post('data');
             if (empty($post['url'])) {
                 $this->_json(0, dr_lang('文件地址不能为空'));
             }
@@ -182,9 +184,9 @@ class File extends \Phpcmf\Common
 
         \Phpcmf\Service::V()->admin();
         \Phpcmf\Service::V()->assign([
-            'one' => \Phpcmf\Service::L('Input')->get('one'),
-            'file' => \Phpcmf\Service::L('Input')->get('file'),
-            'name' => \Phpcmf\Service::L('Input')->get('name'),
+            'one' => \Phpcmf\Service::L('input')->get('one'),
+            'file' => \Phpcmf\Service::L('input')->get('file'),
+            'name' => \Phpcmf\Service::L('input')->get('name'),
             'form' => dr_form_hidden()
         ]);
         \Phpcmf\Service::V()->display('api_upload_url.html');
@@ -250,7 +252,7 @@ class File extends \Phpcmf\Common
 
         $rt = \Phpcmf\Service::M('Attachment')->file_delete(
             (int)$this->member['id'],
-            (int)\Phpcmf\Service::L('Input')->get('id')
+            (int)\Phpcmf\Service::L('input')->get('id')
         );
 
         $this->_json($rt['code'], $rt['msg']);
@@ -263,7 +265,11 @@ class File extends \Phpcmf\Common
 
         // 判断下载权限
         if (!$this->_member_auth_value($this->member_authid, 'downfile')) {
-            $this->_msg(0, dr_lang('您所在用户组不允许下载附件'));
+            if ($this->member && $this->member['is_admin']) {
+                // 管理员
+            } else {
+                $this->_msg(0, dr_lang('您的用户组不允许下载附件'));
+            }
         }
 
         // 读取附件信息
@@ -280,7 +286,6 @@ class File extends \Phpcmf\Common
                 if (FALSE === $handle) {
                     $this->_msg(0, dr_lang('文件已经损坏'));
                 }
-
                 $filesize = filesize($info['file']);
                 header("Content-Type: application/zip"); //zip格式的
                 header("Accept-Ranges:bytes");
@@ -296,11 +301,9 @@ class File extends \Phpcmf\Common
                 }
                 fclose($handle);
                 exit;
-            } elseif (strpos($info['file'], 'http') === 0) {
-                // 远程附件
-                dr_redirect($info['file']);
             } else {
-                $this->_msg(0, dr_lang('附件异常'));
+                // 其他附件就转向地址
+                dr_redirect($info['url']);
             }
         } else {
             $info = dr_file($id);

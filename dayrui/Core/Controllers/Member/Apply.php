@@ -32,7 +32,7 @@ class Apply extends \Phpcmf\Common
      */
     public function index() {
 
-        $gid = intval(\Phpcmf\Service::L('Input')->get('gid'));
+        $gid = intval(\Phpcmf\Service::L('input')->get('gid'));
         if ($this->member['groupid'][$gid]) {
             exit($this->_msg(0, dr_lang('无需重复申请')));
         } elseif (!$this->member_cache['config']['groups'] && dr_count($this->member['groupid']) > 0) {
@@ -77,7 +77,7 @@ class Apply extends \Phpcmf\Common
         if (IS_POST) {
 
             $lid = 0;
-            $post = \Phpcmf\Service::L('Input')->post('data');
+            $post = \Phpcmf\Service::L('input')->post('data');
             $my_verify = $attach = [];
             if ($field) {
                 list($data, $return, $attach) = \Phpcmf\Service::L('Form')->validation($post, null, $field, $verify ? dr_string2array($verify['content']) : '');
@@ -99,7 +99,7 @@ class Apply extends \Phpcmf\Common
                 // 不开启自动升级的时候进入
                 // 价格判断
                 if ($level) {
-                    $lid = (int)\Phpcmf\Service::L('Input')->post('lid');
+                    $lid = (int)\Phpcmf\Service::L('input')->post('lid');
                     if (!$lid) {
                         $this->_json(0, dr_lang('用户组级别未选择'));
                     } elseif (!$group['level'][$lid]) {
@@ -242,7 +242,7 @@ class Apply extends \Phpcmf\Common
      */
     public function level() {
 
-        $gid = intval(\Phpcmf\Service::L('Input')->get('gid'));
+        $gid = intval(\Phpcmf\Service::L('input')->get('gid'));
         !$this->member['groupid'][$gid] && exit($this->_msg(0, dr_lang('你还不是该用户组成员')));
 
         $group = $this->member_cache['group'][$gid];

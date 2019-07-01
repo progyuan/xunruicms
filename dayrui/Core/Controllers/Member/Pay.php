@@ -33,7 +33,7 @@ class Pay extends \Phpcmf\Common
     public function index() {
 
         if (IS_POST) {
-            $pay = \Phpcmf\Service::L('Input')->post('pay');
+            $pay = \Phpcmf\Service::L('input')->post('pay');
             $pay['uid'] = $this->member['uid'];
             $pay['username'] = $this->member['username'];
             $money = floatval($pay['money']);

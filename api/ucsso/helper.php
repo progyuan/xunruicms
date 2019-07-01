@@ -2,9 +2,9 @@
 /**
  * UCSSO单点登录系统 (http://www.ucsso.com/)
  *
- * @version     1.0
- * @author      wangchunjie
- * @copyright   Copyright (c) 2013-2017 天睿程序设计 Inc. (http://www.ucsso.com/)
+ * @version     2.0
+ * @author      李睿
+ * @copyright   Copyright (c) 2013-2019 天睿程序设计 Inc. (http://www.ucsso.com/)
  */
 
 /**
@@ -76,7 +76,7 @@ function ucsso_array2string($data) {
 
 
 function ucsso_daddslashes($string, $force = 0, $strip = FALSE) {
-    if(!MAGIC_QUOTES_GPC || $force) {
+    if($force) {
         if(is_array($string)) {
             foreach($string as $key => $val) {
                 $string[$key] = ucsso_daddslashes($val, $force, $strip);

@@ -11,6 +11,10 @@ if (version_compare(PHP_VERSION, '7.1.0') < 0) {
     echo "<font color=red>PHP版本必须在7.1以上</font>";exit;
 }
 
+$pos = strpos(trim($_SERVER['SCRIPT_NAME'], '/'), '/');
+if ($pos !== false && $pos > 1) {
+    echo "<font color=red>本程序必须在域名根目录中安装</font>";exit;
+}
 
 define('WEBPATH', dirname(__FILE__).'/');
 define('WRITEPATH', WEBPATH.'cache/');
@@ -40,7 +44,7 @@ function dr_check_put_path($dir) {
         return 0;
     }
 
-    $size = file_put_contents($dir.'test.html', 'test');
+    $size = @file_put_contents($dir.'test.html', 'test');
     if ($size === false) {
         return 0;
     } else {

@@ -38,7 +38,7 @@ class File extends \Phpcmf\Common
     public function __construct(...$params)
     {
         parent::__construct(...$params);
-        $this->dir = $this->_safe_path(\Phpcmf\Service::L('Input')->get('dir'));
+        $this->dir = $this->_safe_path(\Phpcmf\Service::L('input')->get('dir'));
         \Phpcmf\Service::V()->assign([
             'menu' => \Phpcmf\Service::M('auth')->_admin_menu(
                 [
@@ -52,7 +52,7 @@ class File extends \Phpcmf\Common
 
     protected function _Image() {
 
-        $file = $this->_safe_path(\Phpcmf\Service::L('Input')->get('file'));
+        $file = $this->_safe_path(\Phpcmf\Service::L('input')->get('file'));
         $filename = $this->root_path.$file;
         !is_file($filename) && exit(dr_lang('文件%s不存在', $file));
 
@@ -102,6 +102,7 @@ class File extends \Phpcmf\Common
         \Phpcmf\Service::V()->assign([
             'list' => $list,
             'path' => rtrim($path, DIRECTORY_SEPARATOR),
+            'is_root' => !$this->dir ? 1 : 0,
             'delete' =>\Phpcmf\Service::L('Router')->url(trim(APP_DIR.'/'.\Phpcmf\Service::L('Router')->class.'/del', '/'), ['dir' => $this->dir]),
         ]);
         \Phpcmf\Service::V()->display('tpl_index.html');
@@ -180,7 +181,7 @@ class File extends \Phpcmf\Common
                 if (IS_AJAX_POST) {
 
                     !IS_EDIT_TPL && $this->_json(0, dr_lang('系统不允许创建和修改模板文件'), ['field' => 'name']);
-                    $name = dr_safe_filename(\Phpcmf\Service::L('Input')->post('name'));
+                    $name = dr_safe_filename(\Phpcmf\Service::L('input')->post('name'));
                     !$name && $this->_json(0, dr_lang('文件名称不能为空'), ['field' => 'name']);
 
                     // 开始修改
@@ -194,6 +195,30 @@ class File extends \Phpcmf\Common
                     'name' => $fname,
                 ]);
                 \Phpcmf\Service::V()->display('tpl_dirname.html');
+                exit;
+                break;
+
+            case 'cname':
+                // 重命名文件别名
+
+                $cname = $this->_get_name_ini($file);
+
+                if (IS_AJAX_POST) {
+
+                    !IS_EDIT_TPL && $this->_json(0, dr_lang('系统不允许创建和修改模板文件'), ['field' => 'name']);
+                    $name = dr_safe_filename(\Phpcmf\Service::L('input')->post('name'));
+                    !$name && $this->_json(0, dr_lang('文件名称不能为空'), ['field' => 'name']);
+
+                    // 开始修改
+                    $this->_save_name_ini($file, $name);
+
+                    $this->_json(1, dr_lang('操作成功'));
+                }
+
+                \Phpcmf\Service::V()->assign([
+                    'name' => $cname,
+                ]);
+                \Phpcmf\Service::V()->display('tpl_cname.html');
                 exit;
                 break;
 
@@ -233,7 +258,7 @@ class File extends \Phpcmf\Common
                         }
 
                         // 备份数据
-                        $code = \Phpcmf\Service::L('Input')->post('code');
+                        $code = \Phpcmf\Service::L('input')->post('code');
                         if ($content != $code && $is_diff == 0) {
                             !is_dir($this->backups_path.$dir.'/') && mkdir($this->backups_path.$dir.'/', 0777);
                             $size = file_put_contents($this->backups_path.$dir.'/'.SYS_TIME, $content);
@@ -244,7 +269,7 @@ class File extends \Phpcmf\Common
                         $size = file_put_contents($filename, $code);
                         $size === false && $this->_json(0, dr_lang('模板目录无法写入'));
 
-                        $cname = \Phpcmf\Service::L('Input')->post('cname');
+                        $cname = \Phpcmf\Service::L('input')->post('cname');
                         $cname && $this->_save_name_ini($filename, $cname);
 
                         \Phpcmf\Service::L('input')->system_log('修改文件内容['.$filename.']');
@@ -360,7 +385,7 @@ class File extends \Phpcmf\Common
 
     protected function _Clear() {
 
-        $file = $this->_safe_path(\Phpcmf\Service::L('Input')->get('file'));
+        $file = $this->_safe_path(\Phpcmf\Service::L('input')->get('file'));
         $filename = $this->root_path.$file;
         !is_file($filename) && $this->_json(0, dr_lang('文件%s不存在', $file));
 
@@ -417,33 +442,44 @@ class File extends \Phpcmf\Common
         ];
 
         $source_dir	= dr_rp($this->root_path.($dir ? $dir : trim($dir, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR), ['//', DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR], ['/', DIRECTORY_SEPARATOR]);
-        $cname = $this->_get_list_ini($source_dir);
+
 
         if ($fp = @opendir($source_dir)) {
 
             while (FALSE !== ($file = readdir($fp))) {
-                if (in_array($file, ['.', '..', '.DS_Store', 'name.ini'])) {
+                if (in_array($file, ['.', '..', '.DS_Store', 'config.ini', 'thumb.jpg'])) {
                     continue;
                 } elseif (strtolower(strrchr($file, '.')) == '.php') {
                     continue;
                 } elseif ($this->not_root_path && in_array($source_dir.$file, $this->not_root_path)) {
                     continue;
                 }
+
                 $edit =\Phpcmf\Service::L('Router')->url(trim(APP_DIR.'/'.\Phpcmf\Service::L('Router')->class.'/edit', '/'), ['file' => $this->dir.'/'.$file]);
                 if (is_dir($source_dir.'/'.$file)) {
                     if (!$dir && $this->exclude_dir && is_array($this->exclude_dir) && in_array($file, $this->exclude_dir)) {
                         continue;
                     }
+                    // 缩略图预览图
+                    $thumb = '';
+                    if (is_file($source_dir.'/'.$file.'/thumb.jpg')) {
+                        list($cache_path, $cache_url) = dr_thumb_path();
+                        if (file_put_contents($cache_path.md5($source_dir.'/'.$file).'_thumb.jpg', file_get_contents($source_dir.'/'.$file.'/thumb.jpg'))) {
+                            $thumb = $cache_url.md5($source_dir.'/'.$file).'_thumb.jpg';
+                        }
+                    }
                     $dir_data[] = [
                         'id' => 0,
                         'name' => $file,
+                        'cname' => $this->_get_name_ini($source_dir.'/'.$file),
+                        'cname_edit' => 'javascript:dr_iframe(\''.dr_lang('文件别名').'\', \''.$edit.'&mtype=cname\', \'500px\',\'240px\');',
+                        'thumb' => $thumb,
                         'file' => $file,
                         'icon' => ROOT_THEME_PATH.'assets/images/ext/folder.png',
                         'size' => ' - ',
                         'time' => dr_date(filemtime($source_dir.'/'.$file), null, 'red'),
-                        'cname' => '',
                         'zip' => '',
-                        'edit' => 'javascript:javascript:dr_iframe(\'edit\', \''.$edit.'&mtype=dir\', \'500px\',\'240px\');;',
+                        'edit' => 'javascript:dr_iframe(\''.dr_lang('目录/文件名称').'\', \''.$edit.'&mtype=dir\', \'500px\',\'240px\');',
                         'url' =>\Phpcmf\Service::L('Router')->url(trim(APP_DIR.'/'.\Phpcmf\Service::L('Router')->class.'/index', '/'), ['dir' => $this->dir.'/'.$file]),
                     ];
                 } else {
@@ -451,7 +487,9 @@ class File extends \Phpcmf\Common
                     $edit =\Phpcmf\Service::L('Router')->url(trim(APP_DIR.'/'.\Phpcmf\Service::L('Router')->class.'/edit', '/'), ['file' => $this->dir.'/'.$file]);
                     $file_data[] = [
                         'id' => md5($file),
-                        'name' => $cname[md5($file)] ? $cname[md5($file)] : $file,
+                        'name' => $file,
+                        'cname' => $this->_get_name_ini($source_dir.'/'.$file),
+                        'cname_edit' => 'javascript:dr_iframe(\'edit\', \''.$edit.'&mtype=cname\', \'500px\',\'240px\');',
                         'file' => $file,
                         'icon' => $this->_file_icon($file),
                         'size' => dr_format_file_size(filesize($source_dir.'/'.$file)),
@@ -459,7 +497,7 @@ class File extends \Phpcmf\Common
                         'edit' => $edit.'&mtype=file',
                         'url' => $edit.'&mtype=file',
                         'zip' => $ext == 'zip' ? 'javascript:dr_ajax_url(\''.$edit.'&mtype=zip'.'\');' : '',
-                        'cname' => 'javascript:javascript:dr_iframe(\'edit\', \''.$edit.'&mtype=filecname\', \'500px\',\'240px\');;',
+                        //'cname' => 'javascript:dr_iframe(\'edit\', \''.$edit.'&mtype=filecname\', \'500px\',\'240px\');',
                     ];
                 }
             }
@@ -473,8 +511,10 @@ class File extends \Phpcmf\Common
     // 存储文件别名
     protected function _save_name_ini($file, $value) {
 
-        $id = md5(basename($file));
-        $ini = dirname($file).'/name.ini';
+        list($dir, $path) = $this->_get_one_dirname($file);
+        $id = md5($path);
+        $ini = $this->root_path.$dir.'/config.ini';
+
         $data = json_decode(file_get_contents($ini), true);
         !$data && $data = [];
         $data[$id] = $value;
@@ -487,18 +527,25 @@ class File extends \Phpcmf\Common
     // 获取单个文件别名
     protected function _get_name_ini($file) {
 
-        $id = md5(basename($file));
-        $ini = dirname($file).'/name.ini';
+        list($dir, $path, $lsname) = $this->_get_one_dirname($file);
+        $id = md5($path);
+        $ini = $this->root_path.$dir.'/config.ini';
         $data = json_decode(file_get_contents($ini), true);
-        return (string)$data[$id];
+
+        return isset($data[$id]) ? (string)$data[$id] : $lsname;
     }
 
-    // 获取本目录全部别名
-    protected function _get_list_ini($path) {
+    // 获取第一个目录名称
+    protected function _get_one_dirname($path) {
 
-        $ini = $path.'/name.ini';
-        $data = json_decode(file_get_contents($ini), true);
-        return (array)$data;
+        $dir = trim(str_replace(['/', '\\'], '*', str_replace($this->root_path, '', $path)), '*');
+        if (strpos($dir, '*')) {
+            //存在子目录
+            list($a) = explode('*', $dir);
+            return [$a, $dir, trim(strtolower(strrchr($dir, '*')), '*')];
+        }
+
+        return [$dir, $dir, $dir];
     }
 
     // 格式化内容

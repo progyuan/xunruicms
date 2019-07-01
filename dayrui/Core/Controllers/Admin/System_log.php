@@ -29,7 +29,7 @@ class System_log extends \Phpcmf\Common
 	public function index() {
 
 
-		$time = (int)strtotime(\Phpcmf\Service::L('Input')->get('time'));
+		$time = (int)strtotime(\Phpcmf\Service::L('input')->get('time'));
 		!$time && $time = SYS_TIME;
 		
 		$file = WRITEPATH.'log/'.date('Ym', $time).'/'.date('d', $time).'.php';
@@ -38,7 +38,7 @@ class System_log extends \Phpcmf\Common
 		$data = @explode(PHP_EOL, str_replace(array(chr(13), chr(10)), PHP_EOL, file_get_contents($file)));
 		$data = @array_reverse($data);
 
-		$page = max(1, (int)\Phpcmf\Service::L('Input')->get('page'));
+		$page = max(1, (int)\Phpcmf\Service::L('input')->get('page'));
         $total = max(0, dr_count($data) - 1);
 		$limit = ($page - 1) * SYS_ADMIN_PAGESIZE;
 
@@ -63,7 +63,7 @@ class System_log extends \Phpcmf\Common
                 ]
             ),
 			'total' => $total,
-			'mypages'	=> \Phpcmf\Service::L('Input')->page(\Phpcmf\Service::L('Router')->url('system_log/index', ['time' => $time]), $total, 'admin')
+			'mypages'	=> \Phpcmf\Service::L('input')->page(\Phpcmf\Service::L('Router')->url('system_log/index', ['time' => $time]), $total, 'admin')
 		));
 		\Phpcmf\Service::V()->display('system_log.html');
 	}

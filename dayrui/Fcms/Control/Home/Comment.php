@@ -37,11 +37,11 @@ class Comment extends \Phpcmf\Common
         $this->_module_init();
         // 是否启用判断
         if (!$this->module['comment']) {
-            !\Phpcmf\Service::L('Input')->get('callback') && $this->_msg(0, dr_lang('模块【%s】没有启用评论', MOD_DIR));
+            !\Phpcmf\Service::L('input')->get('callback') && $this->_msg(0, dr_lang('模块【%s】没有启用评论', MOD_DIR));
             exit('未开启评论'); // jsonp请求时不输出
         }
         // 关联内容数据
-        $this->cid = intval(\Phpcmf\Service::L('Input')->get('id'));
+        $this->cid = intval(\Phpcmf\Service::L('input')->get('id'));
         $this->index = \Phpcmf\Service::L('cache')->init()->get('module_'.MOD_DIR.'_show_id_'.$this->cid);
         if (!$this->index) {
             $this->index = $this->content_model->get_data($this->cid);
@@ -75,7 +75,7 @@ class Comment extends \Phpcmf\Common
         }
         
         // 排序模式
-        $type = (int)str_replace('#', '', \Phpcmf\Service::L('Input')->get('type'));
+        $type = (int)str_replace('#', '', \Phpcmf\Service::L('input')->get('type'));
         $order = 'inputtime desc';
         switch ($type) {
             case 1:
@@ -102,8 +102,8 @@ class Comment extends \Phpcmf\Common
         $comment = $this->content_model->get_comment_index( $this->cid, $this->index['catid']);
         !$comment && exit($this->_msg(0, dr_lang('内容【id#%s】评论索引数据读取失败',  $this->cid)));
 
-        $page = max(1, (int)\Phpcmf\Service::L('Input')->get('page'));
-        $total = (int)\Phpcmf\Service::L('Input')->get('total');
+        $page = max(1, (int)\Phpcmf\Service::L('input')->get('page'));
+        $total = (int)\Phpcmf\Service::L('input')->get('total');
 
         if (IS_API_HTTP) {
             $pagesize = (int)$this->module['comment']['pagesize_api'];
@@ -115,7 +115,7 @@ class Comment extends \Phpcmf\Common
         !$pagesize && $pagesize = 10;
 
         // 查询数据
-        list($list, $total) = $this->content_model->get_comment_result($this->cid, $order, $page, $pagesize, $total);
+        list($list, $total) = $this->content_model->get_comment_result($this->cid, $order, $page, $pagesize, $total, $this->module['comment']['field']);
 
         // ajax动态无刷新调用
         $js = 'dr_ajax_module_comment_'. $this->cid;
@@ -156,7 +156,7 @@ class Comment extends \Phpcmf\Common
     // 评论或者回复
     protected function _Post() {
 
-        $rid = (int)\Phpcmf\Service::L('Input')->get('rid');
+        $rid = (int)\Phpcmf\Service::L('input')->get('rid');
         !IS_POST && $this->_json(0, dr_lang('非法请求'));
 
         // 挂钩点 评论完成之后
@@ -205,7 +205,7 @@ class Comment extends \Phpcmf\Common
         !$comment && $this->_json(0, dr_lang('内容【id#%s】评论索引数据读取失败',  $this->cid));
 
         // 判断评论内容
-        $content = $this->_safe_replace(\Phpcmf\Service::L('Input')->post('content', true));
+        $content = $this->_safe_replace(\Phpcmf\Service::L('input')->post('content', true));
         !$content && $this->_json(0, dr_lang('评论内容不能为空'));
 
         // 开启点评功能时，判断各项点评数，回复不做点评
@@ -221,7 +221,7 @@ class Comment extends \Phpcmf\Common
         if (!$rid && $this->module['comment']['field']) {
             \Phpcmf\Service::L('Field')->app(MOD_DIR);
             list($post, $return, $attach) = \Phpcmf\Service::L('Form')->validation(
-                \Phpcmf\Service::L('Input')->post('data'),
+                \Phpcmf\Service::L('input')->post('data'),
                 [],
                 $this->module['comment']['field']
             );
@@ -267,8 +267,8 @@ class Comment extends \Phpcmf\Common
     // 操作动作
     protected function _Op() {
 
-        $op = \Phpcmf\Service::L('Input')->get('t');
-        $id = (int)\Phpcmf\Service::L('Input')->get('rid');
+        $op = \Phpcmf\Service::L('input')->get('t');
+        $id = (int)\Phpcmf\Service::L('input')->get('rid');
 
         // 查询评论是否存在
         $data = $this->content_model->table($this->content_model->mytable.'_comment')->get($id);

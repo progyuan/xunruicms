@@ -44,7 +44,7 @@ class Site_domain extends \Phpcmf\Common
     public function index() {
 
         if (IS_AJAX_POST) {
-            $data = $post = \Phpcmf\Service::L('Input')->post('data', true);
+            $data = $post = \Phpcmf\Service::L('input')->post('data', true);
             foreach ($post as $name => $value) {
                 unset($data[$name]);
                 if ($value && in_array($value, $data)) {
@@ -54,7 +54,7 @@ class Site_domain extends \Phpcmf\Common
             }
             \Phpcmf\Service::M('Site')->domain($post);
             \Phpcmf\Service::M('cache')->sync_cache('');
-            \Phpcmf\Service::L('Input')->system_log('设置网站域名参数');
+            \Phpcmf\Service::L('input')->system_log('设置网站域名参数');
             exit($this->_json(1, dr_lang('操作成功')));
         }
 
@@ -65,7 +65,7 @@ class Site_domain extends \Phpcmf\Common
             'page' => $page,
             'data' => $data,
             'form' => dr_form_hidden(['page' => $page]),
-            'module' => $module
+            'module' => $module,
         ]);
         \Phpcmf\Service::V()->display('site_domain.html');
     }
@@ -84,13 +84,13 @@ class Site_domain extends \Phpcmf\Common
     public function edit() {
 
         if (IS_POST) {
-            $domain = trim(\Phpcmf\Service::L('Input')->post('domain', true));
+            $domain = trim(\Phpcmf\Service::L('input')->post('domain', true));
             if (!$domain) {
                 exit($this->_json(0, dr_lang('域名不能为空')));
             }
 
             \Phpcmf\Service::M('Site')->edit_domain($domain);
-            \Phpcmf\Service::L('Input')->system_log('变更网站主域名');
+            \Phpcmf\Service::L('input')->system_log('变更网站主域名');
             exit($this->_json(1, dr_lang('操作成功，请域名解析到本站IP')));
         }
 

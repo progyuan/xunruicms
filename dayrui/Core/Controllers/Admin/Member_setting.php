@@ -30,7 +30,7 @@ class Member_setting extends \Phpcmf\Common
 
     public function index() {
 
-        $page = intval(\Phpcmf\Service::L('Input')->get('page'));
+        $page = intval(\Phpcmf\Service::L('input')->get('page'));
 
         // 获取会员全部配置信息
         $data = [];
@@ -43,7 +43,7 @@ class Member_setting extends \Phpcmf\Common
 
         if (IS_AJAX_POST) {
             $save = ['register', 'login', 'oauth', 'config'];
-            $post = \Phpcmf\Service::L('Input')->post('data', true);
+            $post = \Phpcmf\Service::L('input')->post('data', true);
             foreach ($save as $name) {
                 \Phpcmf\Service::M()->db->table('member_setting')->replace([
                     'name' => $name,

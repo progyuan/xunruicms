@@ -26,15 +26,18 @@
                         <div class="form-group row">
                             <label class="col-md-2 control-label"> {dr_lang('表名称')} </label>
                             <div class="col-md-9">
-                                <label><input class="form-control" type="text" name="bm"></label>
-                                <span class="help-block">{dr_lang('无需填写表前缀')}</span>
+                                <label><select name="bm" class="form-control" onchange="dr_fd(this.value)">
+                                    <option value="0">{dr_lang('选择表')}</option>
+                                    {loop $tables $t}
+                                    <option value="{$t.Name}">{$t.Name}{if $t.Comment}（{$t.Comment}）{/if}</option>
+                                    {/loop}
+                                </select></label>
                             </div>
                         </div>
                         <div class="form-group row">
                             <label class="col-md-2 control-label">{dr_lang('待替换字段')}</label>
                             <div class="col-md-9">
-                                <label><input class="form-control" type="text" name="fd"></label>
-                                <span class="help-block">{dr_lang('填写一个正确有效的字段英文名称')}</span>
+                                <label id="dr_fd"></label>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -115,6 +118,22 @@
     </div>
 </div>
 
-
+<script>
+    function dr_fd(v) {
+        $.ajax({type: "POST",dataType:"json", url: "{dr_url('content/field_index')}&table="+v,
+            success: function(json) {
+                if (json.code == 1) {
+                    $('#dr_fd').html(json.msg);
+                } else {
+                    dr_cmf_tips(0, json.msg);
+                }
+                return false;
+            },
+            error: function(HttpRequest, ajaxOptions, thrownError) {
+                dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError)
+            }
+        });
+    }
+</script>
 
 {template "footer.html"}

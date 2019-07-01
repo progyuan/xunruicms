@@ -45,7 +45,7 @@ class Paylog extends \Phpcmf\Table
     // index
     public function index() {
 
-        $tid = (int)\Phpcmf\Service::L('Input')->get('tid');
+        $tid = (int)\Phpcmf\Service::L('input')->get('tid');
         $where = ['`uid`='.$this->uid];
         switch ($tid) {
             case 1: // 收入
@@ -84,7 +84,7 @@ class Paylog extends \Phpcmf\Table
     
     public function show() {
 
-        $id = \Phpcmf\Service::L('Input')->get('id');
+        $id = \Phpcmf\Service::L('input')->get('id');
         strpos($id, '-') !== false && list($a, $id) = explode('-', $id);
 
         list($a, $data) = $this->_Show((int)$id);

@@ -162,7 +162,7 @@ class Cloud extends \Phpcmf\Common
     // 安装程序
     public function install() {
 
-        $dir = dr_safe_replace(\Phpcmf\Service::L('Input')->get('dir'));
+        $dir = dr_safe_replace(\Phpcmf\Service::L('input')->get('dir'));
         !is_file(dr_get_app_dir($dir).'Config/App.php') && $this->_json(0, dr_lang('安装程序App.php不存在'));
 
         // 开始安装
@@ -176,7 +176,7 @@ class Cloud extends \Phpcmf\Common
     // 卸载程序
     public function uninstall() {
 
-        $dir = dr_safe_replace(\Phpcmf\Service::L('Input')->get('dir'));
+        $dir = dr_safe_replace(\Phpcmf\Service::L('input')->get('dir'));
         !preg_match('/^[a-z]+$/U', $dir) && $this->_json(0, dr_lang('目录[%s]格式不正确', $dir));
 
         $path = dr_get_app_dir($dir);
@@ -193,7 +193,7 @@ class Cloud extends \Phpcmf\Common
 
         if (IS_POST) {
 
-            $post = \Phpcmf\Service::L('Input')->post('data');
+            $post = \Phpcmf\Service::L('input')->post('data');
             $surl = $this->service_url.'&action=update_login&get_http=1&username='.$post['username'].'&password='.md5($post['password']);
             $json = dr_catcher_data($surl);
             if (!$json) {
@@ -345,7 +345,7 @@ class Cloud extends \Phpcmf\Common
             $data['phpcmf']['tname'] = '<a href="javascript:dr_help(538);">框架</a>';
         }
 
-        if (is_file(MYPATH.'Init.php')) {
+        if (is_file(MYPATH.'Config/Version.php')) {
             $data['my'] = require MYPATH.'Config/Version.php';
             $cms_id = $data['my']['id'];
             $data['my']['id'] = 'cms-'.$cms_id;
@@ -534,7 +534,7 @@ class Cloud extends \Phpcmf\Common
 
     // 版本日志
     function log_show() {
-        $url = 'http://www.tianruiyun.com/version.php?id='.\Phpcmf\Service::L('Input')->get('id', true).'&version='.\Phpcmf\Service::L('Input')->get('version', true);
+        $url = 'http://www.tianruiyun.com/version.php?id='.\Phpcmf\Service::L('input')->get('id', true).'&version='.\Phpcmf\Service::L('input')->get('version', true);
         \Phpcmf\Service::V()->assign([
             'url' => $url,
         ]);

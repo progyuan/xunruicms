@@ -32,7 +32,7 @@ class Recharge extends \Phpcmf\Common
      */
     public function index() {
         define('FC_PAY', 1);
-        $value = max(floatval(\Phpcmf\Service::L('Input')->get('value')), floatval($this->member_cache['pay']['min']));
+        $value = max(floatval(\Phpcmf\Service::L('input')->get('value')), floatval($this->member_cache['pay']['min']));
         \Phpcmf\Service::V()->assign([
             'payfield' => dr_payform('recharge', $value ? $value : '', '', '', 1),
         ]);

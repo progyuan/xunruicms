@@ -97,10 +97,10 @@ class Member_menu extends \Phpcmf\Common
 
 	public function group_add() {
 
-		$ids = \Phpcmf\Service::L('Input')->get_post_ids();
+		$ids = \Phpcmf\Service::L('input')->get_post_ids();
 		!$ids && $this->_json(0, dr_lang('你还没有选择呢'));
 
-		$gid = (int)\Phpcmf\Service::L('Input')->post('groupid');
+		$gid = (int)\Phpcmf\Service::L('input')->post('groupid');
 		!$gid && $this->_json(0, dr_lang('你还没有选择用户组'));
 
 		$data = \Phpcmf\Service::M()->db->table('member_menu')->whereIN('id', $ids)->get()->getResultArray();
@@ -120,11 +120,11 @@ class Member_menu extends \Phpcmf\Common
 
 	public function group_del() {
 
-		$id = (int)\Phpcmf\Service::L('Input')->get('id');
+		$id = (int)\Phpcmf\Service::L('input')->get('id');
 		$data = \Phpcmf\Service::M('Menu')->getRowData('member', $id);
 		!$data && $this->_json(0, dr_lang('菜单不存在'));
 
-		$gid = (int)\Phpcmf\Service::L('Input')->get('gid');
+		$gid = (int)\Phpcmf\Service::L('input')->get('gid');
 		!$gid && $this->_json(0, dr_lang('用户组id不存在'));
 
 		$value = dr_string2array($data['group']);
@@ -140,10 +140,10 @@ class Member_menu extends \Phpcmf\Common
 
 	public function site_add() {
 
-		$ids = \Phpcmf\Service::L('Input')->get_post_ids();
+		$ids = \Phpcmf\Service::L('input')->get_post_ids();
 		!$ids && $this->_json(0, dr_lang('你还没有选择呢'));
 
-		$sid = (int)\Phpcmf\Service::L('Input')->post('siteid');
+		$sid = (int)\Phpcmf\Service::L('input')->post('siteid');
 		!$sid && $this->_json(0, dr_lang('你还没有选择站点'));
 
 		$data = \Phpcmf\Service::M()->db->table('member_menu')->whereIN('id', $ids)->get()->getResultArray();
@@ -163,11 +163,11 @@ class Member_menu extends \Phpcmf\Common
 
 	public function site_del() {
 
-		$id = (int)\Phpcmf\Service::L('Input')->get('id');
+		$id = (int)\Phpcmf\Service::L('input')->get('id');
 		$data = \Phpcmf\Service::M('Menu')->getRowData('member', $id);
 		!$data && $this->_json(0, dr_lang('菜单不存在'));
 
-        $sid = (int)\Phpcmf\Service::L('Input')->get('sid');
+        $sid = (int)\Phpcmf\Service::L('input')->get('sid');
 		!$sid && $this->_json(0, dr_lang('站点id不存在'));
 
 		$value = dr_string2array($data['site']);
@@ -184,13 +184,13 @@ class Member_menu extends \Phpcmf\Common
 
 	public function add() {
 
-		$pid = intval(\Phpcmf\Service::L('Input')->get('pid'));
+		$pid = intval(\Phpcmf\Service::L('input')->get('pid'));
 		$top = \Phpcmf\Service::M('Menu')->get_top('member');
 
 		if (IS_AJAX_POST) {
-			$data = \Phpcmf\Service::L('Input')->post('data');
+			$data = \Phpcmf\Service::L('input')->post('data');
 			$this->_validation($data);
-			\Phpcmf\Service::L('Input')->system_log('添加用户中心菜单: '.$data['name']);
+			\Phpcmf\Service::L('input')->system_log('添加用户中心菜单: '.$data['name']);
             if (\Phpcmf\Service::M('Menu')->_add('member', $pid, $data)) {
                 \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
                 $this->_json(1, dr_lang('操作成功'));
@@ -210,17 +210,17 @@ class Member_menu extends \Phpcmf\Common
 
 	public function edit() {
 
-		$id = intval(\Phpcmf\Service::L('Input')->get('id'));
+		$id = intval(\Phpcmf\Service::L('input')->get('id'));
 		$data = \Phpcmf\Service::M('Menu')->getRowData('member', $id);
 		!$data && $this->_json(0, dr_lang('数据#%s不存在', $id));
 
 		$top = \Phpcmf\Service::M('Menu')->get_top('member');
 
 		if (IS_AJAX_POST) {
-			$data = \Phpcmf\Service::L('Input')->post('data');
+			$data = \Phpcmf\Service::L('input')->post('data');
 			$this->_validation($data);
 			\Phpcmf\Service::M('Menu')->_update('member', $id, $data);
-			\Phpcmf\Service::L('Input')->system_log('修改用户中心菜单: '.$data['name']);
+			\Phpcmf\Service::L('input')->system_log('修改用户中心菜单: '.$data['name']);
 
             \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
 			exit($this->_json(1, dr_lang('操作成功')));
@@ -238,12 +238,12 @@ class Member_menu extends \Phpcmf\Common
 
 	public function del() {
 
-		$ids = \Phpcmf\Service::L('Input')->get_post_ids();
+		$ids = \Phpcmf\Service::L('input')->get_post_ids();
 		!$ids && exit($this->_json(0, dr_lang('你还没有选择呢')));
 
 		\Phpcmf\Service::M('Menu')->_delete('member', $ids);
         \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
-		\Phpcmf\Service::L('Input')->system_log('批量删除用户中心菜单: '. @implode(',', $ids));
+		\Phpcmf\Service::L('input')->system_log('批量删除用户中心菜单: '. @implode(',', $ids));
 		exit($this->_json(1, dr_lang('操作成功'), ['ids' => $ids]));
 	}
 
@@ -252,17 +252,17 @@ class Member_menu extends \Phpcmf\Common
 	public function init() {
 
 		\Phpcmf\Service::M('Menu')->init('member');
-		\Phpcmf\Service::L('Input')->system_log('初始化用户中心菜单');
+		\Phpcmf\Service::L('input')->system_log('初始化用户中心菜单');
 		exit($this->_json(1, dr_lang('初始化菜单成功，请按F5刷新整个页面')));
 	}
 
 	// 隐藏或者启用
 	public function use_edit() {
 
-		$i = intval(\Phpcmf\Service::L('Input')->get('id'));
+		$i = intval(\Phpcmf\Service::L('input')->get('id'));
 		$v = \Phpcmf\Service::M('Menu')->_uesd('member', $i);
 		$v == -1 && exit($this->_json(0, dr_lang('数据#%s不存在', $i), ['value' => $v]));
-		\Phpcmf\Service::L('Input')->system_log('修改用户中心菜单状态: '. $i);
+		\Phpcmf\Service::L('input')->system_log('修改用户中心菜单状态: '. $i);
         \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
 		exit($this->_json(1, dr_lang($v ? '此菜单已被隐藏' : '此菜单已被启用'), ['value' => $v]));
 
@@ -271,16 +271,16 @@ class Member_menu extends \Phpcmf\Common
 	// 保存数据
 	public function save_edit() {
 
-		$i = intval(\Phpcmf\Service::L('Input')->get('id'));
+		$i = intval(\Phpcmf\Service::L('input')->get('id'));
 		\Phpcmf\Service::M('Menu')->_save(
 			'member',
 			$i,
-			dr_safe_replace(\Phpcmf\Service::L('Input')->get('name')),
-			dr_safe_replace(\Phpcmf\Service::L('Input')->get('value'))
+			dr_safe_replace(\Phpcmf\Service::L('input')->get('name')),
+			dr_safe_replace(\Phpcmf\Service::L('input')->get('value'))
 		);
 
         \Phpcmf\Service::M('cache')->sync_cache(''); // 自动更新缓存
-		\Phpcmf\Service::L('Input')->system_log('修改用户中心菜单信息: '. $i);
+		\Phpcmf\Service::L('input')->system_log('修改用户中心菜单信息: '. $i);
 		exit($this->_json(1, dr_lang('更改成功')));
 	}
 

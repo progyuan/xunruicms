@@ -31,7 +31,7 @@ class Site_client extends \Phpcmf\Common
 
 		if (IS_AJAX_POST) {
 		    $save = [];
-		    $post = \Phpcmf\Service::L('Input')->post('data', true);
+		    $post = \Phpcmf\Service::L('input')->post('data', true);
 		    if ($post) {
                 foreach ($post as $i => $t) {
                     if (isset($t['name'])) {
@@ -59,11 +59,11 @@ class Site_client extends \Phpcmf\Common
             );
             !is_array($rt) && $this->_json(0, dr_lang('网站终端(#%s)不存在', SITE_ID));
             \Phpcmf\Service::M('cache')->sync_cache('');
-			\Phpcmf\Service::L('Input')->system_log('设置网站自定义终端参数');
+			\Phpcmf\Service::L('input')->system_log('设置网站自定义终端参数');
 			exit($this->_json(1, dr_lang('操作成功')));
 		}
 
-		$page = intval(\Phpcmf\Service::L('Input')->get('page'));
+		$page = intval(\Phpcmf\Service::L('input')->get('page'));
 		$data = \Phpcmf\Service::M('Site')->config(SITE_ID);
         list($module, $domain) = \Phpcmf\Service::M('Site')->domain();
 

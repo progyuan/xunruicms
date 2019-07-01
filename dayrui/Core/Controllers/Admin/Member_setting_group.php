@@ -88,7 +88,7 @@ class Member_setting_group extends \Phpcmf\Common
         if (IS_AJAX_POST) {
             \Phpcmf\Service::M()->db->table('member_setting')->replace([
                 'name' => 'auth',
-                'value' => dr_array2string(\Phpcmf\Service::L('Input')->post('data', true))
+                'value' => dr_array2string(\Phpcmf\Service::L('input')->post('data', true))
             ]);
             \Phpcmf\Service::M('cache')->sync_cache('member'); // 自动更新缓存
             $this->_json(1, dr_lang('操作成功'));

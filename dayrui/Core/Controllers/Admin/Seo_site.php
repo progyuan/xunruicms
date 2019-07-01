@@ -32,18 +32,18 @@ class Seo_site extends \Phpcmf\Common
 			$rt = \Phpcmf\Service::M('Site')->config(
 			    SITE_ID,
                 'seo',
-                \Phpcmf\Service::L('Input')->post('data', true)
+                \Phpcmf\Service::L('input')->post('data', true)
             );
             \Phpcmf\Service::M('Site')->config_value(SITE_ID, 'config', [
-                'SITE_INDEX_HTML' => intval(\Phpcmf\Service::L('Input')->post('SITE_INDEX_HTML'))
+                'SITE_INDEX_HTML' => intval(\Phpcmf\Service::L('input')->post('SITE_INDEX_HTML'))
             ]);
             !is_array($rt) && $this->_json(0, dr_lang('网站SEO(#%s)不存在', SITE_ID));
-			\Phpcmf\Service::L('Input')->system_log('设置网站SEO');
+			\Phpcmf\Service::L('input')->system_log('设置网站SEO');
             \Phpcmf\Service::M('cache')->sync_cache('');
 			exit($this->_json(1, dr_lang('操作成功')));
 		}
 
-		$page = intval(\Phpcmf\Service::L('Input')->get('page'));
+		$page = intval(\Phpcmf\Service::L('input')->get('page'));
 		$data = \Phpcmf\Service::M('Site')->config(SITE_ID);
 
 		\Phpcmf\Service::V()->assign([

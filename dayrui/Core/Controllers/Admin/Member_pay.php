@@ -29,7 +29,7 @@ class Member_pay extends \Phpcmf\Common
     public function index() {
 
         if (IS_AJAX_POST) {
-            $post = \Phpcmf\Service::L('Input')->post('data', true);
+            $post = \Phpcmf\Service::L('input')->post('data', true);
             $user = \Phpcmf\Service::M()->db->table('member')->where('username', $post['username'])->get()->getRowArray();
             if (!$user) {
                 $this->_json(0, dr_lang('账号[%s]不存在', $post['username']), ['field' => 'username']);

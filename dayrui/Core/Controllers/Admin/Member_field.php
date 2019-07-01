@@ -82,10 +82,10 @@ class Member_field extends \Phpcmf\Common
 
     public function add() {
 
-        $ids = \Phpcmf\Service::L('Input')->get_post_ids();
+        $ids = \Phpcmf\Service::L('input')->get_post_ids();
         !$ids && $this->_json(0, dr_lang('你还没有选择呢'));
 
-        $gid = (int)\Phpcmf\Service::L('Input')->post('groupid');
+        $gid = (int)\Phpcmf\Service::L('input')->post('groupid');
         !$gid && $this->_json(0, dr_lang('你还没有选择用户组'));
 
         $data = \Phpcmf\Service::M()->db->table('member_setting')->where('name', 'field')->get()->getRowArray();
@@ -106,7 +106,7 @@ class Member_field extends \Phpcmf\Common
 
     public function reg_edit() {
 
-        $fid = (int)\Phpcmf\Service::L('Input')->get('id');
+        $fid = (int)\Phpcmf\Service::L('input')->get('id');
         !$fid && $this->_json(0, dr_lang('字段id不存在'));
 
         $data = \Phpcmf\Service::M()->db->table('member_setting')->where('name', 'register_field')->get()->getRowArray();
@@ -131,10 +131,10 @@ class Member_field extends \Phpcmf\Common
 
     public function del() {
 
-        $fid = (int)\Phpcmf\Service::L('Input')->get('fid');
+        $fid = (int)\Phpcmf\Service::L('input')->get('fid');
         !$fid && $this->_json(0, dr_lang('字段id不存在'));
 
-        $gid = (int)\Phpcmf\Service::L('Input')->get('gid');
+        $gid = (int)\Phpcmf\Service::L('input')->get('gid');
         !$gid && $this->_json(0, dr_lang('用户组id不存在'));
 
         $data = \Phpcmf\Service::M()->db->table('member_setting')->where('name', 'field')->get()->getRowArray();

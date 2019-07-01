@@ -78,7 +78,7 @@ class Notice extends \Phpcmf\Common
 			'list' => $list,
 			'total' => $total,
 			'param' => $param,
-			'mypages'	=> \Phpcmf\Service::L('Input')->page(\Phpcmf\Service::L('Router')->url(\Phpcmf\Service::L('Router')->class.'/'.\Phpcmf\Service::L('Router')->method), $total, 'admin')
+			'mypages'	=> \Phpcmf\Service::L('input')->page(\Phpcmf\Service::L('Router')->url(\Phpcmf\Service::L('Router')->class.'/'.\Phpcmf\Service::L('Router')->method), $total, 'admin')
 		]);
 		\Phpcmf\Service::V()->display('notice_index.html');
 	}
@@ -98,7 +98,7 @@ class Notice extends \Phpcmf\Common
 			'list' => $list,
 			'total' => $total,
 			'param' => $param,
-			'mypages'	=> \Phpcmf\Service::L('Input')->page(\Phpcmf\Service::L('Router')->url(\Phpcmf\Service::L('Router')->class.'/'.\Phpcmf\Service::L('Router')->method), $total, 'admin')
+			'mypages'	=> \Phpcmf\Service::L('input')->page(\Phpcmf\Service::L('Router')->url(\Phpcmf\Service::L('Router')->class.'/'.\Phpcmf\Service::L('Router')->method), $total, 'admin')
 		]);
 		\Phpcmf\Service::V()->display('notice_index.html');
 	}
@@ -118,7 +118,7 @@ class Notice extends \Phpcmf\Common
 			'list' => $list,
 			'total' => $total,
 			'param' => $param,
-			'mypages'	=> \Phpcmf\Service::L('Input')->page(\Phpcmf\Service::L('Router')->url(\Phpcmf\Service::L('Router')->class.'/'.\Phpcmf\Service::L('Router')->method, $param), $total, 'admin')
+			'mypages'	=> \Phpcmf\Service::L('input')->page(\Phpcmf\Service::L('Router')->url(\Phpcmf\Service::L('Router')->class.'/'.\Phpcmf\Service::L('Router')->method, $param), $total, 'admin')
 		]);
 		\Phpcmf\Service::V()->display('notice_index.html');
 	}
@@ -127,7 +127,7 @@ class Notice extends \Phpcmf\Common
 
 	public function del() {
 
-		$ids = \Phpcmf\Service::L('Input')->get_post_ids();
+		$ids = \Phpcmf\Service::L('input')->get_post_ids();
 		!$ids && $this->_json(0, dr_lang('所选数据不存在'));
 
         \Phpcmf\Service::M()->db->table('admin_notice')->whereIn('id', $ids)->delete();

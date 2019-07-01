@@ -120,7 +120,7 @@ class Module extends \Phpcmf\Common
             $this->goto_404_page('当前模块没有安装打赏插件');
         }
 
-        !$id && $id = intval(\Phpcmf\Service::L('Input')->get('id'));
+        !$id && $id = intval(\Phpcmf\Service::L('input')->get('id'));
 
         // 初始化模块
         $this->_module_init();
@@ -326,7 +326,7 @@ class Module extends \Phpcmf\Common
         $list = [];
         if (IS_API_HTTP && $data['id']) {
             // 移动端请求时
-            $pagesize = intval(\Phpcmf\Service::L('Input')->request('pagesize'));
+            $pagesize = intval(\Phpcmf\Service::L('input')->request('pagesize'));
             $tag = 'search module='.$this->module['dirname'].' id='.$data['id'].' total='.$sototal.' order='.$data['params']['order'].' catid='.$catid.' more=1 page=1 pagesize='.$pagesize.' urlrule=test';
             $rt = \Phpcmf\Service::V()->list_tag($tag);
             $list = $rt['return'];
@@ -436,12 +436,17 @@ class Module extends \Phpcmf\Common
             $data = $this->content_model->_call_show($data);
 
             // 缓存结果 
-            if ($data['uid'] != $this->uid) {
-				\Phpcmf\Service::L('cache')->init()->save($name, $data, SYS_CACHE_SHOW * 3600);
-				if (!$is_id) {
-					// 表示自定义查询，再缓存一次ID
-					\Phpcmf\Service::L('cache')->init()->save(str_replace($id, $data['id'], $name), $data, SYS_CACHE_SHOW * 3600);
-				}
+            if ($data['uid'] != $this->uid && SYS_CACHE) {
+                if ($this->member && $this->member['is_admin']) {
+                    // 管理员时不进行缓存
+                    \Phpcmf\Service::L('cache')->init()->delete($name);
+                } else {
+                    \Phpcmf\Service::L('cache')->init()->save($name, $data, SYS_CACHE_SHOW * 3600);
+                    if (!$is_id) {
+                        // 表示自定义查询，再缓存一次ID
+                        \Phpcmf\Service::L('cache')->init()->save(str_replace($id, $data['id'], $name), $data, SYS_CACHE_SHOW * 3600);
+                    }
+                }
 			}
         }
 
@@ -775,7 +780,7 @@ class Module extends \Phpcmf\Common
             $this->_json(0, '当前模块设置了访问权限，无法生成静态');
         }
 
-        $this->_Create_Category_Html(intval(\Phpcmf\Service::L('Input')->get('id')));
+        $this->_Create_Category_Html(intval(\Phpcmf\Service::L('input')->get('id')));
         exit;
 
     }
@@ -795,7 +800,7 @@ class Module extends \Phpcmf\Common
             $this->_json(0, '当前模块设置了访问权限，无法生成静态');
         }
 
-        $this->_Create_Show_Html(intval(\Phpcmf\Service::L('Input')->get('id')));
+        $this->_Create_Show_Html(intval(\Phpcmf\Service::L('input')->get('id')));
         exit;
     }
 
@@ -867,7 +872,16 @@ class Module extends \Phpcmf\Common
             foreach ($data as $t) {
 
                 // 初始化模块
-                !$this->module && $this->_module_init(APP_DIR);
+                if (!APP_DIR) {
+                    if (!$t['is_module_dirname']) {
+                        $this->module = null;
+                    } else {
+                        $this->is_module_init = false;
+                        $this->_module_init($t['is_module_dirname']);
+                    }
+                } else {
+                    $this->_module_init(APP_DIR);
+                }
 
                 $class = '';
                 if (!$this->module) {

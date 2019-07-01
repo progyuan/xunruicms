@@ -66,7 +66,7 @@ class Cash extends \Phpcmf\Table
      * */
     protected function _Save($id = 0, $data = [], $old = [], $func = null, $func2 = null) {
 
-        $post = \Phpcmf\Service::L('Input')->post('data');
+        $post = \Phpcmf\Service::L('input')->post('data');
         $post['value'] = abs(floatval($post['value']));
 
         if (!$post['value']) {

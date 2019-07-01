@@ -82,7 +82,7 @@ class Member extends \Phpcmf\Model
      */
     private function _login_log($data, $type = '') {
 
-        $ip = \Phpcmf\Service::L('Input')->ip_address();
+        $ip = \Phpcmf\Service::L('input')->ip_address();
         if (!$ip || !$data['id']) {
             return;
         }
@@ -123,13 +123,13 @@ class Member extends \Phpcmf\Model
             $del && $this->db->table('member_login')->where('uid', $data['id'])->whereIn('id', $del)->delete();
         }
 
-        $time = \Phpcmf\Service::L('Input')->get_cookie('member_login');
+        $time = \Phpcmf\Service::L('input')->get_cookie('member_login');
         if (date('Ymd') != date('Ymd', $time)) {
             // 登录后的通知
             \Phpcmf\Service::L('Notice')->send_notice('member_login', $data);
             // 登录后的钩子
             \Phpcmf\Hooks::trigger('member_login_after', $data);
-            \Phpcmf\Service::L('Input')->set_cookie('member_login', SYS_TIME, 3600*12);
+            \Phpcmf\Service::L('input')->set_cookie('member_login', SYS_TIME, 3600*12);
         }
 
     }
@@ -140,7 +140,7 @@ class Member extends \Phpcmf\Model
     public function member_uid() {
 
         // 获取本地cookie
-        $uid = (int)\Phpcmf\Service::L('Input')->get_cookie('member_uid');
+        $uid = (int)\Phpcmf\Service::L('input')->get_cookie('member_uid');
         if (!$uid) {
             return 0;
         }
@@ -163,16 +163,16 @@ class Member extends \Phpcmf\Model
 
         // 每日登录积分处理
         $value = \Phpcmf\Service::C()->_member_auth_value($member['authid'], 'login_exp');
-        if ($value && !\Phpcmf\Service::L('Input')->get_cookie('login_experience_'.$member['id'])) {
+        if ($value && !\Phpcmf\Service::L('input')->get_cookie('login_experience_'.$member['id'])) {
             $this->add_experience($member['id'], $value, dr_lang('每日登陆'), '', 'login_score_'.date('Ymd', SYS_TIME), 1);
-            \Phpcmf\Service::L('Input')->set_cookie('login_experience_'.$member['id'], 1, $time - SYS_TIME);
+            \Phpcmf\Service::L('input')->set_cookie('login_experience_'.$member['id'], 1, $time - SYS_TIME);
         }
 
         // 每日登录金币处理
         $value = \Phpcmf\Service::C()->_member_auth_value($member['authid'], 'login_score');
-        if ($value && !\Phpcmf\Service::L('Input')->get_cookie('login_score_'.$member['id'])) {
+        if ($value && !\Phpcmf\Service::L('input')->get_cookie('login_score_'.$member['id'])) {
             $this->add_score($member['id'], $value, dr_lang('每日登陆'), '', 'login_score_'.date('Ymd', SYS_TIME), 1);
-            \Phpcmf\Service::L('Input')->set_cookie('login_score_'.$member['id'], 1, $time - SYS_TIME);
+            \Phpcmf\Service::L('input')->set_cookie('login_score_'.$member['id'], 1, $time - SYS_TIME);
         }
     }
 
@@ -182,7 +182,7 @@ class Member extends \Phpcmf\Model
     public function check_member_cookie($member) {
 
         // 获取本地认证cookie
-        $cookie = \Phpcmf\Service::L('Input')->get_cookie('member_cookie');
+        $cookie = \Phpcmf\Service::L('input')->get_cookie('member_cookie');
 
         // 授权登陆时不验证
         if ($member['id'] && \Phpcmf\Service::C()->session()->get('member_auth_uid') == $member['id']) {
@@ -590,8 +590,8 @@ class Member extends \Phpcmf\Model
 
         // 存储cookie
         $expire = $remember ? 8640000 : SITE_LOGIN_TIME;
-        \Phpcmf\Service::L('Input')->set_cookie('member_uid', $data['id'], $expire);
-        \Phpcmf\Service::L('Input')->set_cookie('member_cookie', substr(md5(SYS_KEY.$data['password']), 5, 20), $expire);
+        \Phpcmf\Service::L('input')->set_cookie('member_uid', $data['id'], $expire);
+        \Phpcmf\Service::L('input')->set_cookie('member_cookie', substr(md5(SYS_KEY.$data['password']), 5, 20), $expire);
 
     }
 
@@ -643,9 +643,9 @@ class Member extends \Phpcmf\Model
      */
     public function logout() {
 
-        \Phpcmf\Service::L('Input')->set_cookie('member_uid', 0, -100000000);
-        \Phpcmf\Service::L('Input')->set_cookie('member_cookie', '', -100000000);
-        \Phpcmf\Service::L('Input')->set_cookie('admin_login_member', '', -100000000);
+        \Phpcmf\Service::L('input')->set_cookie('member_uid', 0, -100000000);
+        \Phpcmf\Service::L('input')->set_cookie('member_cookie', '', -100000000);
+        \Phpcmf\Service::L('input')->set_cookie('admin_login_member', '', -100000000);
 
         $sso = [];
         // 同步退出地址
@@ -1017,7 +1017,7 @@ class Member extends \Phpcmf\Model
         $member['spend'] = 0;
         $member['score'] = 0;
         $member['experience'] = 0;
-        $member['regip'] = (string)\Phpcmf\Service::L('Input')->ip_address();
+        $member['regip'] = (string)\Phpcmf\Service::L('input')->ip_address();
         $member['regtime'] = SYS_TIME;
         $member['randcode'] = rand(100000, 999999);
         !$member['username'] && $member['username'] = '';

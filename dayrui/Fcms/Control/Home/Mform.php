@@ -82,7 +82,7 @@ class Mform extends \Phpcmf\Table
         }
 
         // 获取父级内容
-        $this->cid = intval(\Phpcmf\Service::L('Input')->get('cid'));
+        $this->cid = intval(\Phpcmf\Service::L('input')->get('cid'));
         $this->index = $this->_Module_Row($this->cid);
         !$this->index && exit($this->_msg(0, dr_lang('模块内容【id#%s】不存在',  $this->cid)));
 
@@ -90,7 +90,7 @@ class Mform extends \Phpcmf\Table
         \Phpcmf\Service::V()->assign(\Phpcmf\Service::L('Seo')->mform_list(
             $this->form,
             $this->index,
-            max(1, (int)\Phpcmf\Service::L('Input')->get('page'))
+            max(1, (int)\Phpcmf\Service::L('input')->get('page'))
         ));
 
         \Phpcmf\Service::V()->assign([
@@ -124,7 +124,7 @@ class Mform extends \Phpcmf\Table
         );
 
         // 获取父级内容
-        $this->cid = intval(\Phpcmf\Service::L('Input')->get('cid'));
+        $this->cid = intval(\Phpcmf\Service::L('input')->get('cid'));
         $this->index = $this->_Module_Row($this->cid);
         !$this->index && exit($this->_msg(0, dr_lang('模块内容【id#%s】不存在',  $this->cid)));
 
@@ -165,7 +165,7 @@ class Mform extends \Phpcmf\Table
             return;
         }
 
-        $id = intval(\Phpcmf\Service::L('Input')->get('id'));
+        $id = intval(\Phpcmf\Service::L('input')->get('id'));
         $name = 'module_'.MOD_DIR.'_from_'.$this->form['table'].'_show_id_'.$id;
         $cache = \Phpcmf\Service::L('cache')->init()->get($name);
         if (!$cache) {
@@ -184,7 +184,14 @@ class Mform extends \Phpcmf\Table
                 $this->index,
             ];
             // 缓存结果
-            $data['uid'] != $this->uid && \Phpcmf\Service::L('cache')->init()->save($name, $cache, SYS_CACHE_SHOW * 3600);
+            if ($data['uid'] != $this->uid && SYS_CACHE) {
+                if ($this->member && $this->member['is_admin']) {
+                    // 管理员时不进行缓存
+                    \Phpcmf\Service::L('cache')->init()->delete($name);
+                } else {
+                    \Phpcmf\Service::L('cache')->init()->save($name, $cache, SYS_CACHE_SHOW * 3600);
+                }
+            }
         } else {
             list($tpl, $data, $this->cid, $this->index) = $cache;
         }
@@ -228,7 +235,14 @@ class Mform extends \Phpcmf\Table
             if (!$data) {
                 return [];
             }
-            $data['uid'] != $this->uid && \Phpcmf\Service::L('cache')->init()->save($name, $data, SYS_CACHE_SHOW * 3600);
+            if ($data['uid'] != $this->uid && SYS_CACHE) {
+                if ($this->member && $this->member['is_admin']) {
+                    // 管理员时不进行缓存
+                    \Phpcmf\Service::L('cache')->init()->delete($name);
+                } else {
+                    \Phpcmf\Service::L('cache')->init()->save($name, $data, SYS_CACHE_SHOW * 3600);
+                }
+            }
         }
 
 
@@ -280,7 +294,7 @@ class Mform extends \Phpcmf\Table
         $data[1]['author'] = $this->member['username'] ? $this->member['username'] : 'guest';
         $data[1]['cid'] = $data[0]['cid'] =  $this->cid;
         $data[1]['catid'] = $data[0]['catid'] = (int)$this->index['catid'];
-        $data[1]['inputip'] = \Phpcmf\Service::L('Input')->ip_address();
+        $data[1]['inputip'] = \Phpcmf\Service::L('input')->ip_address();
         $data[1]['inputtime'] = SYS_TIME;
         $data[1]['tableid'] = 0;
         $data[1]['displayorder'] = 0;

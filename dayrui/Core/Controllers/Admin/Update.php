@@ -31,7 +31,7 @@ class Update extends \Phpcmf\Common
 	public function index() {
 
 	    exit;
-		$page = (int)\Phpcmf\Service::L('Input')->get('page');
+		$page = (int)\Phpcmf\Service::L('input')->get('page');
 		if (!$page) {
 			$this->_admin_msg(2, '正在更新数据...',\Phpcmf\Service::L('Router')->url('update/index', array('page' => $page + 1)), 1);
 		}

@@ -44,7 +44,7 @@ class Attachment extends \Phpcmf\Common
         $data = is_file(WRITEPATH.'config/system.php') ? require WRITEPATH.'config/system.php' : [];
 
         if (IS_AJAX_POST) {
-            $post = \Phpcmf\Service::L('Input')->post('data', true);
+            $post = \Phpcmf\Service::L('input')->post('data', true);
             \Phpcmf\Service::M('System')->save_config($data,
                 [
                     'SYS_FIELD_THUMB_ATTACH' => (int)$post['SYS_FIELD_THUMB_ATTACH'],
@@ -54,14 +54,14 @@ class Attachment extends \Phpcmf\Common
                     'SYS_ATTACHMENT_PATH' => addslashes($post['SYS_ATTACHMENT_PATH']),
                 ]
             );
-            \Phpcmf\Service::M('Site')->config(SITE_ID, 'image', \Phpcmf\Service::L('Input')->post('image'));
-            \Phpcmf\Service::L('Input')->system_log('设置附件参数');
+            \Phpcmf\Service::M('Site')->config(SITE_ID, 'image', \Phpcmf\Service::L('input')->post('image'));
+            \Phpcmf\Service::L('input')->system_log('设置附件参数');
             // 自动更新缓存
             \Phpcmf\Service::M('cache')->sync_cache('');
             $this->_json(1, dr_lang('操作成功'));
         }
 
-        $page = intval(\Phpcmf\Service::L('Input')->get('page'));
+        $page = intval(\Phpcmf\Service::L('input')->get('page'));
         $site = \Phpcmf\Service::M('Site')->config(SITE_ID);
 
         \Phpcmf\Service::V()->assign([
@@ -100,7 +100,7 @@ class Attachment extends \Phpcmf\Common
 	public function add() {
 
 	    if (IS_AJAX_POST) {
-            $data = \Phpcmf\Service::L('Input')->post('data', true);
+            $data = \Phpcmf\Service::L('input')->post('data', true);
             $rt = \Phpcmf\Service::M()->table('attachment_remote')->insert([
                 'type' => intval($data['type']),
                 'name' => (string)$data['name'],
@@ -132,7 +132,7 @@ class Attachment extends \Phpcmf\Common
 	    $id = intval($_GET['id']);
 
 	    if (IS_AJAX_POST) {
-            $data = \Phpcmf\Service::L('Input')->post('data', true);
+            $data = \Phpcmf\Service::L('input')->post('data', true);
             $rt = \Phpcmf\Service::M()->table('attachment_remote')->update($id,
                 [
                     'type' => intval($data['type']),
@@ -169,11 +169,11 @@ class Attachment extends \Phpcmf\Common
 
 	public function del() {
 
-        $ids = \Phpcmf\Service::L('Input')->get_post_ids();
+        $ids = \Phpcmf\Service::L('input')->get_post_ids();
         !$ids && exit($this->_json(0, dr_lang('你还没有选择呢')));
 
         \Phpcmf\Service::M()->table('attachment_remote')->deleteAll($ids);
-        \Phpcmf\Service::L('Input')->system_log('批量删除远程附件策略: '. @implode(',', $ids));
+        \Phpcmf\Service::L('input')->system_log('批量删除远程附件策略: '. @implode(',', $ids));
         // 自动更新缓存
         \Phpcmf\Service::M('cache')->sync_cache('attachment');
         exit($this->_json(1, dr_lang('操作成功'), ['ids' => $ids]));

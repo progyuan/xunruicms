@@ -74,7 +74,7 @@ class Router
     // 获取返回时的URL
     public function get_back($uri, $param = [])
     {
-        $name = md5($_SERVER['HTTP_USER_AGENT'] . SELF . $uri . \Phpcmf\Service::C()->uid . SITE_ID . \Phpcmf\Service::L('Input')->ip_address());
+        $name = md5($_SERVER['HTTP_USER_AGENT'] . SELF . $uri . \Phpcmf\Service::C()->uid . SITE_ID . \Phpcmf\Service::L('input')->ip_address());
         $value = \Phpcmf\Service::L('cache')->init()->get($name);
         if ($value) {
             $uri = $value[0];
@@ -86,7 +86,7 @@ class Router
     // 设置返回时的URL, uri页面标识,param参数,nuri当前页优先
     public function set_back($uri, $param = [], $nuri = '')
     {
-        $name = md5($_SERVER['HTTP_USER_AGENT'] . SELF . $uri . \Phpcmf\Service::C()->uid . SITE_ID . \Phpcmf\Service::L('Input')->ip_address());
+        $name = md5($_SERVER['HTTP_USER_AGENT'] . SELF . $uri . \Phpcmf\Service::C()->uid . SITE_ID . \Phpcmf\Service::L('input')->ip_address());
         $param['page'] = $_GET['page'];
         \Phpcmf\Service::L('cache')->init()->save(
             $name,

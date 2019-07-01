@@ -81,7 +81,7 @@ class Cron extends \Phpcmf\Table
 
     public function show() {
 
-        list($tpl, $data) = $this->_Show(\Phpcmf\Service::L('Input')->get('id'));
+        list($tpl, $data) = $this->_Show(\Phpcmf\Service::L('input')->get('id'));
 
         \Phpcmf\Service::V()->assign([
             'show_error' => var_export(dr_string2array($data['error']), true),
@@ -93,7 +93,7 @@ class Cron extends \Phpcmf\Table
     // 后台删除任务
     public function del() {
         $this->_Del(
-            \Phpcmf\Service::L('Input')->get_post_ids(),
+            \Phpcmf\Service::L('input')->get_post_ids(),
             null,
             null,
             \Phpcmf\Service::M()->dbprefix($this->init['table'])
@@ -104,7 +104,7 @@ class Cron extends \Phpcmf\Table
     // 执行任务
     public function post_add() {
 
-        $ids = \Phpcmf\Service::L('Input')->get_post_ids();
+        $ids = \Phpcmf\Service::L('input')->get_post_ids();
         if ($ids) {
             foreach ($ids as $id) {
                 //\Phpcmf\Service::M('cron')->do_cron_id($id);

@@ -105,8 +105,8 @@ class Module extends \Phpcmf\Table
     protected function _Admin_Add() {
 
         $id = 0;
-        $did = intval(\Phpcmf\Service::L('Input')->get('did'));
-        $catid = intval(\Phpcmf\Service::L('Input')->get('catid'));
+        $did = intval(\Phpcmf\Service::L('input')->get('did'));
+        $catid = intval(\Phpcmf\Service::L('input')->get('catid'));
 
         $did && $this->auto_save = 0; // 草稿数据时不加载
         $draft = $did ? $this->content_model->get_draft($did) : [];
@@ -155,8 +155,8 @@ class Module extends \Phpcmf\Table
     // 后台修改内容
     protected function _Admin_Edit() {
 
-        $id = intval(\Phpcmf\Service::L('Input')->get('id'));
-        $did = intval(\Phpcmf\Service::L('Input')->get('did'));
+        $id = intval(\Phpcmf\Service::L('input')->get('id'));
+        $did = intval(\Phpcmf\Service::L('input')->get('did'));
         $did && $this->auto_save = 0; // 草稿数据时不加载
         $draft = $did ? $this->content_model->get_draft($did) : [];
 
@@ -196,13 +196,13 @@ class Module extends \Phpcmf\Table
 
         if (IS_POST) {
 
-            $ids = \Phpcmf\Service::L('Input')->get_post_ids();
+            $ids = \Phpcmf\Service::L('input')->get_post_ids();
             !$ids && $this->_json(0, dr_lang('参数不存在'));
 
-            $rt = $this->content_model->delete_to_recycle($ids, \Phpcmf\Service::L('Input')->post('note'));
+            $rt = $this->content_model->delete_to_recycle($ids, \Phpcmf\Service::L('input')->post('note'));
 
             // 写入日志
-            $rt['code'] && \Phpcmf\Service::L('Input')->system_log(dr_lang('内容模块[%s]', APP_DIR).'：放入回收站('.implode(', ', $ids).')');
+            $rt['code'] && \Phpcmf\Service::L('input')->system_log(dr_lang('内容模块[%s]', APP_DIR).'：放入回收站('.implode(', ', $ids).')');
 
             $rt['code'] ? $this->_json(1, dr_lang('所选内容已被放入回收站中')) : $this->_json(0, $rt['msg']);
         } else {
@@ -220,16 +220,16 @@ class Module extends \Phpcmf\Table
     // 后台批量保存排序值
     protected function _Admin_Order() {
         $this->_Display_Order(
-            intval(\Phpcmf\Service::L('Input')->get('id')),
-            intval(\Phpcmf\Service::L('Input')->get('value'))
+            intval(\Phpcmf\Service::L('input')->get('id')),
+            intval(\Phpcmf\Service::L('input')->get('value'))
         );
     }
 
     // 批量移动栏目
     protected function _Admin_Move() {
 
-        $ids = \Phpcmf\Service::L('Input')->get_post_ids();
-        $catid = (int)\Phpcmf\Service::L('Input')->post('catid');
+        $ids = \Phpcmf\Service::L('input')->get_post_ids();
+        $catid = (int)\Phpcmf\Service::L('input')->post('catid');
         if (!$ids) {
             $this->_json(0, dr_lang('选择内容不存在'));
         } elseif (!$catid) {
@@ -243,7 +243,7 @@ class Module extends \Phpcmf\Table
         $rt = $this->content_model->move_category($ids, $catid);
 
         // 写入日志
-        $rt['code'] && \Phpcmf\Service::L('Input')->system_log(dr_lang('内容模块[%s]', APP_DIR).'：批量修改栏目('.implode(', ', $ids).')');
+        $rt['code'] && \Phpcmf\Service::L('input')->system_log(dr_lang('内容模块[%s]', APP_DIR).'：批量修改栏目('.implode(', ', $ids).')');
 
         $rt['code'] ? $this->_json(1, dr_lang('操作成功')) : $this->_json(0, $rt['msg']);
     }
@@ -253,7 +253,7 @@ class Module extends \Phpcmf\Table
 
         if (IS_AJAX_POST) {
 
-            $catid = \Phpcmf\Service::L('Input')->post('catid');
+            $catid = \Phpcmf\Service::L('input')->post('catid');
             !$catid && $this->_json(0, dr_lang('你没有选择同步的栏目'));
 
             $syncat = [];
@@ -292,10 +292,10 @@ class Module extends \Phpcmf\Table
     // 批量推送
     protected function _Admin_Send() {
 
-        $ids = \Phpcmf\Service::L('Input')->get('ids');
+        $ids = \Phpcmf\Service::L('input')->get('ids');
         !$ids && $this->_json(0, dr_lang('所选数据不存在'));
 
-        $page = \Phpcmf\Service::L('Input')->get('page');
+        $page = \Phpcmf\Service::L('input')->get('page');
 
         if (IS_AJAX_POST) {
 
@@ -310,7 +310,7 @@ class Module extends \Phpcmf\Table
 
                 case 1: // 推送到其他栏目
 
-                    $catids = \Phpcmf\Service::L('Input')->post('catid');
+                    $catids = \Phpcmf\Service::L('input')->post('catid');
                     !$catids && $this->_json(0, dr_lang('你还没有选择同步的栏目'));
 
                     $data = \Phpcmf\Service::M()->db->table($this->init['table'])->whereIn('id', $in)->where('link_id<=0')->get()->getResultArray();
@@ -346,8 +346,8 @@ class Module extends \Phpcmf\Table
 
                 case 0: // 推荐位
 
-                    $flag = \Phpcmf\Service::L('Input')->post('flag');
-                    $clear = \Phpcmf\Service::L('Input')->post('clear');
+                    $flag = \Phpcmf\Service::L('input')->post('flag');
+                    $clear = \Phpcmf\Service::L('input')->post('clear');
                     !$clear && !$flag && $this->_json(0, dr_lang('你还没有选择推荐位'));
 
                     \Phpcmf\Service::M()->db->table($this->init['table'].'_flag')->whereIn('id', $in)->delete();
@@ -441,7 +441,7 @@ class Module extends \Phpcmf\Table
             'table' => SITE_ID.'_'.APP_DIR.'_draft',
         ]);
 
-        $this->_Del(\Phpcmf\Service::L('Input')->get_post_ids());
+        $this->_Del(\Phpcmf\Service::L('input')->get_post_ids());
     }
 
     // ===========================
@@ -475,7 +475,7 @@ class Module extends \Phpcmf\Table
         // 说明来自审核页面
         define('IS_MODULE_VERIFY', 1);
 
-        $id = intval(\Phpcmf\Service::L('Input')->get('id'));
+        $id = intval(\Phpcmf\Service::L('input')->get('id'));
         list($tpl, $data) = $this->_Post($id);
         if (!$data) {
             $this->_admin_msg(0, dr_lang('内容不存在'));
@@ -529,7 +529,7 @@ class Module extends \Phpcmf\Table
         $this->_init([
             'table' => SITE_ID.'_'.APP_DIR.'_verify',
         ]);
-        $this->_Del(\Phpcmf\Service::L('Input')->get_post_ids(), function ($rows) {
+        $this->_Del(\Phpcmf\Service::L('input')->get_post_ids(), function ($rows) {
             foreach ($rows as $t) {
                 if ($this->where_list_sql && \Phpcmf\Service::M('content', 'cqx')->is_edit($t['catid'], $t['uid'])) {
                     return dr_return_data(0, dr_lang('当前角色无权限管理此栏目'));
@@ -576,10 +576,10 @@ class Module extends \Phpcmf\Table
     // 后台定时发布
     protected function _Admin_Time_Add() {
 
-        $at = \Phpcmf\Service::L('Input')->get('at');
+        $at = \Phpcmf\Service::L('input')->get('at');
         if ($at == 'post') {
             // 批量发布
-            $ids = \Phpcmf\Service::L('Input')->get_post_ids();
+            $ids = \Phpcmf\Service::L('input')->get_post_ids();
             !$ids && $this->_json(0, dr_lang('还没有选择呢'));
             $html = [];
             foreach ($ids as $id) {
@@ -603,7 +603,7 @@ class Module extends \Phpcmf\Table
 
         // 说明来自定时页面
         define('IS_MODULE_TIME', 1);
-        $id = intval(\Phpcmf\Service::L('Input')->get('id'));
+        $id = intval(\Phpcmf\Service::L('input')->get('id'));
         list($tpl, $data) = $this->_Post($id);
         !$data && $this->_admin_msg(0, dr_lang('内容不存在'));
 
@@ -638,7 +638,7 @@ class Module extends \Phpcmf\Table
             'table' => SITE_ID.'_'.APP_DIR.'_time',
         ]);
 
-        $this->_Del(\Phpcmf\Service::L('Input')->get_post_ids());
+        $this->_Del(\Phpcmf\Service::L('input')->get_post_ids());
     }
 
     // ===========================
@@ -669,7 +669,7 @@ class Module extends \Phpcmf\Table
     // 后台删除内容
     protected function _Admin_Recycle_Del() {
 
-        $ids = \Phpcmf\Service::L('Input')->get_post_ids();
+        $ids = \Phpcmf\Service::L('input')->get_post_ids();
         !$ids && $this->_json(0, dr_lang('参数不存在'));
 
         $rt = $this->content_model->delete_for_recycle($ids);
@@ -682,7 +682,7 @@ class Module extends \Phpcmf\Table
         );
 
         // 写入日志
-        \Phpcmf\Service::L('Input')->system_log(dr_lang('内容模块[%s]', APP_DIR).'：删除('.implode(', ', $ids).')');
+        \Phpcmf\Service::L('input')->system_log(dr_lang('内容模块[%s]', APP_DIR).'：删除('.implode(', ', $ids).')');
 
         $rt['code'] ? $this->_json(1, dr_lang('操作成功')) : $this->_json(0, $rt['msg']);
     }
@@ -693,7 +693,7 @@ class Module extends \Phpcmf\Table
         // 说明来自页面
         define('IS_MODULE_RECYCLE', 1);
 
-        $id = intval(\Phpcmf\Service::L('Input')->get('id'));
+        $id = intval(\Phpcmf\Service::L('input')->get('id'));
         list($tpl, $data) = $this->_Show($id);
         !$data && $this->_admin_msg(0, dr_lang('内容不存在'));
 
@@ -714,13 +714,13 @@ class Module extends \Phpcmf\Table
     // 后台恢复内容
     protected function _Admin_Recovery() {
 
-        $ids = \Phpcmf\Service::L('Input')->get_post_ids();
+        $ids = \Phpcmf\Service::L('input')->get_post_ids();
         !$ids && $this->_json(0, dr_lang('参数不存在'));
 
         $rt = $this->content_model->recovery($ids);
 
         // 写入日志
-        \Phpcmf\Service::L('Input')->system_log(dr_lang('内容模块[%s]', APP_DIR).'：恢复('.implode(', ', $ids).')');
+        \Phpcmf\Service::L('input')->system_log(dr_lang('内容模块[%s]', APP_DIR).'：恢复('.implode(', ', $ids).')');
 
         $rt['code'] ? $this->_json(1, dr_lang('操作成功')) : $this->_json(0, $rt['msg']);
     }
@@ -731,7 +731,7 @@ class Module extends \Phpcmf\Table
     // 推荐位管理
     protected function _Admin_Flag_List() {
 
-        $flag = intval(\Phpcmf\Service::L('Input')->get('flag'));
+        $flag = intval(\Phpcmf\Service::L('input')->get('flag'));
         !$this->module['setting']['flag'][$flag] && $this->_admin_msg(0, dr_lang('推荐位不存在: '.$flag));
 
         $this->_init([
@@ -782,7 +782,7 @@ class Module extends \Phpcmf\Table
             return [];
         }
 
-        $catid = intval(\Phpcmf\Service::L('Input')->get('catid'));
+        $catid = intval(\Phpcmf\Service::L('input')->get('catid'));
 
         if (defined('IS_MODULE_VERIFY')) {
             // 判断是否来至审核
@@ -846,7 +846,7 @@ class Module extends \Phpcmf\Table
     protected function _Format_Data($id, $data, $old) {
 
         // 验证栏目
-        $catid = (int)\Phpcmf\Service::L('Input')->post('catid');
+        $catid = (int)\Phpcmf\Service::L('input')->post('catid');
         if (!$this->module['category'][$catid] && !$this->is_hcategory) {
             $this->_json(0, dr_lang('栏目[%s]不存在', $catid));
         }
@@ -885,12 +885,12 @@ class Module extends \Phpcmf\Table
      * */
     protected function _Save($id = 0, $data = [], $old = [], $func = null, $func2 = null) {
 
-        $did = intval(\Phpcmf\Service::L('Input')->get('did'));
-        $is_draft = intval(\Phpcmf\Service::L('Input')->post('is_draft'));
+        $did = intval(\Phpcmf\Service::L('input')->get('did'));
+        $is_draft = intval(\Phpcmf\Service::L('input')->post('is_draft'));
 
         // 判断定时发布时间
         if (defined('IS_MODULE_TIME')) {
-            $this->post_time = (int)strtotime(\Phpcmf\Service::L('Input')->get('posttime'));
+            $this->post_time = (int)strtotime(\Phpcmf\Service::L('input')->get('posttime'));
             if (SYS_TIME > $this->post_time) {
                 return dr_return_data(0, dr_lang('定时发布时间不正确'), $data);
             }
@@ -939,7 +939,7 @@ class Module extends \Phpcmf\Table
                     }
                     // 处理推荐位
                     $myflag = $old['myflag'];
-                    $update = \Phpcmf\Service::L('Input')->post('flag');
+                    $update = \Phpcmf\Service::L('input')->post('flag');
                     if ($update !== $myflag) {
                         // 删除旧的
                         $id && $myflag && $this->content_model->delete_flag($id, $myflag);
@@ -952,9 +952,9 @@ class Module extends \Phpcmf\Table
                     }
                     $data[1]['id'] = $id;
                     // 同步发送到其他栏目
-                    !$old && \Phpcmf\Service::L('Input')->post('sync_cat') && $this->content_model->sync_cat(\Phpcmf\Service::L('Input')->post('sync_cat'), $data);
+                    !$old && \Phpcmf\Service::L('input')->post('sync_cat') && $this->content_model->sync_cat(\Phpcmf\Service::L('input')->post('sync_cat'), $data);
                     // 同步微博
-                    !$old && \Phpcmf\Service::L('Input')->post('sync_weibo') && $this->content_model->sync_weibo($data);
+                    !$old && \Phpcmf\Service::L('input')->post('sync_weibo') && $this->content_model->sync_weibo($data);
                     return $data;
                 }
             );

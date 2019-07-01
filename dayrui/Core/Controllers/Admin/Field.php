@@ -45,8 +45,8 @@ class Field extends \Phpcmf\Common
 		$this->namespace = ''; // 设置应用目录
 		
 		// 字段来源相关表
-        \Phpcmf\Service::M('Field')->relatedid = $this->relatedid = (int)\Phpcmf\Service::L('Input')->get('rid');
-		\Phpcmf\Service::M('Field')->relatedname = $this->relatedname = \Phpcmf\Service::L('Input')->get('rname');
+        \Phpcmf\Service::M('Field')->relatedid = $this->relatedid = (int)\Phpcmf\Service::L('input')->get('rid');
+		\Phpcmf\Service::M('Field')->relatedname = $this->relatedname = \Phpcmf\Service::L('input')->get('rname');
 
 		list($ismain, $issearch, $iscategory) = $this->_set_init();
 
@@ -200,14 +200,14 @@ class Field extends \Phpcmf\Common
                 'validate' => [],
             ],
         ];
-		$page = max((int)\Phpcmf\Service::L('Input')->post('page'), 0);
+		$page = max((int)\Phpcmf\Service::L('input')->post('page'), 0);
 		$data['fieldtype'] = $data['setting']['option'] = '';
 		$data['setting']['validate']['required'] = $id = 0;
 		$data['ismain'] = 1;
 
 		// 提交表单
 		if (IS_AJAX_POST) {
-			$data = \Phpcmf\Service::L('Input')->post('data');
+			$data = \Phpcmf\Service::L('input')->post('data');
 			$field = \Phpcmf\Service::L('field')->get($data['fieldtype']);
 			if (!$field) {
 				$this->_json(0, dr_lang('字段类别不存在'));
@@ -223,7 +223,7 @@ class Field extends \Phpcmf\Common
 				$rt = \Phpcmf\Service::M('Field')->add($data, $field);
 				!$rt['code'] && $this->_json(0, dr_lang($rt['msg']));
                 $this->_cache(); // 自动更新缓存
-				\Phpcmf\Service::L('Input')->system_log('添加'.$this->name.'【'.$data['fieldname'].'】'.$data['name']); // 记录日志
+				\Phpcmf\Service::L('input')->system_log('添加'.$this->name.'【'.$data['fieldname'].'】'.$data['name']); // 记录日志
 				$this->_json(1, dr_lang('操作成功'));
 			}
 		}
@@ -240,14 +240,14 @@ class Field extends \Phpcmf\Common
 
 	public function edit() {
 
-		$id = intval(\Phpcmf\Service::L('Input')->get('id'));
-		$page = max((int)\Phpcmf\Service::L('Input')->get('page'), 0);
+		$id = intval(\Phpcmf\Service::L('input')->get('id'));
+		$page = max((int)\Phpcmf\Service::L('input')->get('page'), 0);
 		$data = \Phpcmf\Service::M()->table('field')->get($id);
 		!$data && exit($this->_json(0, dr_lang('数据#%s不存在', $id)));
 		$data['setting'] = dr_string2array($data['setting']);
 
 		if (IS_AJAX_POST) {
-			$post = \Phpcmf\Service::L('Input')->post('data');
+			$post = \Phpcmf\Service::L('input')->post('data');
 			$field = \Phpcmf\Service::L('field')->get($data['fieldtype']);
 			$rt = \Phpcmf\Service::M('Field')->edit(
 				$data,
@@ -256,7 +256,7 @@ class Field extends \Phpcmf\Common
 			);
 			!$rt['code'] && $this->_json(0, dr_lang($rt['msg']));
             $this->_cache(); // 自动更新缓存
-			\Phpcmf\Service::L('Input')->system_log('修改'.$this->name.'【'.$data['fieldname'].'】'.$data['name']); // 记录日志
+			\Phpcmf\Service::L('input')->system_log('修改'.$this->name.'【'.$data['fieldname'].'】'.$data['name']); // 记录日志
 			exit($this->_json(1, dr_lang('操作成功')));
 		}
 
@@ -276,16 +276,16 @@ class Field extends \Phpcmf\Common
 	 */
 	public function option() {
 
-		$id = (int)\Phpcmf\Service::L('Input')->get('id');
+		$id = (int)\Phpcmf\Service::L('input')->get('id');
 		$data = \Phpcmf\Service::M()->table('field')->get($id);
 		!$data && exit($this->_json(0, dr_lang('字段不存在')));
 		
-		switch (\Phpcmf\Service::L('Input')->get('op')) {
+		switch (\Phpcmf\Service::L('input')->get('op')) {
 			case 'disabled':
 				$value = $data['disabled'] == 1 ? 0 : 1;
 				\Phpcmf\Service::M()->table('field')->save($id, 'disabled', $value);
                 $this->_cache(); // 自动更新缓存
-				\Phpcmf\Service::L('Input')->system_log(($value ? '禁用' : '启用').$this->name.'【'.$data['fieldname'].'】'); // 记录日志
+				\Phpcmf\Service::L('input')->system_log(($value ? '禁用' : '启用').$this->name.'【'.$data['fieldname'].'】'); // 记录日志
 				exit($this->_json(1, dr_lang(($value ? '禁用' : '启用').'成功'), ['value' => $value]));
 				break;
 			case 'xss':
@@ -293,20 +293,20 @@ class Field extends \Phpcmf\Common
 				$data['setting']['validate']['xss'] = $value = $data['setting']['validate']['xss'] ? 0 : 1;
 				\Phpcmf\Service::M()->table('field')->save($id, 'setting', dr_array2string($data['setting']));
                 $this->_cache(); // 自动更新缓存
-				\Phpcmf\Service::L('Input')->system_log($this->name.'【'.$data['fieldname'].'】'.($value ? '开启XSS' : '关闭XSS')); // 记录日志
+				\Phpcmf\Service::L('input')->system_log($this->name.'【'.$data['fieldname'].'】'.($value ? '开启XSS' : '关闭XSS')); // 记录日志
 				exit($this->_json(1, dr_lang('操作成功'), ['value' => $value]));
 				break;
 			case 'member':
 				$value = $data['ismember'] ? 0 : 1;
 				\Phpcmf\Service::M()->table('field')->save($id, 'ismember', $value);
                 $this->_cache(); // 自动更新缓存
-				\Phpcmf\Service::L('Input')->system_log($this->name.'【'.$data['fieldname'].'】'.($value ? '前端显示' : '前端隐藏')); // 记录日志
+				\Phpcmf\Service::L('input')->system_log($this->name.'【'.$data['fieldname'].'】'.($value ? '前端显示' : '前端隐藏')); // 记录日志
 				exit($this->_json(1, dr_lang('操作成功'), ['value' => $value]));
 				break;
 			case 'save':
-				\Phpcmf\Service::M()->table('field')->save($id, 'displayorder', dr_safe_replace(\Phpcmf\Service::L('Input')->get('value')));
+				\Phpcmf\Service::M()->table('field')->save($id, 'displayorder', dr_safe_replace(\Phpcmf\Service::L('input')->get('value')));
                 $this->_cache(); // 自动更新缓存
-				\Phpcmf\Service::L('Input')->system_log('修改排序值: '. $this->name.'【'.$data['fieldname'].'】');
+				\Phpcmf\Service::L('input')->system_log('修改排序值: '. $this->name.'【'.$data['fieldname'].'】');
 				exit($this->_json(1, dr_lang('操作成功')));
 				break;
 		}
@@ -317,14 +317,14 @@ class Field extends \Phpcmf\Common
 	// 删除字段
 	public function del() {
 
-		$ids = \Phpcmf\Service::L('Input')->get_post_ids();
+		$ids = \Phpcmf\Service::L('input')->get_post_ids();
 		!$ids && exit($this->_json(0, dr_lang('你还没有选择呢')));
 
 		$rt = \Phpcmf\Service::M('Field')->delete_field($ids);
 		!$rt['code'] && exit($this->_json(0, $rt['msg']));
 
         $this->_cache(); // 自动更新缓存
-		\Phpcmf\Service::L('Input')->system_log('删除字段'. $this->name.' '. @implode(',', $ids));
+		\Phpcmf\Service::L('input')->system_log('删除字段'. $this->name.' '. @implode(',', $ids));
 
 		exit($this->_json(1, dr_lang('操作成功'), ['ids' => $ids]));
 	}
