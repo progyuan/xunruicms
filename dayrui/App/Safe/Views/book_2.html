@@ -1,0 +1,12 @@
+{template "header.html"}
+当前目录是：{WRITEPATH}<br>
+例如，我把此目录移动到新目录为：/www/cache/<br>
+
+1、把{WRITEPATH}目录移动到服务器中的/www/cache/<br>
+2、打开web目录中的{WEBPATH}index.php<br>
+3、在【执行主程序】之前加上下面的代码<br>
+<pre>
+// 此代码放到【执行主程序】代码之前<br>
+define('WRITEPATH', '/www/cache/');
+</pre>
+<br>4、赋予新目录（/www/cache/）可读写权限，如果网站正常访问就表示ok了

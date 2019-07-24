@@ -1,0 +1,33 @@
+{template "header.html"}
+{php list($cache_path, $cache_url) = dr_avatar_path();}
+<p style="white-space: normal;">
+    {$cache_path}目录是头像存放的目录，安全起见，强烈推荐进行分离
+</p>
+<p style="white-space: normal;">
+    1、将{$cache_path}目录移动到指定目录，例如/www/fenli/touxiang/
+</p>
+<p style="white-space: normal;">
+    2、再web服务器中为此目录绑定一个域名，例如：
+</p>
+<pre class="brush:html;toolbar:false">www.abc-touxiang.com</pre>
+<p style="white-space: normal;">
+    顶级域名二级域名都可以
+</p>
+<p style="white-space: normal;">
+    3、必须设置此网站不能执行php代码，以宝塔BT服务器为例的配置：
+</p>
+<p>
+    <img src="http://cdn-vipfile.tianruiyun.com/ueditor/image/201904/1556325819528169.png" title="image" alt="image.png"/>
+</p>
+<p>
+    4、进入cms后台，系统，附件设置，头像分离设置
+</p>
+<p>
+    <img src="http://cdn-vipfile.tianruiyun.com/ueditor/image/201904/1556325864196168.png" title="image" alt="image.png"/>
+</p>
+<p>
+    5、保存再更新缓存后，测试上传头像试试是否正常
+</p>
+<p>
+    <br/>
+</p>

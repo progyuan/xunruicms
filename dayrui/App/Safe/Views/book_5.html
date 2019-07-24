@@ -1,0 +1,35 @@
+{template "header.html"}
+<p>
+    {SYS_UPLOAD_PATH}目录是附件存放的目录，安全起见，强烈推荐进行分离
+</p>
+<p>
+    1、将{SYS_UPLOAD_PATH}目录移动到指定目录，例如/www/fenli/uploadfile/
+</p>
+<p>
+    2、再web服务器中为此目录绑定一个域名，例如：
+</p>
+<pre class="brush:html;toolbar:false">www.abc-file.com</pre>
+<p>
+    顶级域名二级域名都可以
+</p>
+<p>
+    3、必须设置此网站不能执行php代码，以宝塔BT服务器为例的配置：
+</p>
+<p>
+    <img src="http://cdn-vipfile.tianruiyun.com/ueditor/image/201904/1556325598852854.png" title="image" alt="image.png"/>
+</p>
+<p>
+    纯静态的目的是为了此目录下的不允许执行php文件，增强被非法写入的安全性
+</p>
+<p>
+    4、进入cms后台，系统，附件设置
+</p>
+<p>
+    <img src="http://cdn-vipfile.tianruiyun.com/ueditor/image/201904/1556325704113812.png" title="image" alt="image.png"/>
+</p>
+<p>
+    5、保存再更新缓存后，测试上传附件试试是否正常
+</p>
+<p>
+    <br/>
+</p>

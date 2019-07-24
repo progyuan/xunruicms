@@ -1,0 +1,61 @@
+{template "header.html"}
+<div class="note note-danger">
+    <p>本插件需要具备PHP技术或者服务器运维技术人员</p>
+</div>
+
+<table class="table table-striped table-bordered table-hover table-checkable dataTable">
+    <thead>
+    <tr>
+        <th width="55"> </th>
+        <th width="300"> {dr_lang('检查项目')} </th>
+        <th> {dr_lang('检查结果')} </th>
+    </tr>
+    </thead>
+    <tbody>
+    {loop $list $id $t}
+    <tr>
+        <td>
+            <span class="badge badge-success"> {$id} </span>
+        </td>
+        <td>
+            {$t}
+        </td>
+        <td id="dr_{$id}_result">
+            <img style='height:17px' src='{THEME_PATH}assets/images/loading-0.gif'>
+        </td>
+    </tr>
+    <script>
+        $(function () {
+            $.ajax({
+                type: "GET",
+                dataType: "json",
+                url: "{dr_url('safe/home/do_index')}&id={$id}",
+                success: function (json) {
+                    $('#dr_{$id}_result').html(json.msg);
+                    if (json.code == 0) {
+                        $('#dr_{$id}_result').append("&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"javascript:dr_safe_book({$id});\" class=\"btn btn-xs red\"> <i class=\"fa fa-book\"></i> 设置教程</a>");
+                        $('#dr_{$id}_result').attr('style', 'color:red');
+                    } else {
+                        $('#dr_{$id}_result').attr('style', 'color:green');
+                    }
+                },
+                error: function(HttpRequest, ajaxOptions, thrownError) {
+                    $('#dr_{$id}_result').attr('style', 'color:red');
+                    $('#dr_{$id}_result').html('系统异常，请检查错误日志');
+                }
+            });
+        });
+    </script>
+    {/loop}
+    </tbody>
+</table>
+
+<script>
+    function dr_safe_book(id) {
+        dr_iframe_show('设置教程', "{dr_url('safe/home/book_index')}&id="+id);
+    }
+</script>
+
+
+
+{template "footer.html"}
