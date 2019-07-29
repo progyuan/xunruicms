@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -391,12 +391,14 @@ class Api extends \Phpcmf\Common
 	    $data = \Phpcmf\Service::L('input')->post('data');
         $type = intval($data['type']);
         $value = $data['value'][$type];
-        !$value && $this->_json(0, dr_lang('参数不存在'));
+        if (!$value) {
+            $this->_json(0, dr_lang('参数不存在'));
+        }
 
         $rt = \Phpcmf\Service::L('upload')->save_file(
             'content',
             'this is phpcmf file-test',
-            'test.txt',
+            'test/test.txt',
             [
                 'id' => 0,
                 'url' => $data['url'],
@@ -405,8 +407,9 @@ class Api extends \Phpcmf\Common
             ]
         );
 
-        !$rt['code'] && $this->_json(0, $rt['msg']);
-        if (strpos(dr_catcher_data($rt['data']['url']), 'phpcmf') !== false) {
+        if (!$rt['code']) {
+            $this->_json(0, $rt['msg']);
+        } elseif (strpos(dr_catcher_data($rt['data']['url']), 'phpcmf') !== false) {
             $this->_json(1, dr_lang('测试成功'));
         }
 

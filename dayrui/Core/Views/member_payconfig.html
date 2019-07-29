@@ -10,9 +10,6 @@
                 <li class="{if $page==0}active{/if}">
                     <a href="#tab_0" data-toggle="tab" onclick="$('#dr_page').val('0')"> <i class="fa fa-cog"></i> {dr_lang('支付设置')} </a>
                 </li>
-                <li class="{if $page==1}active{/if}">
-                    <a href="#tab_1" data-toggle="tab" onclick="$('#dr_page').val('1')"> <i class="fa fa-credit-card"></i> {dr_lang('提现设置')} </a>
-                </li>
             </ul>
         </div>
         <div class="portlet-body">
@@ -72,28 +69,7 @@
 
                 </div>
 
-                <div class="tab-pane {if $page==1}active{/if}" id="tab_1">
 
-                    <div class="form-body">
-                        {loop $ci->member_cache['group'] $gid $t}
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">{$t.name}</label>
-                            <div class="col-md-9">
-                                <label><input class="form-control input-small" style="width:75px!important;" type="text" name="data[cash][group_price][{$gid}]" value="{intval($data['cash']['group_price'][$gid])}" /></label>
-                                <label>&nbsp;&nbsp;%，{dr_lang('提现手续费')}</label>
-                            </div>
-                        </div>
-                        {/loop}
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">{dr_lang('最小提现金额')}</label>
-                            <div class="col-md-9">
-                                <label><input class="form-control " type="text" name="data[cash][min]" value="{$data[cash]['min']}" /></label>
-                                <label>&nbsp;&nbsp;元</label>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
 
             </div>
         </div>

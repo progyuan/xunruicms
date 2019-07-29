@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -58,7 +58,7 @@ class Ip
     }
 
     /**
-     * IP地址解析
+     * IP地址解析详细地址
      */
     public function address($ip) {
         if ($ip == '127.0.0.1') {
@@ -76,7 +76,20 @@ class Ip
             return '本地';
         }
         $this->set($ip);
-        return $this->address;
+        if (preg_match('/省(.+)市/U', $this->address, $m)) {
+            return $m[1];
+        } elseif (preg_match('/(.+)市/U', $this->address, $m)) {
+            return str_replace([
+                '西藏',
+                '内蒙古',
+                '青海',
+                '宁夏',
+                '新疆'
+            ], '', $m[1]);
+        } else {
+            list($name) = explode(' ', $this->address);
+            return $name;
+        }
     }
 
     private function _full($ip) {

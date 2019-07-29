@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -63,13 +63,17 @@ class Install extends \Phpcmf\Common
 
         $step = intval($_GET['step']);
 
-        if (DR_CMS == 10) {
-            !$step && $step = 1;
-        }
-
         switch ($step) {
 
             case 0:
+                $gsname = '四川迅睿云软件开发有限公司';
+                $ls = require MYPATH.'Config/License.php';
+                if ($ls['name']) {
+                    $gsname = $ls['name'];
+                }
+                \Phpcmf\Service::V()->assign([
+                    'gsname' => $gsname,
+                ]);
                 break;
 
             case 1:

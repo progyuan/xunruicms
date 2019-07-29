@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -210,7 +210,7 @@ class Service
                 $extendFile = '';
             }
             // 都不存在就报错
-            if ( !$classFile || !is_file($classFile)) {
+            if (!$classFile || !is_file($classFile)) {
                 defined('IS_API_HTTP') && IS_API_HTTP ? \Phpcmf\Common::json(0, '类文件：'.str_replace(FCPATH, '', $classFile).'不存在') : exit('类文件：'.str_replace(FCPATH, '', $classFile).'不存在');
             }
         }

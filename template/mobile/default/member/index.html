@@ -18,14 +18,13 @@
                 <div class="user-balance-wrap">
                     <div class="user-balance">
                         <span class="user-balance-small ng-binding">{number_format($member.money, 2)}</span>
-                        <span class="user-small">元</span>
                     </div>
                     <div class="user-small">
-                        冻结 <i class="fa fa-rmb"></i> {number_format($member.freeze, 2)} 元
+                        冻结 <i class="fa fa-rmb"></i> {number_format($member.freeze, 2)}
+                        <a href="{dr_member_url('recharge/index')}" class="btn green btn-xs"> 在线充值 </a>
                     </div>
 
                     <div class="user-bottom">
-                        <a href="{dr_member_url('recharge/index')}" class="btn green btn-xs"> 在线充值 </a>
                     </div>
                 </div>
             </div>

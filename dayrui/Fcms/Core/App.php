@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -25,7 +25,7 @@
 
 
 
-// 插件公共继承类
+// 应用公共继承类
 class App extends \Phpcmf\Common
 {
 
@@ -35,9 +35,9 @@ class App extends \Phpcmf\Common
         if (!dr_is_app(APP_DIR)) {
             if (is_file(APPPATH.'Config/App.php')) {
                 $cfg = require APPPATH.'Config/App.php';
-                $this->_msg(0, dr_lang('插件[%s]未安装', $cfg['name']));
+                $this->_msg(0, dr_lang('应用[%s]未安装', $cfg['name']));
             } else {
-                $this->_msg(0, dr_lang('插件[%s]未安装', APP_DIR));
+                $this->_msg(0, dr_lang('应用[%s]未安装', APP_DIR));
             }
         }
     }

@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -1118,6 +1118,18 @@ class Member extends \Phpcmf\Model
             $id = $row['id'];
         }
 
+        // 绑定成功更新头像
+        if ($uid && $data['avatar']) {
+            list($cache_path) = dr_avatar_path();
+            if (!is_file($cache_path.$uid.'.jpg')) {
+                // 没有头像下载头像
+                $img = dr_catcher_data($data['avatar']);
+                if (strlen($img) > 20) {
+                    @file_put_contents($cache_path.$uid.'.jpg', $img);
+                }
+            }
+        }
+
         // 存储session
         \Phpcmf\Service::C()->session()->set('member_auth_'.$type.'_'.$data['oauth'], $id);
 
@@ -1249,11 +1261,11 @@ class Member extends \Phpcmf\Model
             }
         } else {
             $content = $type == 'code' ? dr_lang('您的本次验证码是: %s', $content) : $content;
-            $url = 'http://sms.dayrui.com/index.php?uid='.$config['uid'].'&key='.$config['key'].'&mobile='.$mobile.'&content='.$content.'【'.$config['note'].'】&domain='.trim(str_replace('http://', '', SITE_URL), '/').'&sitename='.SITE_NAME;
+            $url = 'http://www.xunruicms.com/index.php?s=vip&c=check&uid='.$config['uid'].'&key='.$config['key'].'&mobile='.$mobile.'&content='.$content.'【'.$config['note'].'】&domain='.trim(str_replace('http://', '', SITE_URL), '/').'&sitename='.SITE_NAME;
             $result = dr_catcher_data($url);
             if (!$result) {
-                log_message('error', '访问天睿云短信服务器失败');
-                return dr_return_data(0, dr_lang('访问天睿云短信服务器失败'));
+                log_message('error', '访问官方云短信服务器失败');
+                return dr_return_data(0, dr_lang('访问官方云短信服务器失败'));
             }
             $result = json_decode($result, true);
         }
@@ -1296,6 +1308,9 @@ class Member extends \Phpcmf\Model
      * $url	详细地址
      * $color	top颜色
      */
+    public function weixin_template($uid, $id, $data, $url = '', $color = '') {
+        return $this->wexin_template($uid, $id, $data, $url, $color);
+    }
     public function wexin_template($uid, $id, $data, $url = '', $color = '') {
 
         $oauth = $this->db->table('member_oauth')->where('uid', $uid)->where('oauth', 'wechat')->get()->getRowArray();

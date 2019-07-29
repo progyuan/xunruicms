@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -43,6 +43,13 @@ class Site_config extends \Phpcmf\Common
 		    $tj = $_POST['data']['SITE_TONGJI'];
             $post = \Phpcmf\Service::L('input')->post('data', true);
             $post['SITE_TONGJI'] = $tj;
+            if ($_POST['theme']) {
+                // 远程资源
+                $post['SITE_THEME'] = $post['SITE_THEME2'];
+            } else {
+                // 本地资源
+            }
+
             $rt = \Phpcmf\Service::M('Site')->config(SITE_ID, 'config', $post);
 			!is_array($rt) && $this->_json(0, dr_lang('网站信息(#%s)不存在', SITE_ID));
 
@@ -72,7 +79,7 @@ class Site_config extends \Phpcmf\Common
                 ]
             ),
 			'theme' => dr_get_theme(),
-			'is_theme' => (strpos($data['SITE_THEME'], 'http://') === 0 || strpos($data['SITE_THEME'], 'https://') === 0) ? 1 : 0,
+			'is_theme' => strpos($data['config']['SITE_THEME'], '/') !== false ? 1 : 0,
             'logofield' => dr_fieldform($field['logo'], $data['config']['logo']),
 			'template_path' => dr_dir_map(TPLPATH.'pc/', 1),
 		]);

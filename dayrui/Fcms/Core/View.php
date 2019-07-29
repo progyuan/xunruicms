@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -101,7 +101,7 @@ class View {
         // 可用action
         $this->action = [
             'category', 'module', 'content', 'related', 'share', 'table', 'form', 'mform', 'member', 'page',
-            'tag', 'hits', 'search', 'category_search_field', 'linkage', 'sql',
+            'tag', 'hits', 'search', 'category_search_field', 'linkage', 'sql', 'function',
             'cache', 'navigator'
         ];
 
@@ -133,6 +133,12 @@ class View {
         $this->_root = $this->get_client_home_path($this->_tname);
         $this->_dir = $this->get_client_home_path($this->_tname, $module);
     }
+
+    // 外部获取当前应用的模板路径
+    public function get_dir() {
+        return $this->_dir;
+    }
+
 
     /**
      * 强制设置为当前默认的模板目录(一般用于api外部接入)
@@ -352,7 +358,7 @@ class View {
         $fname = md5($file);
         isset($this->_include_file[$fname]) ? $this->_include_file[$fname] ++ : $this->_include_file[$fname] = 0;
 
-        $this->_include_file[$fname] > 50 && exit('模板文件 ('.str_replace(TPLPATH, '/', $file).') 标签template引用文件目录结构错误');
+        $this->_include_file[$fname] > 500 && exit('模板文件 ('.str_replace(TPLPATH, '/', $file).') 标签template引用文件目录结构错误');
 
         return $this->load_view_file($file);
     }
@@ -368,7 +374,7 @@ class View {
         $fname = md5($file);
         $this->_include_file[$fname] ++;
 
-        $this->_include_file[$fname] > 50 && exit('模板文件 ('.str_replace(TPLPATH, '/', $file).') 标签load引用文件目录结构错误');
+        $this->_include_file[$fname] > 500 && exit('模板文件 ('.str_replace(TPLPATH, '/', $file).') 标签load引用文件目录结构错误');
 
         return $this->load_view_file($file);
     }
@@ -438,7 +444,7 @@ class View {
             // PHP函数
             '#{([a-z_0-9]+)\((.*)\)}#Ui',
             // PHP常量
-            '#{([A-Z_]+)}#',
+            '#{([A-Z_0-9]+)}#',
             // PHP变量
             '#{\$(.+?)}#i',
             // 类库函数
@@ -624,7 +630,7 @@ class View {
         $params = explode(' ', $_params);
         in_array($params[0], $this->action) &&  $params[0] = 'action='.$params[0];
 
-        $sysadj = array('IN', 'BEWTEEN', 'BETWEEN', 'LIKE', 'NOTIN', 'NOT', 'BW', 'GT', 'EGT', 'LT', 'ELT');
+        $sysadj = array('IN', 'BEWTEEN', 'BETWEEN', 'LIKE', 'NOTIN', 'NOT', 'BW', 'GT', 'EGT', 'LT', 'ELT', 'DAY', 'MONTH');
         foreach ($params as $t) {
             $var = substr($t, 0, strpos($t, '='));
             $val = substr($t, strpos($t, '=') + 1);
@@ -677,6 +683,27 @@ class View {
 
         // action
         switch ($system['action']) {
+
+            case 'function': //执行函数
+
+                if (!isset($param['name'])) {
+                    return $this->_return($system['return'], 'name参数不存在');
+                } elseif (!function_exists($param['name'])) {
+                    return $this->_return($system['return'], '函数['.$param['name'].']未定义');
+                }
+
+                $name = 'function-'.md5(dr_array2string($param));
+                $cache = \Phpcmf\Service::L('cache')->init()->get($name);
+                if (!$cache) {
+                    $rt = call_user_func($param['name'], $param['param']);
+                    $cache = [
+                        $rt
+                    ];
+                    \Phpcmf\Service::L('cache')->init()->save($name, $cache, $system['cache']);
+                }
+
+                return $this->_return($system['return'], $cache, '');
+                break;
 
             case 'cache': // 系统缓存数据
 
@@ -925,7 +952,7 @@ class View {
 
                 // aninstall
                 if (!dr_is_app('tag')) {
-                    return $this->_return($system['return'], '没有安装Tag关键词库插件');
+                    return $this->_return($system['return'], '没有安装Tag关键词库应用');
                 }
 
                 $system['order'] = dr_safe_replace($system['order'] ? ($system['order'] == 'rand' ? 'RAND()' : $system['order']) : 'displayorder asc');
@@ -1531,6 +1558,7 @@ class View {
                     unset($param['where']);
                 }
 
+                $fields = $module['field']; // 主表的字段
 
                 // 排序操作
                 if (!$system['order'] && $where[0]['adj'] == 'IN' && $where[0]['name'] == 'id') {
@@ -1543,6 +1571,7 @@ class View {
 
                 // 栏目筛选
                 if ($system['catid']) {
+                    $fwhere = [];
                     if (strpos($system['catid'], ',') !== FALSE) {
                         $temp = @explode(',', $system['catid']);
                         if ($temp) {
@@ -1550,34 +1579,34 @@ class View {
                             foreach ($temp as $i) {
                                 $catids = $module['category'][$i]['child'] ? array_merge($catids, $module['category'][$i]['catids']) : array_merge($catids, array($i));
                             }
-                            $catids && $where[] = array(
-                                'adj' => 'IN',
-                                'name' => 'catid',
-                                'value' => implode(',', $catids),
-                            );
-                            unset($catids);
+                            $catids && $fwhere[] = '`'.$table.'`.`catid` IN ('.implode(',', $catids).')';
                         }
                         unset($temp);
                     } elseif ($module['category'][$system['catid']]['child']) {
-                        $where[] = array(
-                            'adj' => 'IN',
-                            'name' => 'catid',
-                            'value' => $module['category'][$system['catid']]['childids']
-                        );
+                        $catids = @explode(',', $module['category'][$system['catid']]['childids']);
+                        $fwhere[] = '`'.$table.'`.`catid` IN ('.$module['category'][$system['catid']]['childids'].')';
                     } else {
-                        $where[] = array(
-                            'adj' => '',
-                            'name' => 'catid',
-                            'value' => (int)$system['catid']
-                        );
+                        $fwhere[] = '`'.$table.'`.`catid` = '.(int)$system['catid'];
+                        $catids = [$system['catid']];
                     }
+
+                    // 副栏目判断
+                    if (isset($fields['catids']) && $fields['catids']['fieldtype'] = 'Catids') {
+                        foreach ($catids as $c) {
+                            $fwhere[] = '`'.$table.'`.`catids` LIKE "%\"'.intval($c).'\"%"';
+                        }
+                    }
+                    $fwhere && $where[] = [
+                        'adj' => 'SQL',
+                        'value' => urldecode('('.implode(' OR ', $fwhere).')')
+                    ];
+                    unset($fwhere);
+                    unset($catids);
                 }
 
-                $fields = $module['field']; // 主表的字段
                 $where[] = array( 'adj' => '', 'name' => 'status', 'value' => 9);
                 $where = $this->_set_where_field_prefix($where, $tableinfo[$table], $table, $fields); // 给条件字段加上表前缀
                 $system['field'] = $this->_set_select_field_prefix($system['field'], $tableinfo[$table], $table); // 给显示字段加上表前缀
-
 
                 // 多表组合排序
                 $_order = [];
@@ -1649,11 +1678,15 @@ class View {
                 if ($system['page']) {
                     $page = max(1, (int)$_GET['page']);
                     if ($system['catid'] && is_numeric($system['catid'])) {
-                        !$system['urlrule'] && $system['urlrule'] = \Phpcmf\Service::L('router')->category_url($module, $module['category'][$system['catid']], '{page}');
-                        if ($this->_is_mobile) {
-                            $system['pagesize'] = (int)$module['category'][$system['catid']]['setting']['template']['mpagesize'];
-                        } else {
-                            $system['pagesize'] = (int)$module['category'][$system['catid']]['setting']['template']['pagesize'];
+                        if (!$system['urlrule']) {
+                            $system['urlrule'] = \Phpcmf\Service::L('router')->category_url($module, $module['category'][$system['catid']], '{page}');
+                        }
+                        if (!$system['sbpage']) {
+                            if ($this->_is_mobile) {
+                                $system['pagesize'] = (int)$module['category'][$system['catid']]['setting']['template']['mpagesize'];
+                            } else {
+                                $system['pagesize'] = (int)$module['category'][$system['catid']]['setting']['template']['pagesize'];
+                            }
                         }
                         $first_url = \Phpcmf\Service::L('router')->category_url($module, $module['category'][$system['catid']]);
                     }
@@ -1832,6 +1865,31 @@ class View {
 
                     case 'SQL':
                         $string.= $join.' '.$t['value'];
+                        break;
+
+                    case 'DAY':
+                        if (substr($t['value'], 0, 1) == 'E') {
+                            // 当天
+                            $stime = strtotime('-'.intval(substr($t['value'], 1)).' day');
+                            $etime = strtotime(date('Y-m-d 23:59:59', $stime));
+                        } else {
+                            $stime = strtotime('-'.intval($t['value']).' day');
+                            $etime = SYS_TIME;
+                        }
+
+                        $string.= $join." {$t['name']}  BETWEEN ".strtotime(date('Y-m-d 00:00:00', $stime))." AND ".$etime;
+                        break;
+
+                    case 'MONTH':
+                        if (substr($t['value'], 0, 1) == 'E') {
+                            // 当月
+                            $stime = strtotime('-'.intval(substr($t['value'], 1)).' month');
+                            $etime = strtotime(date('Y-m', $stime).'-1  +1 month -1 day');
+                        } else {
+                            $stime = strtotime('-'.intval($t['value']).' month');
+                            $etime = SYS_TIME;
+                        }
+                        $string.= $join." {$t['name']}  BETWEEN ".strtotime(date('Y-m-01 00:00:00', $stime))." AND ".$etime;
                         break;
 
 

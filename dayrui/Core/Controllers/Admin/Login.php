@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -33,9 +33,21 @@ class Login extends \Phpcmf\Common
 		$url = $url['basename'] ? $url['basename'] :\Phpcmf\Service::L('Router')->url('home/index');
 
 		if (IS_AJAX_POST) {
-			$data = \Phpcmf\Service::L('input')->post('data', true);
+            $sn = 0;
+            if (defined('SYS_ADMIN_LOGINS') && SYS_ADMIN_LOGINS) {
+                $sn = (int)$this->session()->get('fclogin_error_sn');
+                $time = (int)$this->session()->get('fclogin_error_time');
+                if (defined('SYS_ADMIN_LOGIN_TIME') && SYS_ADMIN_LOGIN_TIME && $time && SYS_TIME - $time > (SYS_ADMIN_LOGIN_TIME * 60)) {
+                    // 超过时间了
+                    \Phpcmf\Service::C()->session()->set('fclogin_error_sn', 0);
+                    \Phpcmf\Service::C()->session()->set('fclogin_error_time', 0);
+                }
+            }
+            $data = \Phpcmf\Service::L('input')->post('data', true);
 			if (SYS_ADMIN_CODE && !\Phpcmf\Service::L('form')->check_captcha('code')) {
 				$this->_json(0, dr_lang('验证码不正确'));
+			} elseif (defined('SYS_ADMIN_LOGINS') && SYS_ADMIN_LOGINS && $sn && $sn > SYS_ADMIN_LOGINS) {
+                $this->_json(0, dr_lang('失败次数已达到%s次，已被禁止登录', SYS_ADMIN_LOGINS));
 			} elseif (empty($data['username']) || empty($data['password'])) {
 				$this->_json(0, dr_lang('账号或密码必须填写'));
 			} else {
@@ -49,6 +61,11 @@ class Login extends \Phpcmf\Common
                     \Phpcmf\Service::L('input')->system_log('登录后台成功', 1);
                     $this->_json(1, 'ok', ['sync' => $sync, 'url' => \Phpcmf\Service::L('input')->xss_clean($url)]);
                 } else {
+                    // 登录失败
+                    if (defined('SYS_ADMIN_LOGINS') && SYS_ADMIN_LOGINS) {
+                        \Phpcmf\Service::C()->session()->set('fclogin_error_sn', intval($sn) + 1);
+                        \Phpcmf\Service::C()->session()->set('fclogin_error_time', SYS_TIME);
+                    }
                     // 写入日志
                     \Phpcmf\Service::L('input')->system_log($login['msg'].'（密码'.$data['password'].'）', 1);
                     $this->_json(0, $login['msg']);
@@ -56,8 +73,10 @@ class Login extends \Phpcmf\Common
 			}
 		}
 
+        $license = require MYPATH.'Config/License.php';
 		\Phpcmf\Service::V()->assign(array(
 			'form' => dr_form_hidden(),
+			'license' => $license,
 		));
 		\Phpcmf\Service::V()->display('login.html');exit;
 	}
@@ -69,6 +88,7 @@ class Login extends \Phpcmf\Common
 	}
 
 	public function out() {
+		$this->session()->remove('uid');
 		$this->session()->remove('admin');
 		$this->session()->remove('siteid');
 		$this->_json(1, dr_lang('您已经安全退出系统了'));

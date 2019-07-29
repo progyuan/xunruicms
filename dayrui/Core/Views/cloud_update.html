@@ -29,7 +29,7 @@
                 <td>{$t.tname}</td>
                 <td>{$t.name}{if $t.type == 'app'} / {$dir}{/if}</td>
                 <td> {$t.updatetime} </td>
-                <td> <a href="javascript:dr_show_log('{$t.id}', '{$t.version}');">v{$t.version}</a> </td>
+                <td> <a href="javascript:dr_show_log('{$t.id}', '{$t.version}');">{$t.version}</a> </td>
                 <td class="dr_check_version" id="dr_row_{$dir}"></td>
             </tr>
             {php $i++;}
@@ -54,8 +54,9 @@
 <script type="text/javascript">
 
     $(function() {
-        $(".dr_check_version").html("<img style='height:17px' src='{THEME_PATH}assets/images/loading-0.gif'>");
         {loop $list $dir $t}
+        {if $t.id}
+        $("#dr_row_{$dir}").html("<img style='height:17px' src='{THEME_PATH}assets/images/loading-0.gif'>");
         $.ajax({
             type: "GET",
             dataType: "json",
@@ -71,6 +72,7 @@
                 $("#dr_row_{$dir}").html("<font color='red'>网络异常，请稍后再试</font>");
             }
         });
+        {/if}
         {/loop}
     });
 
@@ -89,7 +91,7 @@
                     var login_url = '{dr_url("cloud/login")}';
                     layer.open({
                         type: 2,
-                        title: '登录天睿云账号',
+                        title: '登录官方云账号',
                         fix:true,
                         scrollbar: false,
                         shadeClose: true,

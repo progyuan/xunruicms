@@ -22,49 +22,13 @@
                 <li class="{if $page==3}active{/if}">
                     <a href="#tab_3" data-toggle="tab" onclick="$('#dr_page').val('3')"> <i class="fa fa-code"></i> {dr_lang('分页设置')} </a>
                 </li>
-                <li class=" {if $page==9}active{/if}">
-                    <a href="#tab_9" data-toggle="tab" onclick="$('#dr_page').val('9')"> <i class="fa fa-code"></i> UCSSO </a>
-                </li>
             </ul>
         </div>
         <div class="portlet-body">
             <div class="tab-content">
 
 
-                <div class="tab-pane  {if $page==9}active{/if}" id="tab_9">
-                    <div class="form-body">
 
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">UCSSO</label>
-                            <div class="col-md-9">
-                                <input type="checkbox" name="data[config][ucsso]" value="1" {if $data['config']['ucsso']}checked{/if} data-on-text="{dr_lang('开启')}" data-off-text="{dr_lang('关闭')}" data-on-color="success" data-off-color="danger" class="make-switch" data-size="small">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">网站通信地址</label>
-                            <div class="col-md-9">
-                                <label><input readonly class="form-control input-large" type="text" value="{ROOT_URL}"/></label>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">其他通信地址</label>
-                            <div class="col-md-9">
-                                <label><textarea readonly style="height:80px" class="form-control input-large">{loop $synurl $url}
-					{if $url != ROOT_URL && $url != '/'}{$url}{PHP_EOL}{/if}
-					{/loop}</textarea></label>
-                                <span class="help-block">多站点或者绑定域名时，将这些URL复制到UCSSO中的“网站其他地址”中</span>
-
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">通信配置代码</label>
-                            <div class="col-md-9">
-                                <span style="margin-top: 8px;" class="help-block">请把UCSSO生成的通信配置代码复制到文件api/ucsso/config.php</span>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
 
                 <div class="tab-pane {if $page==0}active{/if}" id="tab_0">
                     <div class="form-body">
@@ -164,9 +128,15 @@
                 <div class="tab-pane {if $page==1}active{/if}" id="tab_1">
                     <div class="form-body">
                         <div class="form-group">
+                            <label class="col-md-2 control-label">{dr_lang('注册功能')}</label>
+                            <div class="col-md-9">
+                                <input type="checkbox" name="data[register][close]" value="1" {if $data['register']['code']}checked{/if} data-on-text="{dr_lang('关闭')}" data-off-text="{dr_lang('开启')}" data-on-color="success" data-off-color="danger" class="make-switch" data-size="small">
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <label class="col-md-2 control-label">{dr_lang('注册验证码')}</label>
                             <div class="col-md-9">
-                                <input type="checkbox" name="data[register][code]" value="1" {if $data['register']['code']}checked{/if} data-on-text="{dr_lang('是')}" data-off-text="{dr_lang('否')}" data-on-color="success" data-off-color="danger" class="make-switch" data-size="small">
+                                <input type="checkbox" name="data[register][code]" value="1" {if $data['register']['code']}checked{/if} data-on-text="{dr_lang('启用')}" data-off-text="{dr_lang('关闭')}" data-on-color="success" data-off-color="danger" class="make-switch" data-size="small">
                             </div>
                         </div>
                         <div class="form-group">

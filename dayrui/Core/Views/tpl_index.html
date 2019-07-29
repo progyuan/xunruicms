@@ -1,6 +1,11 @@
 {template "header.html"}
 <div class="note note-danger">
     <p>{dr_safe_replace_path($path)}</p>
+    {if IS_EDIT_TPL}
+    <p style="color: red;padding-top: 5px;">{dr_lang('目前已开启可编辑文件权限，此权限风险极高，建议尽快关闭')}</p>
+    {else}
+    <p style="color: green;padding-top: 5px;">{dr_lang('目前没有开启可编辑文件权限，只能查看和浏览文件')}</p>
+    {/if}
 </div>
 
 <form class="form-horizontal" role="form" id="myform">
@@ -52,9 +57,6 @@
                 {if $ci->_is_admin_auth('edit')}
                 {if $t.edit}
                 <label><a href="{$t.edit}" class="btn btn-xs green"> <i class="fa fa-edit"></i> {dr_lang('修改')}</a></label>
-                {/if}
-                {if $t.cname}
-                <label><a href="{$t.cname}" class="btn btn-xs blue"> <i class="fa fa-refresh"></i> {dr_lang('重命名')}</a></label>
                 {/if}
                 {if $t.zip}
                 <label><a href="{$t.zip}" class="btn btn-xs red"> <i class="fa fa-file-zip-o"></i> {dr_lang('解压')}</a></label>

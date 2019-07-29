@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -115,6 +115,7 @@ class Seo
                         isset($opt[$value]) && $opt[$value] && $param_value[] = $opt[$value];
                         break;
 
+                    case 'Linkages':
                     case 'Linkage':
                         $param_value[] = dr_linkagepos($myfield[$name]['setting']['option']['linkage'], $value, $data['join']);
                         break;

@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -41,7 +41,7 @@ class File extends \Phpcmf\Common
 
         // 验证用户权限
         $rt = \Phpcmf\Service::M('Attachment')->check($this->member, $this->siteid);
-        !$rt['code'] && exit(json_encode($rt));
+        !$rt['code'] && exit(dr_array2string($rt));
 
         $fid = (int)\Phpcmf\Service::L('input')->get('fid');
         $field = \Phpcmf\Service::C()->get_cache('table-field', $fid);
@@ -106,11 +106,11 @@ class File extends \Phpcmf\Common
             'file_size' => (int)$p['size'] * 1024 * 1024,
             'attachment' => \Phpcmf\Service::M('Attachment')->get_attach_info((int)$p['attachment']),
         ]);
-        !$rt['code'] && exit(json_encode($rt));
+        !$rt['code'] && exit(dr_array2string($rt));
 
         // 附件归档
         $data = \Phpcmf\Service::M('Attachment')->save_data($rt['data']);
-        !$data['code'] && exit(json_encode($data));
+        !$data['code'] && exit(dr_array2string($data));
 
         // 上传成功
         if (IS_API_HTTP) {
@@ -118,9 +118,9 @@ class File extends \Phpcmf\Common
                 'id' => $data['code'],
                 'url' => $rt['data']['url'],
             ];
-            exit(json_encode($data));
+            exit(dr_array2string($data));
         } else {
-            exit(json_encode(['code' => 1, 'msg' => dr_lang('上传成功'), 'id' => $data['code'], 'info' => $rt['data']]));
+            exit(dr_array2string(['code' => 1, 'msg' => dr_lang('上传成功'), 'id' => $data['code'], 'info' => $rt['data']]));
         }
 
     }
@@ -155,11 +155,11 @@ class File extends \Phpcmf\Common
                     'url' => $post['url'],
                     'attachment' => \Phpcmf\Service::M('Attachment')->get_attach_info((int)$p['attachment']),
                 ]);
-                !$rt['code'] && exit(json_encode($rt));
+                !$rt['code'] && exit(dr_array2string($rt));
 
                 // 附件归档
                 $att = \Phpcmf\Service::M('Attachment')->save_data($rt['data']);
-                !$att['code'] && exit(json_encode($att));
+                !$att['code'] && exit(dr_array2string($att));
 
                 $data = [
                     'id' => $att['code'],
@@ -360,11 +360,11 @@ class File extends \Phpcmf\Common
                 'content' => $content,
                 'attachment' => \Phpcmf\Service::M('Attachment')->get_attach_info((int)$p['attachment']),
             ]);
-            !$rt['code'] && exit(json_encode($rt));
+            !$rt['code'] && exit(dr_array2string($rt));
 
             // 附件归档
             $att = \Phpcmf\Service::M('Attachment')->save_data($rt['data']);
-            !$att['code'] && exit(json_encode($att));
+            !$att['code'] && exit(dr_array2string($att));
 
 
             $data = [

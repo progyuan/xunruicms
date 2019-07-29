@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -36,6 +36,7 @@ class Member_notice extends \Phpcmf\Table
             [
                 '站内消息' => ['member_notice/index', 'fa fa-bell'],
                 '发送消息' => ['member_notice/add', 'fa fa-plus'],
+                'help' => [ 669 ],
             ]
         ));
         // 表单显示名称

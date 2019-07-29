@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -390,7 +390,7 @@ class Router
         if (!$name) {
             return 'TagURL name参数为空';
         } elseif (!dr_is_app('tag')) {
-            return '关键词库插件没有安装';
+            return '关键词库应用没有安装';
         }
 
         // PC端
@@ -424,7 +424,7 @@ class Router
             $url = file_get_contents($file);
             if ($url) {
                 if (!dr_is_app('tag')) {
-                    return '关键词库插件没有安装';
+                    return '关键词库应用没有安装';
                 }
                 return $url;
             }
@@ -544,7 +544,7 @@ class Router
     {
 
         if (!dr_is_app('shang')) {
-            return '没有安装【打赏】插件';
+            return '没有安装【打赏】应用';
         }
 
         // 模块目录识别
@@ -705,7 +705,9 @@ class Router
             }
         }
 
-        $doamin && $this->_temp['domain'][] = $doamin;
+        if ($doamin) {
+            $this->_temp['domain'][] = $doamin;
+        }
 
         return str_replace($this->_temp['domain'], '', $url);
     }
@@ -714,6 +716,7 @@ class Router
      * url参数转化成数组
      */
     public function url2array($query) {
+
         if (!$query) {
             return [];
         }

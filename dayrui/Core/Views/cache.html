@@ -3,6 +3,7 @@
 <div class="note note-danger">
     <p>{dr_lang('更改系统配置之后需要重新生成一次缓存文件')}</p>
 </div>
+<div class="table-scrollable">
 <table class="table table-striped table-bordered table-hover table-checkable dataTable">
     <thead>
     <tr>
@@ -33,6 +34,7 @@
 
     </tbody>
 </table>
+</div>
 
 <script>
     function my_update_cache(id, m) {
@@ -54,7 +56,7 @@
                     }
                 },
                 error: function(HttpRequest, ajaxOptions, thrownError) {
-                    obj.html('<a href="javascript:dr_show_file_code(\'{dr_lang('查看日志')}\', \'admin.php?c=error&m=log_show\');" style="color:red">{dr_lang("系统崩溃，请将错误日志发送给官方处理")}</a>');
+                    obj.html('<a href="javascript:dr_show_file_code(\'{dr_lang('查看日志')}\', \'{dr_url('error/log_show')}\');" style="color:red">{dr_lang("系统崩溃，请将错误日志发送给官方处理")}</a>');
                 }
             });
         }
@@ -81,7 +83,7 @@
                 }
             },
             error: function(HttpRequest, ajaxOptions, thrownError) {
-                obj.html('<a href="javascript:dr_show_file_code(\'{dr_lang('查看日志')}\', \'admin.php?c=error&m=log_show\');" style="color:red">{dr_lang("系统崩溃，请将错误日志发送给官方处理")}</a>');
+                obj.html('<a href="javascript:dr_show_file_code(\'{dr_lang('查看日志')}\', \'{dr_url('error/log_show')}\');" style="color:red">{dr_lang("系统崩溃，请将错误日志发送给官方处理")}</a>');
             }
         });
     }

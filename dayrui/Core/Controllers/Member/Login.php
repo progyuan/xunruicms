@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -141,7 +141,11 @@ class Login extends \Phpcmf\Common
         } else {
             
             // 用户组判断
-            !$this->member_cache['register']['group'] && $this->_msg(0, dr_lang('系统没有可注册的用户组'));
+            if ($this->member_cache['register']['close']) {
+                $this->_msg(0, dr_lang('系统关闭了注册功能'));
+            } elseif (!$this->member_cache['register']['group']) {
+                $this->_msg(0, dr_lang('系统没有可注册的用户组'));
+            }
 
             // 验证用户组
             $groupid = (int)\Phpcmf\Service::L('input')->get('groupid');
@@ -183,7 +187,7 @@ class Login extends \Phpcmf\Common
                 // 绑定账号
                 $type = intval(\Phpcmf\Service::L('input')->get('type'));
                 if (IS_POST) {
-                    $post = \Phpcmf\Service::L('input')->post('data');
+                    $post = \Phpcmf\Service::L('input')->post('data', true);
                     !\Phpcmf\Service::L('input')->post('is_protocol') && $this->_json(0, dr_lang('你没有同意注册协议'));
                     if ($type) {
                         // 注册绑定

@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -117,7 +117,7 @@ class Module extends \Phpcmf\Common
         }
 
         if (!dr_is_app_dir('shang')) {
-            $this->goto_404_page('当前模块没有安装打赏插件');
+            $this->goto_404_page('当前模块没有安装打赏应用');
         }
 
         !$id && $id = intval(\Phpcmf\Service::L('input')->get('id'));
@@ -506,7 +506,7 @@ class Module extends \Phpcmf\Common
             'fix_html_now_url' => defined('SC_HTML_FILE') ? dr_url_prefix(\Phpcmf\Service::L('Router')->show_url($this->module, $data, $page), $this->module['dirname'], SITE_ID, \Phpcmf\Service::V()->_is_mobile == 'mobile') : '', // 修复静态下的当前url变量
         ]);
         \Phpcmf\Service::V()->module($this->module['dirname']);
-        !$rt && (\Phpcmf\Service::V()->display(isset($data['template']) && strpos($data['template'], '.html') !== FALSE ? $data['template'] : ($this->module['category'][$data['catid']]['setting']['template']['show'] ? $this->module['category'][$data['catid']]['setting']['template']['show'] : 'show.html')));
+        !$rt && (\Phpcmf\Service::V()->display(isset($data['template']) && strpos($data['template'], '.html') !== FALSE && is_file(\Phpcmf\Service::V()->get_dir().$data['template']) ? $data['template'] : ($this->module['category'][$data['catid']]['setting']['template']['show'] ? $this->module['category'][$data['catid']]['setting']['template']['show'] : 'show.html')));
         return $data;
     }
 
@@ -864,7 +864,7 @@ class Module extends \Phpcmf\Common
         $page = max(1, intval($_GET['pp']));
         $name = 'show-'.APP_DIR.'-html-file';
         $cache = \Phpcmf\Service::L('cache')->init()->get($name);
-        !$cache && $this->_json(0, '临时缓存数据缓存不存在'.$name);
+        !$cache && $this->_json(0, '临时缓存数据缓存不存在：'.$name);
 
         $data = $cache[$page];
         if ($data) {
@@ -927,7 +927,7 @@ class Module extends \Phpcmf\Common
         $name = 'category-'.($this->module['share'] ? '' : APP_DIR).'-html-file';
         $cache = \Phpcmf\Service::L('cache')->init()->get($name);
         if (!$cache) {
-            $this->_json(0, '临时缓存数据缓存不存在'.$name);
+            $this->_json(0, '临时缓存数据缓存不存在：'.$name);
         }
 
         $data = $cache[$page];

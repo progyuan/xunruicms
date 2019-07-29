@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -47,6 +47,8 @@ class System extends \Phpcmf\Common
                 'SYS_EMAIL' => $post['SYS_EMAIL'],
                 'SYS_ADMIN_LOG' => intval($post['SYS_ADMIN_LOG']),
                 'SYS_ADMIN_CODE' => intval($post['SYS_ADMIN_CODE']),
+                'SYS_ADMIN_LOGINS' => intval($post['SYS_ADMIN_LOGINS']),
+                'SYS_ADMIN_LOGIN_TIME' => intval($post['SYS_ADMIN_LOGIN_TIME']),
                 'SYS_ADMIN_PAGESIZE' => intval($post['SYS_ADMIN_PAGESIZE']),
 
                 'SYS_KEY' => $post['SYS_KEY'] == '***' ? $data['SYS_KEY'] : $post['SYS_KEY'],

@@ -194,7 +194,9 @@ class Pays extends \Phpcmf\Library\A_Field  {
             \Phpcmf\Service::L('Field')->data[$field['ismain']][$field['fieldname'].'_quantity'] = (int)$_POST[$field['fieldname']]['quantity'];
             $_field = \Phpcmf\Service::L('Form')->get_myfields();
             foreach ($field['setting']['option']['field'] as $ff) {
-                isset($_field[$ff]) && \Phpcmf\Service::L('Field')->data[$_field[$ff]['ismain']][$ff] = (string)$_POST[$field['fieldname']][$ff];
+                if (isset($_field[$ff])) {
+                    \Phpcmf\Service::L('Field')->data[$_field[$ff]['ismain']][$ff] = (string)$_POST[$field['fieldname']][$ff];
+                }
             }
 
         }
@@ -360,8 +362,8 @@ class Pays extends \Phpcmf\Library\A_Field  {
                 var tpl_value = "'.$this->_js_var($tpl_value).'";
                 var field_name = "'.$field['fieldname'].'_sku";
                 var sku_field_name = "'.$this->_js_var($sku_field_name).'";
-                var sku_field_id = '.json_encode($sku_field_id).';
-                arrayValue = '.json_encode($ovalue).';
+                var sku_field_id = '.dr_array2string($sku_field_id).';
+                arrayValue = '.dr_array2string($ovalue).';
                 </script>
                 <script type="text/javascript" src="'.ROOT_THEME_PATH.'assets/js/sku.js"></script>
                 <script type="text/javascript">
@@ -535,8 +537,8 @@ class Pays extends \Phpcmf\Library\A_Field  {
                 var tpl_value = "'.$this->_js_var($tpl_value).'";
                 var field_name = "'.$field['fieldname'].'_sku";
                 var sku_field_name = "'.$this->_js_var($sku_field_name).'";
-                var sku_field_id = '.json_encode($sku_field_id).';
-                arrayValue = '.json_encode($ovalue).';
+                var sku_field_id = '.dr_array2string($sku_field_id).';
+                arrayValue = '.dr_array2string($ovalue).';
                 </script>
                 <script type="text/javascript" src="'.ROOT_THEME_PATH.'assets/js/sku.js"></script>
                 <script type="text/javascript">

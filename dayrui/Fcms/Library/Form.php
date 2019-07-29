@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -96,7 +96,7 @@ class Form
     /**
      *
      * 验证字段格式
-     * 字段名 => [name显示名称, rule验证规则(支持正则), lenght长度]
+     * 字段名 => [name显示名称, rule验证规则(支持正则), length长度]
      * field 自定义字段配置
      * id  是否修改的条件
      **/
@@ -109,7 +109,7 @@ class Form
         if ($config) {
             foreach ($config as $name => $t) {
                 // 长度验证
-                if ($t['lenght'] && strlen($data[$name]) > $t['lenght']) {
+                if ($t['length'] && strlen($data[$name]) > $t['length']) {
                     return [[], ['name' => $name, 'error' => dr_lang('长度不规范')]];
                 }
                 // 规则验证

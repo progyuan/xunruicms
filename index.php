@@ -7,10 +7,10 @@
 declare(strict_types=1);
 header('Content-Type: text/html; charset=utf-8');
 
-// 是否是开发者模式
+// 是否是开发者模式（1开启、0关闭）
 define('IS_DEV', 0);
 
-// 是否允许后台修改模板文件
+// 是否允许后台修改模板文件（1开启、0关闭），请不要长期开启此功能
 define('IS_EDIT_TPL', 0);
 
 // 主网站目录,表示index.php文件的目录

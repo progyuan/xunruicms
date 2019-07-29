@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -210,13 +210,13 @@ class Site_member extends \Phpcmf\Common
                 foreach ($this->module['category'] as $id => $t) {
                     $c ++;
                     $mid = $t['mid'] ? $t['mid'] :'share';
-                    $this->auth[SITE_ID][$mid]['category'][$id] = $auth;
+                    $this->auth_module[SITE_ID][$mid]['category'][$id] = $auth;
                 }
             } else {
                 foreach ($catids as $id) {
                     $c ++;
                     $mid = $this->tree[$id]['mid'] ? $this->tree[$id]['mid'] :'share';
-                    $this->auth[SITE_ID][$mid]['category'][$id] = $auth;
+                    $this->auth_module[SITE_ID][$mid]['category'][$id] = $auth;
                 }
             }
 

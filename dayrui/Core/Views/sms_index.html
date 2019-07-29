@@ -1,6 +1,6 @@
 {template "header.html"}
 <div class="note note-danger">
-    <p>{dr_lang('使用天睿接口时需要到天睿网站用户中心申请短信Key')}</p>
+    <p>{dr_lang('使用官方接口时需要到官方网站用户中心申请短信Key')}</p>
 </div>
 <form action="" class="form-horizontal" method="post" name="myform" id="myform">
     {dr_form_hidden()}
@@ -28,13 +28,13 @@
                             </div>
                         </div>
                         <div class="form-group dr_0">
-                            <label class="col-md-2 control-label">天睿SMS Uid</label>
+                            <label class="col-md-2 control-label">官方SMS Uid</label>
                             <div class="col-md-9">
                                 <label><input class="form-control" type="text" name="data[uid]" value="{$data.uid}" ></label>
                             </div>
                         </div>
                         <div class="form-group dr_0">
-                            <label class="col-md-2 control-label">天睿SMS Key</label>
+                            <label class="col-md-2 control-label">官方SMS Key</label>
                             <div class="col-md-9">
                                 <input class="form-control" type="text" name="data[key]" value="{$data.key}" >
                             </div>

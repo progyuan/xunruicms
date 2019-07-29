@@ -18,7 +18,7 @@
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * */
 class Ueditor extends \Phpcmf\Library\A_Field {
@@ -94,7 +94,7 @@ class Ueditor extends \Phpcmf\Library\A_Field {
                         </div>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group hidden">
                     <label class="col-md-2 control-label">'.dr_lang('编辑器类型').'</label>
                     <div class="col-md-9" style="padding-left: 35px;">
                         <div class="radio-list">
@@ -270,7 +270,7 @@ class Ueditor extends \Phpcmf\Library\A_Field {
                                         'attachment' => \Phpcmf\Service::M('Attachment')->get_attach_info(intval($field['setting']['option']['attachment'])),
                                     ]);
                                     if ($rt['code']) {
-                                        $att = \Phpcmf\Service::M('Attachment')->save_data($rt['data'], 'editor_down_img');
+                                        $att = \Phpcmf\Service::M('Attachment')->save_data($rt['data'], 'ueditor_down_img');
                                         if ($att['code']) {
                                             // 归档成功
                                             $value = str_replace($img, $rt['data']['url'], $value);
@@ -362,11 +362,12 @@ class Ueditor extends \Phpcmf\Library\A_Field {
         // 输出
         $str = '';
 
-        $is_mini = $field['setting']['option']['mini'];
-        $is_mobile && !$is_mini && $is_mini = !$field['setting']['option']['mobile_mini'];
+        $is_mini = 0;
 
         $uri = \Phpcmf\Service::L('router')->uri();
         APP_DIR != 'member' && $uri = str_replace('member/', '', $uri);
+
+        $pagebreak = (int)$field['setting']['option']['page'] ? ', \'pagebreak\'' : '';
 
         if ($is_mini) {
             // 防止重复加载JS
@@ -447,7 +448,6 @@ class Ueditor extends \Phpcmf\Library\A_Field {
             }
 
             $tool = IS_ADMIN ? "'fullscreen', 'source', '|', " : ''; // 后台引用时显示html工具栏
-            $pagebreak = (int)$field['setting']['option']['page'] ? ', \'pagebreak\'' : '';
 
             // 编辑器模式
             if (IS_ADMIN) {

@@ -224,7 +224,7 @@
                         {loop $cbottom $a}
                         {if !$a.uri || ($a.uri && $ci->_is_admin_auth($a.uri))}
                         <li>
-                            <a href="{str_replace(array('{mid}'), array(APP_DIR), $a.url)}"> <i class="{$a.icon}"></i> {dr_lang($a.name)} </a>
+                            <a href="{str_replace('{mid}', APP_DIR, urldecode($a.url))}"> <i class="{$a.icon}"></i> {dr_lang($a.name)} </a>
                         </li>
                         {/if}
                         {/loop}

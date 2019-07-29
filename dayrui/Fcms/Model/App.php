@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -34,7 +34,7 @@ class App extends \Phpcmf\Model
 
         $path = dr_get_app_dir($dir);
         if (!is_file($path.'Config/App.php')) {
-            return dr_return_data(0, dr_lang('插件配置文件不存在'));
+            return dr_return_data(0, dr_lang('应用配置文件不存在'));
         }
 
         $config = require $path.'Config/App.php';
@@ -43,6 +43,14 @@ class App extends \Phpcmf\Model
         $rt = file_put_contents($path.'install.test', SYS_TIME);
         if (!$rt) {
             return dr_return_data(0, 'App/'.ucfirst($dir).'/程序目录无法写入');
+        }
+
+        // 安装前的判断
+        if (is_file($path.'Config/Before.php')) {
+            $rt = require $path.'Config/Before.php';
+            if (!$rt['code']) {
+                return dr_return_data(0, $rt['msg']);
+            }
         }
 
         if (is_file($path.'install.lock')) {
@@ -93,7 +101,7 @@ class App extends \Phpcmf\Model
 
         $path = dr_get_app_dir($dir);
         if (!is_file($path.'Config/App.php')) {
-            return dr_return_data(0, dr_lang('插件配置文件不存在'));
+            return dr_return_data(0, dr_lang('应用配置文件不存在'));
         }
 
         $config = require $path.'Config/App.php';

@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -76,6 +76,10 @@ class Db extends \Phpcmf\Common
         !$ids && $this->_json(0, dr_lang('没有选择表'));
 
         foreach ($ids as $table) {
+
+            if (!$table) {
+                continue;
+            }
 
             switch ($at) {
 

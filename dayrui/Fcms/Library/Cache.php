@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -64,7 +64,7 @@ class Cache {
         }
 
         $cache_file = self::parse_cache_file($key, $cache_dir); // 分析缓存文件
-        $value = json_encode($value); // 分析缓存内容
+        $value = dr_array2string($value); // 分析缓存内容
 
         // 分析缓存目录
         $cache_dir = ($cache_dir ? WRITEPATH.$cache_dir.'/' : $this->file_dir);

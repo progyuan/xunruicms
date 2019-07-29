@@ -111,7 +111,7 @@ if (! function_exists('config'))
 
 //--------------------------------------------------------------------
 
-if (! function_exists('db_connnect'))
+if (! function_exists('db_connect'))
 {
 	/**
 	 * Grabs a database connection and returns it to the user.
@@ -814,6 +814,8 @@ if (! function_exists('force_https'))
 		// Set an HSTS header
 		$response->setHeader('Strict-Transport-Security', 'max-age=' . $duration);
 		$response->redirect($uri);
+		$response->sendHeaders();
+		
 		exit();
 	}
 }

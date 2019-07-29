@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -99,7 +99,7 @@ class File {
         }
 
         $data[] = $sql;
-        file_put_contents($file, json_encode($data));
+        file_put_contents($file, dr_array2string($data));
 
         return;
     }

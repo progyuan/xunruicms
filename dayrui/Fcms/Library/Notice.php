@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -30,7 +30,7 @@
 class Notice {
 
     /**
-     * 发送通知动作
+     * 发送通知动作（按用户设置）
      *
      * $name    动作名称
      * $data    传入参数
@@ -48,6 +48,35 @@ class Notice {
             'name' => $name,
             'data' => $data,
             'config' => \Phpcmf\Service::C()->member_cache['notice'][$name],
+        ]);
+        if (!$rt['code']) {
+            log_message('error', '通知任务注册失败：'.$rt['msg']);
+        }
+
+        return;
+    }
+
+    /**
+     * 发送通知动作（按自定义位置设置）
+     *
+     * $name    动作名称
+     * $data    传入参数
+     */
+    public function send_notice_user($name, $uid, $data, $config) {
+
+        if (!$config) {
+            return; // 没有配置通知
+        }
+
+        $data['uid'] = $uid;
+        // 当前的信息变量
+        $data['sys_time'] = SYS_TIME;
+        $data['ip_address'] = \Phpcmf\Service::L('input')->ip_address_info();
+        // 加入队列并执行
+        $rt = \Phpcmf\Service::M('cron')->add_cron(SITE_ID, 'notice', [
+            'name' => $name,
+            'data' => $data,
+            'config' => $config,
         ]);
         if (!$rt['code']) {
             log_message('error', '通知任务注册失败：'.$rt['msg']);

@@ -47,7 +47,7 @@
                                             <div class="col-md-6">
                                                 <ul class="list-unstyled fc-list-row">
                                                     <!-- 调用MOD_DIR模块的指定栏目下的最新的数据,9条 -->
-                                                    {module module=MOD_DIR field=url,title catid=$c.id order=updatetime num=9}
+                                                    {module module=MOD_DIR catid=$c.id order=updatetime num=9}
                                                     <li><span class="badge badge-empty badge-success"></span> <a href="{$t.url}" class="title">{dr_strcut($t.title, 18)}</a></li>
                                                     {/module}
                                                 </ul>
@@ -55,7 +55,7 @@
                                             <div class="col-md-6">
                                                 <ul class="list-unstyled fc-list-row">
                                                     <!-- 调用MOD_DIR模块的指定栏目下的最新的数据,从第9条开始,显示9条数据 -->
-                                                    {module module=MOD_DIR field=url,title catid=$c.id order=updatetime num=9,9}
+                                                    {module module=MOD_DIR catid=$c.id order=updatetime num=9,9}
                                                     <li><span class="badge badge-empty badge-success"></span> <a href="{$t.url}" class="title">{dr_strcut($t.title, 18)}</a></li>
                                                     {/module}
                                                 </ul>
@@ -65,7 +65,7 @@
                                     <div class="col-lg-5">
                                         <div class="row">
                                             <!-- 调用MOD_DIR模块的指定栏目下带“图片”的数据 -->
-                                            {module module=MOD_DIR field=url,title,thumb thumb=1 catid=$c.id order=updatetime num=6}
+                                            {module module=MOD_DIR thumb=1 catid=$c.id order=updatetime num=6}
                                             <div class="col-sm-4">
                                                 <div class="tile-container">
                                                     <div class="tile-thumbnail">

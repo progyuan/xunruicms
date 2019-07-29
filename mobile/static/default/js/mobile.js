@@ -1037,3 +1037,17 @@ Array.prototype.shuffle = function(){this.sort(function(){return Math.random() -
 		window.CustomEvent = CustomEvent;
 	}
 })();
+
+function dr_m_top_search() {
+    $('.top-search-menu').show();
+}
+function dr_m_top_search2() {
+    $('.top-search-menu').hide();
+}
+
+function dr_m_top_category() {
+	$('.top-category-menu').show();
+}
+function dr_m_top_category2() {
+	$('.top-category-menu').hide();
+}

@@ -155,7 +155,7 @@
                                     <div class="todo-project-list">
                                         <ul class="nav nav-stacked">
                                             <!--此标签用于调用相关文章，tag=关键词1,关键词2，多个关键词,分隔，num=显示条数，field=显示字段-->
-                                            {related module=MOD_DIR field=title,url tag=$tag num=5}
+                                            {related module=MOD_DIR tag=$tag num=5}
                                             <li>
                                                 <a href="{$t.url}" title="{$t.title}">
                                                 <span class="badge fc-icon-left {$a[array_rand($a)]}"> {$key+1} </span>
@@ -167,25 +167,7 @@
                                 </div>
                             </div>
 
-                            <div class="portlet light ">
-                                <div class="portlet-title">
-                                    <div class="caption">
-                                        <span class="caption-subject font-dark bold uppercase">相关Tag</span>
-                                    </div>
 
-                                </div>
-                                <div class="portlet-body">
-                                    <div class="todo-project-list">
-                                        <div class="nav nav-stacked" style="line-height: 25px">
-                                            <!--此标签用于调用相关tag标签，tag=$tag表示与当前文章相关的,order=rand表示随机排序,num=显示条数-->
-                                            {tag tag=$tag order=rand num=10}
-                                            <a href="{$t.url}" title="点击量：{$t.hits}"><span class="badge {$a[array_rand($a)]}">{$t.name}</span></a>
-                                            {/tag}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- END PORTLET-->
                         </div>
                     </div>
                 </div>

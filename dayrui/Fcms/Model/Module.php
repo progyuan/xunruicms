@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -209,8 +209,8 @@ class Module extends \Phpcmf\Model
 
         $site = dr_string2array($module['site']);
         if (count($site) == 1 && isset($config['ftype']) && $config['ftype'] == 'module' && $is_app == 0) {
-            // 只有一个站点时，卸载需要 验证插件模块
-            return dr_return_data(0, dr_lang('此模块属于插件类型，请到[本地插件]中去卸载'));
+            // 只有一个站点时，卸载需要 验证应用模块
+            return dr_return_data(0, dr_lang('此模块属于应用类型，请到[本地应用]中去卸载'));
         }
 
         if (isset($site[SITE_ID]) && $site[SITE_ID]) {
@@ -360,8 +360,8 @@ class Module extends \Phpcmf\Model
         $module = $this->db->table('module')->where('dirname', $dir)->get()->getRowArray();
         if (!$module) {
             if (isset($config['ftype']) && $config['ftype'] == 'module' && $is_app == 0) {
-                // 首次安装模块时，验证插件模块
-                return dr_return_data(0, dr_lang('此模块属于插件类型，请到[本地插件]中去安装'));
+                // 首次安装模块时，验证应用模块
+                return dr_return_data(0, dr_lang('此模块属于应用类型，请到[本地应用]中去安装'));
             }
             $module = [
                 'site' => dr_array2string([

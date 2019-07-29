@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -31,7 +31,9 @@ class Register extends \Phpcmf\Common
     public function index() {
 
         // 验证系统是否支持注册
-        if (!$this->member_cache['register']['groupid']) {
+        if ($this->member_cache['register']['close']) {
+            $this->_msg(0, dr_lang('系统关闭了注册功能'));
+        } elseif (!$this->member_cache['register']['groupid']) {
             $this->_msg(0, dr_lang('系统没有设置默认注册的用户组'));
         } elseif (!$this->member_cache['register']['group']) {
             $this->_msg(0, dr_lang('系统没有可注册的用户组'));
@@ -65,7 +67,7 @@ class Register extends \Phpcmf\Common
         }
 
         if (IS_AJAX_POST) {
-            $post = \Phpcmf\Service::L('input')->post('data');
+            $post = \Phpcmf\Service::L('input')->post('data', true);
             if (!\Phpcmf\Service::L('input')->post('is_protocol')) {
                 $this->_json(0, dr_lang('你没有同意注册协议'));
             } elseif ($this->member_cache['register']['code']
@@ -85,7 +87,8 @@ class Register extends \Phpcmf\Common
             } elseif ($post['password'] != $post['password2']) {
                 $this->_json(0, dr_lang('确认密码不正确'), ['field' => 'password2']);
             } else {
-
+                // 注册之前的钩子
+                \Phpcmf\Hooks::trigger('member_register_before', $post);
                 // 验证操作
                 if ($this->member_cache['register']['sms']) {
                     $sms = $this->session()->get('member-register-phone-'.$post['phone']);
@@ -153,7 +156,7 @@ class Register extends \Phpcmf\Common
     public function yq() {
 
         if (!dr_is_app('yaoqing')) {
-            $this->_msg(0, dr_lang('邀请注册插件未安装'));
+            $this->_msg(0, dr_lang('邀请注册应用未安装'));
         }
 
         // 存储邀请参数

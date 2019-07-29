@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -87,17 +87,19 @@ class Check extends \Phpcmf\Common
 
 
             case '02':
-			
+
 				if (!function_exists('mb_substr')) {
                     $this->_json(0, 'PHP不支持mbstring扩展，必须开启');
                 } elseif (!function_exists('curl_init')) {
                      $this->halt('PHP不支持CURL扩展，必须开启', 0);
+                } elseif (!function_exists('imagecreatetruecolor')) {
+                     $this->halt('PHP的GD库版本太低，无法支持验证码图片', 0);
 				} elseif (!function_exists('ini_get')) {
                     $this->_json(0, '系统函数ini_get未启用，将无法获取到系统环境参数');
                 } elseif (!function_exists('gzopen')) {
-                    $this->halt('zlib扩展未启用，您将无法进行在线升级、无法下载插件等', 0);
+                    $this->halt('zlib扩展未启用，您将无法进行在线升级、无法下载应用插件等', 0);
                 } elseif (!function_exists('gzinflate')) {
-                     $this->halt('函数gzinflate未启用，您将无法进行在线升级、无法下载插件等', 0);
+                     $this->halt('函数gzinflate未启用，您将无法进行在线升级、无法下载应用插件等', 0);
                 } elseif (!function_exists('fsockopen')) {
                      $this->halt('PHP不支持fsockopen，可能充值接口无法使用、手机短信无法发送、电子邮件无法发送、一键登录无法登录等', 0);
                 } elseif (!function_exists('openssl_open')) {
@@ -118,8 +120,8 @@ class Check extends \Phpcmf\Common
                     WRITEPATH.'data/' => '无法生成系统配置文件，会导致系统配置无效',
                     $thumb_path => '无法生成缩略图缓存文件',
                     SYS_UPLOAD_PATH => '无法上传附件',
-                    APPSPATH => '无法创建模块、创建表单、下载插件',
-                    TPLPATH => '无法创建模块模板和插件模板',
+                    APPSPATH => '无法创建模块、创建表单、下载应用插件',
+                    TPLPATH => '无法创建模块模板和应用插件模板',
                 );
 
                 foreach ($dir as $path => $note) {
@@ -207,12 +209,6 @@ class Check extends \Phpcmf\Common
                 $table = $prefix.'member_paylog';
                 if (!\Phpcmf\Service::M()->db->fieldExists('site', $table)) {
                     \Phpcmf\Service::M()->query('ALTER TABLE `'.$table.'` ADD `site` INT(10) NOT NULL COMMENT \'站点\'');
-                }
-
-
-                $table = $prefix.'member_cashlog';
-                if (!\Phpcmf\Service::M()->db->fieldExists('money', $table)) {
-                    \Phpcmf\Service::M()->query('ALTER TABLE `'.$table.'` ADD `money` decimal(10,2) NOT NULL COMMENT \'到账\'');
                 }
 
                 $table = $prefix.'member_scorelog';

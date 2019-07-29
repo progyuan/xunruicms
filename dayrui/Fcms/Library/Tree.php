@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -258,7 +258,7 @@ class Tree {
                     }
                 }
                 // 选中操作
-                $t['selected'] = $id == $t['id'] ? 'selected' : '';
+                $t['selected'] = (is_array($id) ? in_array($t['id'], $id) : $id == $t['id']) ? 'selected' : '';
                 // 是否可选子栏目
                 $t['html_disabled'] = $onlysub && $t['child'] ? 1 : 0;
 

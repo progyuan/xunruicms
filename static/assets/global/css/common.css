@@ -264,6 +264,9 @@ code.form-control-static {
 .fc-form-body {
     margin:30px 0;
 }
+.fc-code img {
+    height: 32px;
+}
 .fc-code {
     border: 1px solid #c2cad8;
     border-left: 0;

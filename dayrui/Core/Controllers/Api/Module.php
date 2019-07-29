@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -97,11 +97,11 @@ class Module extends \Phpcmf\Common
     public function favorite() {
 
         if (!dr_is_app('favorite')) {
-            $this->_json(0, dr_lang('插件[模块内容收藏]未安装'));
+            $this->_json(0, dr_lang('应用[模块内容收藏]未安装'));
         }
 
         if (!in_array('favorites', \Phpcmf\Service::M('table')->get_cache_field($this->tablename)) ) {
-            $this->_json(0, dr_lang('插件[模块内容收藏]未安装到本模块[%s]', $this->dirname));
+            $this->_json(0, dr_lang('应用[模块内容收藏]未安装到本模块[%s]', $this->dirname));
         }
 
         $id = (int)\Phpcmf\Service::L('input')->get('id');
@@ -140,11 +140,11 @@ class Module extends \Phpcmf\Common
     public function is_favorite() {
 
         if (!dr_is_app('favorite')) {
-            $this->_json(0, dr_lang('插件[模块内容收藏]未安装'));
+            $this->_json(0, dr_lang('应用[模块内容收藏]未安装'));
         }
 
         if (!in_array('favorites', \Phpcmf\Service::M('table')->get_cache_field($this->tablename)) ) {
-            $this->_json(0, dr_lang('插件[模块内容收藏]未安装到本模块[%s]', $this->dirname));
+            $this->_json(0, dr_lang('应用[模块内容收藏]未安装到本模块[%s]', $this->dirname));
         }
 
         $id = (int)\Phpcmf\Service::L('input')->get('id');
@@ -166,15 +166,15 @@ class Module extends \Phpcmf\Common
     public function digg() {
 
         if (!dr_is_app('zan')) {
-            $this->_json(0, dr_lang('插件[模块内容点赞]未安装'));
+            $this->_json(0, dr_lang('应用[模块内容点赞]未安装'));
         }
 
         if (!in_array('support', \Phpcmf\Service::M('table')->get_cache_field($this->tablename)) ) {
-            $this->_json(0, dr_lang('插件[模块内容点赞]未安装到本模块[%s]', $this->dirname));
+            $this->_json(0, dr_lang('应用[模块内容点赞]未安装到本模块[%s]', $this->dirname));
         }
 
         if (!in_array('oppose', \Phpcmf\Service::M('table')->get_cache_field($this->tablename)) ) {
-            $this->_json(0, dr_lang('插件[模块内容点赞]未安装到本模块[%s]', $this->dirname));
+            $this->_json(0, dr_lang('应用[模块内容点赞]未安装到本模块[%s]', $this->dirname));
         }
 
         $id = (int)\Phpcmf\Service::L('input')->get('id');
@@ -189,7 +189,7 @@ class Module extends \Phpcmf\Common
         $field = $value ? 'support' : 'oppose';
         $table = $this->tablename.'_'.$field;
         if (!\Phpcmf\Service::M()->db->tableExists($table)) {
-            $this->_json(0, dr_lang('插件[模块内容点赞]未安装到本模块[%s]', $this->dirname));
+            $this->_json(0, dr_lang('应用[模块内容点赞]未安装到本模块[%s]', $this->dirname));
         }
 
         $result = \Phpcmf\Service::M()->db->table($table)->where('cid', $id)->where('uid', $this->uid)->get()->getRowArray();

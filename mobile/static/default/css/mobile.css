@@ -42,9 +42,14 @@ textarea{resize:none; background:inherit;}
     margin-right: 5px;
 }
 .hui-header{display:flex; width:100%; height:44px; text-align:center; top:0px; left:0px; position:fixed; z-index:99999; background:#3388FF;}
-.hui-header h1{margin:0;font-size:18px; height:44px; line-height:44px; overflow:hidden; width:100%; padding:0px 38px 0px 38px; text-align:center; font-weight:400; white-space:nowrap; text-overflow:ellipsis; color:#FFF;}
+.hui-header h1{margin:0;font-size:18px; height:44px; line-height:44px; overflow:hidden; width:78%;text-align:center; font-weight:400; white-space:nowrap; text-overflow:ellipsis; color:#FFF;}
 .hui-header + .hui-wrap{padding-top:44px;}
 #hui-back{width:44px; height:44px; font-family:"hui-font"; line-height:44px; text-align:center; flex-shrink:0;}
+#hui-member, #hui-search, #hui-cart {width:44px; height:44px;  line-height:44px; text-align:center; color: #fff; font-size: 18px; font-weight: initial;}
+#hui-cart b {
+    font-size: 12px;
+    font-weight: initial;
+}
 #hui-back:before{content:"\e6a5"; font-size:18px; color:#FFFFFF;}
 #hui-header-menu{width:44px; height:44px; line-height:44px; font-family:"hui-font"; flex-shrink:0;}
 #hui-header-menu:before{content:"\e60e"; font-size:25px; color:#FFFFFF;}
@@ -484,3 +489,120 @@ input[type="month"].hui-picker-valued:before,input[type="date"].hui-picker-value
 .hui-icons-remove:before{content:"\e656";} .hui-icons-edit:before{content:"\e600";} .hui-icons-like:before{content:"\e64a";} 
 .hui-icons-pause:before{content:"\e96b";} .hui-icons-play:before{content:"\e6b1";} .hui-icons-stop:before{content:"\e61b";} 
 .hui-icons-shopping-cart:before{content:"\e633";} .hui-icons-close:before{content:"\e617";}
+
+.hui-index-header-line {
+  height: 84px;
+}
+.category-nav {
+    display: flex;
+    width: 100%;
+    height: 40px;
+    overflow: hidden;
+    text-align: left;
+    top: 44px;
+    left: 0px;
+    position: fixed;
+    z-index: 99999;
+    background: #fff;
+    border-bottom: 1px solid #e6e9ec;
+}
+.category-nav li a {
+    color:#666;
+    font-size: 14px;
+}
+.category-nav ul {
+    width: 95%;
+    padding-top: 10px;
+}
+.category-nav li {
+    display: inline-block;
+    padding: 0px 10px 10px 10px;
+
+}
+.category-more {
+    color: #666;
+    margin-top: 5px;
+    padding-right: 10px;
+    font-size: 20px;
+}
+
+.top-category-menu .top-category-back {
+    height: 40px;
+    background: rgba(2, 2, 1, 0.12);
+    font-size: 16px;
+    padding: 8px 0px 0 10px;
+}
+.top-category-menu .top-category-back i {
+    font-size: 20px;
+}
+
+.top-category-menu a {
+    color:#666;
+}
+.top-category-menu .top-category-list .p1-nav h5 {
+    font-weight: 400;
+    font-size: 16px;
+}
+.top-category-menu .top-category-list .p1-nav {
+    clear: both;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+.top-category-menu .top-category-list .p1-nav .active {
+    color:rgba(219, 37, 14, 0.74);
+}
+.top-category-menu .top-category-list .p2-nav .active {
+    border: 1px solid rgba(219, 37, 14, 0.74);
+}
+.top-category-menu .top-category-list .p2-nav a {
+    float: left;
+    padding: 5px 10px;
+    border: 1px solid #e6e6e6;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    color: #666;
+    font-size: 12px;
+    border-radius: 5px !important;
+}
+.top-category-menu .top-category-list .p2-nav {
+    clear: both;
+    margin-bottom: 10px;
+}
+.top-category-menu .top-category-list {
+    padding: 10px;
+}
+.top-category-menu {
+    z-index: 999999;
+    position: fixed;
+    top: 44px;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    padding-bottom: 50px;
+    background: #fff;
+}
+
+
+
+.top-search-menu {
+    z-index: 999999;
+    position: fixed;
+    top: 44px;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    padding-bottom: 50px;
+    background: #fff;
+}
+.top-search-menu .top-search-list {
+    padding: 20px 20px;
+}
+.top-search-menu .top-search-back {
+    height: 40px;
+    background: rgba(2, 2, 1, 0.12);
+    font-size: 16px;
+    padding: 8px 0px 0 10px;
+}
+.top-search-menu .top-search-back i {
+    font-size: 20px;
+}

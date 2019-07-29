@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -220,10 +220,6 @@ class Pay extends \Phpcmf\Model
 
             // 订单
             case 'order':
-                return '<span class="label label-success"> '.dr_lang('订单').' </span>';
-                break;
-
-            // 订单
             case 'orders':
                 return '<span class="label label-success"> '.dr_lang('订单').' </span>';
                 break;
@@ -238,12 +234,8 @@ class Pay extends \Phpcmf\Model
                 list($rname, $rid, $fid) = explode('-', $mark);
                 switch ($rname) {
 
-                    case 'order':
-                        // 订单
-                        return '<span class="label label-success"> '.dr_lang('订单').' </span>';
-                        break;
-
                     // 订单
+                    case 'order':
                     case 'orders':
                         return '<span class="label label-success"> '.dr_lang('订单').' </span>';
                         break;
@@ -255,7 +247,12 @@ class Pay extends \Phpcmf\Model
 
                     case 'my':
                         // 二次开发
-                        return $this->my_pay_obj($rid)->paytype();
+                        $obj = $this->my_pay_obj($rid);
+                        if (method_exists($obj, 'paytype')) {
+                            return $obj->paytype();
+                        } else {
+                            return '<span class="label label-warning"> '.dr_lang('应用').' </span>';
+                        }
                         break;
 
                     case 'donation':
@@ -269,6 +266,8 @@ class Pay extends \Phpcmf\Model
                         if ($field['relatedname'] == 'module') {
                             // 模块
                             return '<span class="label label-success"> '.dr_lang('模块').' </span>';
+                        } elseif (function_exists('dr_paytype_'.$mark)) {
+                            return call_user_func('dr_paytype_'.$mark);
                         }
                         return '<span class="label label-warning"> '.dr_lang('其他').' </span>';
                         break;
@@ -313,7 +312,12 @@ class Pay extends \Phpcmf\Model
             default;
 
                 if (!$this->payname[$name]) {
-                    $this->payname[$name] = require WEBPATH.'api/pay/'.$name.'/config.php';
+                    if (is_file(WEBPATH.'api/pay/'.$name.'/config.php')) {
+                        $this->payname[$name] = require WEBPATH.'api/pay/'.$name.'/config.php';
+                    } else {
+                        return $name;
+                    }
+
                 }
 
                 if (isset($this->payname[$name]['name']) && $this->payname[$name]['name']) {
@@ -360,14 +364,22 @@ class Pay extends \Phpcmf\Model
                     case 'my':
                         // 来自二次开发
                         $obj = $this->my_pay_obj($rid);
-                        $field = $obj->get_myfield();
+                        if (method_exists($obj, 'get_myfield')) {
+                            $field = $obj->get_myfield();
+                        } else {
+                            return dr_lang('自定义类方法get_myfield未定义');
+                        }
                         if (method_exists($obj, 'pay_before')) {
                             $rt = $obj->pay_before($fid, $num, $sku, SITE_ID);
                             if ($rt) {
                                 return $rt;
                             }
                         }
-                        $value = $obj->get_price($fid, $num, $sku, SITE_ID);
+                        if (method_exists($obj, 'get_price')) {
+                            $value = $obj->get_price($fid, $num, $sku, SITE_ID);
+                        } else {
+                            return dr_lang('自定义类方法get_price未定义');
+                        }
                         break;
 
                     case 'donation':
@@ -563,14 +575,14 @@ class Pay extends \Phpcmf\Model
                         // 收款开发钩子
                         \Phpcmf\Hooks::trigger('gathering_'.$c.'_success', $row, $data);
                     }
+                    break;
                 case 'my':
                     // 来自二次开发
                     $obj = $this->my_pay_obj($b);
                     if (method_exists($obj, 'success')) {
                         $obj->success($c, $data, $d, $e);
                     }
-
-
+                    break;
             }
 
             return dr_return_data(1, dr_lang('支付成功'));
@@ -589,10 +601,14 @@ class Pay extends \Phpcmf\Model
 
             case 'my':
                 // 来自二次开发
-                $row = $this->my_pay_obj($rid)->call_url($fid, $data);
-                if ($row) {
-                    $url = $row;
+                $obj = $this->my_pay_obj($rid);
+                if (method_exists($obj, 'call_url')) {
+                    $row = $obj->call_url($fid, $data);
+                    if ($row) {
+                        $url = $row;
+                    }
                 }
+
                 break;
 
             case 'order':
@@ -689,10 +705,16 @@ class Pay extends \Phpcmf\Model
 
                     case 'my':
                         // 来自二次开发
-                        $row = $this->my_pay_obj($rid)->get_row($fid, $num, $sku, SITE_ID);
-                        if (!$row) {
-                            return dr_return_data(0, dr_lang('主题不存在'));
+                        $obj = $this->my_pay_obj($rid);
+                        if (method_exists($obj, 'get_row')) {
+                            $row = $obj->get_row($fid, $num, $sku, SITE_ID);
+                            if (!$row) {
+                                return dr_return_data(0, dr_lang('主题不存在'));
+                            }
+                        } else {
+                            return dr_return_data(0, dr_lang('类方法[get_row]未定义'));
                         }
+
                         $money = floatval($row['price']);
                         if ($money <= 0) {
                             return dr_return_data(0, dr_lang('金额不规范'));
@@ -819,114 +841,14 @@ class Pay extends \Phpcmf\Model
         return;
     }
 
-    // 提现手续费比例
-    public function cash_price($member) {
-
-        if (!$member) {
-            return 0;
-        }
-
-        $price = [];
-
-        if (\Phpcmf\Service::C()->member_cache['pay']['cash']['group_price'] && is_array(\Phpcmf\Service::C()->member_cache['pay']['cash']['group_price'])) {
-            foreach (\Phpcmf\Service::C()->member_cache['pay']['cash']['group_price'] as $gid => $value) {
-                if (in_array($gid, $member['groupid'])) {
-                    $price[] = $value;
-                }
-            }
-            if ($price) {
-                return intval(min($price));
-            }
-        }
-
-        return 0;
-    }
-
-    /// 提现申请
-    public function add_cash($post) {
-
-        if (!$this->uid || !$post) {
-            return dr_return_data(0, dr_lang('参数错误'));
-        } elseif (strlen($post['value']) > 8) {
-            return dr_return_data(0, dr_lang('金额不规范'));
-        }
-
-        // 手续费
-        $price = $this->cash_price($this->member);
-
-        $rt = $this->table('member_cashlog')->insert([
-            'uid' => $this->uid,
-            'username' => $this->member['username'],
-            'content' => dr_safe_replace($post['content']),
-            'value' => $post['value'],
-            'money' => $price ? $post['value'] - $post['value'] * ($price/100) : $post['value'],
-            'status' => 0,
-            'result' => '',
-            'paytime' => 0,
-            'inputtime' => SYS_TIME,
-        ]);
-        if (!$rt['code']) {
-            return $rt;
-        }
-
-        // 扣钱
-        $rt2 = \Phpcmf\Service::M('member')->add_freeze($this->uid, $post['value']);
-        if (!$rt2['code']) {
-            // 删除刚刚添加的数据
-            $this->table('member_cashlog')->delete($rt['code']);
-        }
-
-        return $rt;
-    }
-
-    // 提现申请处理拒绝
-    public function cash_fail($id, $post, $old) {
-
-        $this->table('member_cashlog')->update($id, [
-            'result' => $post['result'],
-            'status' => 1, // 拒绝
-        ]);
-        // 取消冻结资金
-        return \Phpcmf\Service::M('member')->cancel_freeze($old['uid'], $old['value']);
-    }
-
-    // 提现申请处理成功
-    public function cash_successs($id, $post, $old) {
-
-        // 增加消费量 并移除冻结资金
-        $rt = \Phpcmf\Service::M('member')->use_freeze($old['uid'], $old['value']);
-        if (!$rt['code']) {
-            return $rt;
-        }
-
-        // 标识申请成功
-        $this->table('member_cashlog')->update($id, [
-            'result' => $post['result'],
-            'status' => 2, // 成功
-        ]);
-
-        // 增加消费记录
-        return $this->add_paylog([
-            'uid' => $old['uid'],
-            'username' => $old['username'],
-            'touid' => $old['uid'],
-            'tousername' => $old['username'],
-            'mid' => 'cash',
-            'title' => dr_lang('现金提现'),
-            'value' => -$old['value'],
-            'type' => 'finecms',
-            'status' => 1,
-            'url' => '',
-            'result' => $post['result'],
-            'paytime' => SYS_TIME,
-            'inputtime' => SYS_TIME,
-        ]);
-    }
-
 
     // 获取二次开发对象
     public function my_pay_obj($name) {
         list($app, $class) = explode('_', $name);
+        $classFile = dr_get_app_dir($app).'models/'.ucfirst($class).'.php';
+        if (!is_file($classFile)) {
+            return;
+        }
         return \Phpcmf\Service::M($class, $app);
     }
 

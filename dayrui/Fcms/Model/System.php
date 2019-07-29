@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -40,6 +40,8 @@ class System extends \Phpcmf\Model
 
         'SYS_KEY' => '安全密匙',
         'SYS_HTTPS'	=> 'https模式',
+        'SYS_ADMIN_LOGINS'	=> '登录失败N次后，系统将锁定登录',
+        'SYS_ADMIN_LOGIN_TIME'	=> '登录失败锁定后在x分钟内禁止登录',
 
         'SYS_ATTACHMENT_DB'	    => '附件归属开启模式',
         'SYS_ATTACHMENT_PATH'	=> '附件上传路径',

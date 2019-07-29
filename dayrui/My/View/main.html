@@ -25,18 +25,25 @@
             </div>
             <div class="portlet-body">
 
-                <ul class="use-info" style="margin:-10px 0 30px 10px;">
+                <ul class="use-info" style="margin:-10px 0 30px 10px;height: 100px;">
                     <li>
                         <span>框架版本：</span>
-                        <a target="_blank" href="http://www.tpcmf.com/">v{$cmf_version}</a>
+                        <a target="_blank" href="http://www.xunruicms.com/">{$cmf_version}</a>
                         <a id="dr_cmf_update" href="{dr_url('cloud/update')}" style="margin-left: 10px;display: none" class="badge badge-danger badge-roundless">  </a>
+                    </li>
+
+
+
+                    <li>
+                        <span>官方网站：</span>
+                        <a><a target="_blank" href="http://www.xunruicms.com/" style="margin-right: 10px;">www.xunruicms.com</a>
                     </li>
 
                     <li>
                         <span>技术支持：</span>
-                        <a target="_blank" href="http://www.tpcmf.com/" style="margin-right: 10px;">官方网站</a>
-                        <a target="_blank" href="http://help.phpcmf.net/" style="margin-right: 10px;">使用文档</a>
-                        <a target="_blank" href="http://www.wendacms.com/tpcmf/" style="margin-right: 10px;">产品论坛</a>
+
+                        <a target="_blank" href="http://help.xunruicms.com/" style="margin-right: 10px;">使用文档</a>
+                        <a target="_blank" href="http://www.xunruicms.com/wenda/" style="margin-right: 10px;">产品论坛</a>
                         <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=f0fbe4240aec09f99a7949701235c8cde6809f96ad9ee44775da41418632a105" style="margin-right: 10px;">用户QQ群</a>
                     </li>
 
@@ -124,38 +131,39 @@
             <div class="portlet-body">
 
                 <div class="scroller">
-                <?php $notice = \Phpcmf\Service::M('auth')->admin_notice(12);?>
-                {if !$notice}
-                <div style="padding-top: 30px;padding-bottom: 30px;text-align: center;color: #d7d8da;"> {dr_lang('无任何提醒')} </div>
-                {else}
-                <ul class="feeds" style="padding-bottom: 20px">
-                    {loop $notice $t}
-                    <li>
-                        <div class="col1" style="padding-top: 2px;padding-left: 3px;">
-                            <div class="cont">
-                                <div class="cont-col1 user-avatar">
-                                    <a href="{dr_url('api/notice', array('id' => $t.id))}"><img style="height: 25px!important;" src="{dr_avatar($t.uid)}" /></a>
-                                </div>
-                                <div class="cont-col2">
-                                    <div class="desc"><a href="{dr_url('api/notice', array('id' => $t.id))}">{$t.msg}</a></div>
+                    <?php $notice = \Phpcmf\Service::M('auth')->admin_notice(12);?>
+                    {if !$notice}
+                    <div style="padding-top: 30px;padding-bottom: 30px;text-align: center;color: #d7d8da;"> {dr_lang('无任何提醒')} </div>
+                    {else}
+                    <ul class="feeds" style="padding-bottom: 20px">
+                        {loop $notice $t}
+                        <li>
+                            <div class="col1" style="padding-top: 2px;padding-left: 3px;">
+                                <div class="cont">
+                                    <div class="cont-col1 user-avatar">
+                                        <a href="{dr_url('api/notice', array('id' => $t.id))}"><img style="height: 25px!important;" src="{dr_avatar($t.uid)}" /></a>
+                                    </div>
+                                    <div class="cont-col2">
+                                        <div class="desc"><a href="{dr_url('api/notice', array('id' => $t.id))}">{$t.msg}</a></div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col2">
-                            <div class="date"> {dr_fdate($t.inputtime)} </div>
-                        </div>
-                    </li>
-                    {/loop}
-                </ul>
-                {/if}
+                            <div class="col2">
+                                <div class="date"> {dr_fdate($t.inputtime)} </div>
+                            </div>
+                        </li>
+                        {/loop}
+                    </ul>
+                    {/if}
 
+                </div>
             </div>
-        </div>
+
+
 
 
     </div>
 
-</div>
 
 
 
@@ -172,6 +180,7 @@
                 }
             }
         });
+
     });
 </script>
 

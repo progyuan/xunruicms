@@ -276,7 +276,7 @@ class Baidu {
         }
 
         $opt = array();
-        $opt['acl'] = "public-write";
+        $opt['acl'] = "public-read";
         $opt['curlopts'] = array(CURLOPT_CONNECTTIMEOUT => 10, CURLOPT_TIMEOUT => 1800);
 
         $object = $this->filename;
@@ -288,7 +288,7 @@ class Baidu {
         $opt [self::METHOD] = 'PUT';
         if (isset ( $opt ['acl'] )) {
             if (in_array ( $opt ['acl'], self::$ACL_TYPES )) {
-                $this->set_header_into_opt ( "x-bs-acl", $opt ['acl'], $opt );
+                $this->set_header_into_opt ( "x-bce-acl", $opt ['acl'], $opt );
             } else {
                 return dr_return_data(0, 'Invalid acl string, it should be acl_type');
             }
@@ -297,7 +297,6 @@ class Baidu {
         if (isset ( $opt ['filename'] )) {
             $this->set_header_into_opt ( "Content-Disposition", 'attachment; filename=' . $opt ['filename'], $opt );
         }
-
 
         $response = $this->authenticate ( $opt );
         if ($response->status == 200) {
@@ -309,7 +308,8 @@ class Baidu {
                 'md5' => $md5,
             ]);
         } else {
-            return dr_return_data(0, 'error');
+            $rt = dr_string2array($response->body);
+            return dr_return_data(0, $rt['message'] ? $rt['message'] : 'error');
         }
     }
 

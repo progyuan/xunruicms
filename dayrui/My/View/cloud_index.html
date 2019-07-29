@@ -1,6 +1,6 @@
 {template "header.html"}
 <div class="note note-danger">
-    <p><a href="http://www.tpcmf.com/news/26.html" target="_blank">TPCMF框架SDID: {$license_sn}</a></p>
+    <p>迅睿CMS终身免费开源</p>
 </div>
 <form class="form-horizontal" role="form" id="myform">
 <div class="row">
@@ -8,7 +8,7 @@
         <div class="portlet light bordered">
             <div class="portlet-title">
                 <div class="caption">
-                    <span class="caption-subject font-green sbold ">TPCMF框架</span>
+                    <span class="caption-subject font-green sbold ">迅睿CMS</span>
                 </div>
 
             </div>
@@ -18,31 +18,31 @@
                     <div class="form-group">
                         <label class="col-md-3 control-label">{dr_lang('框架版本')}</label>
                         <div class="col-md-9">
-                            <div class="form-control-static"><a href="{dr_url('cloud/update')}">v{$cmf_version.version}</a></div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-md-3 control-label">{dr_lang('更新时间')}</label>
-                        <div class="col-md-9">
-                            <div class="form-control-static">{$cmf_version.updatetime}</div>
+                            <div class="form-control-static"><a href="{dr_url('cloud/update')}">{$cmf_version.version}（{$cmf_version.updatetime}）</a></div>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-md-3 control-label">{dr_lang('原创作者')}</label>
                         <div class="col-md-9">
-                            <div class="form-control-static"><a href="http://www.tianruiyun.com/index.php?s=vip&c=go&m=zqq" target="_blank">PHP码农</a></div>
+                            <div class="form-control-static"><a href="javascript:dr_show_info('联络邮件：finecms@qq.com<br>程序问题或功能建议问题请发送到本邮箱');">PHP码农</a></div>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-md-3 control-label">{dr_lang('官方网站')}</label>
                         <div class="col-md-9">
-                            <div class="form-control-static"><a href="http://www.tpcmf.com" target="_blank">www.tpcmf.com</a></div>
+                            <div class="form-control-static"><a href="http://www.xunruicms.com" target="_blank">www.xunruicms.com</a></div>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-md-3 control-label">{dr_lang('产品论坛')}</label>
                         <div class="col-md-9">
-                            <div class="form-control-static"><a href="http://www.wendacms.com/tpcmf/" target="_blank">www.wendacms.com</a></div>
+                            <div class="form-control-static"><a href="http://www.xunruicms.com/wenda/" target="_blank">wenda.xunruicms.com</a></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-3 control-label">{dr_lang('漏洞上报')}</label>
+                        <div class="col-md-9">
+                            <div class="form-control-static">finecms@qq.com</div>
                         </div>
                     </div>
                     <div class="form-group">

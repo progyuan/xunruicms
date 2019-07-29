@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -64,6 +64,23 @@ class Upload
         $this->notallowed = ['php', 'asp', 'jsp', 'aspx', 'exe', 'sh'];
     }
 
+    // 安全验证
+    private function _safe_check($data) {
+
+        $data = strtolower($data);
+        if (strpos($data, '<?php') !== false) {
+            return dr_return_data(0, dr_lang('此文件不安全，禁止上传'));
+        } elseif (strpos($data, 'eval(') !== false) {
+            return dr_return_data(0, dr_lang('此文件不安全，禁止上传'));
+        } elseif (strpos($data, '.php') !== false) {
+            return dr_return_data(0, dr_lang('此文件不安全，禁止上传'));
+        } elseif (strpos($data, 'base64_decode(') !== false) {
+            return dr_return_data(0, dr_lang('此文件不安全，禁止上传'));
+        }
+
+        return dr_return_data(1, 'ok');
+    }
+
     /**
      * 上传文件
      */
@@ -85,18 +102,20 @@ class Upload
         $file_ext = $this->_file_ext($file['name']); // 扩展名
         $file_name = $this->_file_name($file['name']); // 文件实际名字
 
-        // 文件大小限制
+        // 安全验证
+        $rt = $this->_safe_check(file_get_contents($file["tmp_name"]));
+        if (!$rt['code']) {
+            return dr_return_data(0, $rt['msg']);
+        }
+
         if ($file['size'] > $config['file_size']) {
+            // 文件大小限制
             return dr_return_data(0, $this->error['ERROR_SIZE_EXCEED']. ' '.($config['file_size']/1024/1024).'MB');
-        }
-
-        // 检查是文件格式
-        if ($config['file_exts'][0] != '*' && !in_array($file_ext, $config['file_exts'])) {
+        } elseif ($config['file_exts'][0] != '*' && !in_array($file_ext, $config['file_exts'])) {
+            // 检查是文件格式
             return dr_return_data(0, $this->error['ERROR_TYPE_NOT_ALLOWED'] . $file_ext);
-        }
-
-        // 检查系统保留文件格式
-        if (in_array($file_ext, $this->notallowed)) {
+        } elseif (in_array($file_ext, $this->notallowed)) {
+            // 检查系统保留文件格式
             return dr_return_data(0, $this->error['ERROR_SYSTEM_TYPE_NOT_ALLOWED']);
         }
 
@@ -157,6 +176,11 @@ class Upload
         }
 
         $file_ext = $this->_file_ext($file['name']); // 扩展名
+        // 安全验证
+        $rt = $this->_safe_check(file_get_contents($file["tmp_name"]));
+        if (!$rt['code']) {
+            return dr_return_data(0, $rt['msg']);
+        }
 
         // 检查是文件格式
         if ($config['file_exts'][0] != '*' && !in_array($file_ext, $config['file_exts'])) {
@@ -184,6 +208,11 @@ class Upload
         if (!$data) {
             log_message('error', '服务器无法下载文件：'.$config['url']);
             return dr_return_data(0, dr_lang('文件下载失败'));
+        }
+        // 安全验证
+        $rt = $this->_safe_check($data);
+        if (!$rt['code']) {
+            return dr_return_data(0, $rt['msg']);
         }
 
         $name = substr(md5(SYS_TIME), rand(0, 20), 15); // 随机新名字
@@ -237,6 +266,12 @@ class Upload
     public function base64_image($config) {
 
         $data = $config['content'];
+
+        // 安全验证
+        $rt = $this->_safe_check($data);
+        if (!$rt['code']) {
+            return dr_return_data(0, $rt['msg']);
+        }
 
         $name = substr(md5(SYS_TIME), rand(0, 20), 15); // 随机新名字
         $file_ext = $config['ext'] ? $config['ext'] : 'jpg'; // 扩展名

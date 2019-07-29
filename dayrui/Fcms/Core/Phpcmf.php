@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -116,7 +116,6 @@ abstract class Common extends \CodeIgniter\Controller
             //&& !in_array(DOMAIN_NAME, $client) // 当前域名不存在于客户端中时
             && $this->site_info[SITE_ID]['SITE_AUTO'] // 开启自动识别跳转
         ) {
-
             if (isset($_COOKIE['is_mobile'])) {
                 // 表示来自切换,不跳转
                 $is_mobile = false;
@@ -172,8 +171,20 @@ abstract class Common extends \CodeIgniter\Controller
         define('THEME_PATH', (SYS_THEME_ROOT ? SITE_URL : ROOT_URL).'static/'); // 系统风格
         define('ROOT_THEME_PATH', ROOT_URL.'static/'); // 系统风格绝对路径
 
-        define('HOME_THEME_PATH', (SYS_THEME_ROOT ? SITE_URL : ROOT_URL).'static/'.SITE_THEME.'/'); // 站点风格
-        define('MOBILE_THEME_PATH', SITE_MURL.'static/'.SITE_THEME.'/'); // 移动端站点风格
+        if (strpos(SITE_THEME, '/') !== false) {
+            // 远程资源
+            define('HOME_THEME_PATH', SITE_THEME); // 站点风格
+            define('MOBILE_THEME_PATH', SITE_THEME); // 移动端站点风格
+        } else {
+            // 本地资源
+            define('HOME_THEME_PATH', (SYS_THEME_ROOT ? SITE_URL : ROOT_URL).'static/'.SITE_THEME.'/'); // 站点风格
+            if (!defined('IS_MOBILE') && ($this->_is_mobile() && $this->site_info[SITE_ID]['SITE_AUTO'])) {
+                // 当开启自适应移动端，没有绑定域名时
+                define('MOBILE_THEME_PATH', SITE_URL.'mobile/static/'.SITE_THEME.'/'); // 移动端站点风格
+            } else {
+                define('MOBILE_THEME_PATH', SITE_MURL.'static/'.SITE_THEME.'/'); // 移动端站点风格
+            }
+        }
 
         // 本地附件上传目录和地址
         if (SYS_ATTACHMENT_PATH
@@ -194,17 +205,19 @@ abstract class Common extends \CodeIgniter\Controller
         }
 
         // 设置终端模板
+        $is_auto_mobile_page = 0;
         if (defined('IS_CLIENT')) {
-            define('CLIENT_URL', dr_http_prefix($this->get_cache('site', SITE_ID, 'client', IS_CLIENT)).'/');
+            // 存在自定义终端
+            define('CLIENT_URL', dr_http_prefix($this->get_cache('site', SITE_ID, 'client', IS_CLIENT)) . '/');
             \Phpcmf\Service::V()->init(defined('IS_CLIENT_TPL') && IS_CLIENT_TPL ? IS_CLIENT_TPL : IS_CLIENT);
+        } elseif (defined('IS_MOBILE') || ($this->_is_mobile() && $this->site_info[SITE_ID]['SITE_AUTO'])) {
+            // 移动端模板 // 开启自动识别移动端
+            \Phpcmf\Service::V()->init('mobile');
+            $is_auto_mobile_page = 1;
         } else {
+            // 默认情况下pc模板
             define('CLIENT_URL', SITE_URL);
             \Phpcmf\Service::V()->init('pc');
-        }
-
-        // 移动端模板
-        if (defined('IS_MOBILE')) {
-            \Phpcmf\Service::V()->init('mobile');
         }
 
         // 用户系统
@@ -221,10 +234,12 @@ abstract class Common extends \CodeIgniter\Controller
             // 默认域名
             define('MEMBER_URL', (\Phpcmf\Service::IS_PC() ? SITE_URL : SITE_MURL).(defined('MEMBER_PAGE') && MEMBER_PAGE ? MEMBER_PAGE : 'index.php?s=member'));
         }
+
         // 加载UCSSO客户端
+        /*
         if ($this->member_cache['config']['ucsso'] && is_file(ROOTPATH.'api/ucsso/config.php')) {
             include ROOTPATH.'api/ucsso/client.php';
-        }
+        }*/
 
         // 网站常量
         define('SITE_ICP', $this->get_cache('site', SITE_ID, 'config', 'SITE_ICP'));
@@ -266,7 +281,9 @@ abstract class Common extends \CodeIgniter\Controller
         }
 
         // 判断网站是否关闭
-        !IS_ADMIN && $this->site_info[SITE_ID]['SITE_CLOSE'] && (!$this->member || !$this->member['is_admin']) && exit($this->_msg(0, $this->get_cache('site', SITE_ID, 'config', 'SITE_CLOSE_MSG')));
+        if (!IS_ADMIN && $this->site_info[SITE_ID]['SITE_CLOSE'] && (!$this->member || !$this->member['is_admin'])) {
+            $this->_msg(0, $this->get_cache('site', SITE_ID, 'config', 'SITE_CLOSE_MSG'));
+        }
 
         if (IS_ADMIN) {
             // 开启session
@@ -343,10 +360,14 @@ abstract class Common extends \CodeIgniter\Controller
         \Phpcmf\Service::M('member')->init_member($this->member);
 
         // 判断网站访问权限
-        !IS_ADMIN && !IS_MEMBER && APP_DIR != 'api' && !dr_member_auth($this->member_authid, $this->member_cache['auth_site'][SITE_ID]['home']) && exit( $this->_msg(0, dr_lang('您的用户组无权限访问站点')));
+        if (!IS_ADMIN && !IS_MEMBER && APP_DIR != 'api' && !dr_member_auth($this->member_authid, $this->member_cache['auth_site'][SITE_ID]['home'])) {
+            $this->_msg(0, dr_lang('您的用户组无权限访问站点'));
+        }
 
         // 账户被锁定
-        !IS_ADMIN && $this->member && $this->member['is_lock'] && exit($this->_msg(0, dr_lang('账号被锁定')));
+        if (!IS_ADMIN && $this->member && $this->member['is_lock']) {
+            $this->_msg(0, dr_lang('账号被锁定'));
+        }
 
         \Phpcmf\Service::V()->assign([
             'member' => $this->member,
@@ -400,6 +421,20 @@ abstract class Common extends \CodeIgniter\Controller
         $this->session->start();
 
         return $this->session;
+    }
+
+    /**
+     * 缓存页面
+     */
+    protected function cachePage(int $time) {
+        if (isset($this->site_info[SITE_ID]['SITE_CLOSE']) && $this->site_info[SITE_ID]['SITE_CLOSE']) {
+            // 网站关闭状态时不进行缓存页面
+            return;
+        } elseif (!$this->site_info[SITE_ID]['SITE_MOBILE'] && $this->site_info[SITE_ID]['SITE_AUTO']) {
+            // 没有绑定移动端域名，开启了自动识别，不进行缓存
+            return;
+        }
+        parent::cachePage($time);
     }
 
     /**
@@ -468,7 +503,7 @@ abstract class Common extends \CodeIgniter\Controller
      */
     public function _json($code, $msg, $data = []){
 
-        echo json_encode(dr_return_data($code, $msg, $data));exit;
+        echo dr_array2string(dr_return_data($code, $msg, $data));exit;
     }
 
     /**
@@ -480,9 +515,9 @@ abstract class Common extends \CodeIgniter\Controller
         !$callback && $callback = 'callback';
 
         if (IS_API_HTTP) {
-            echo json_encode(dr_return_data($code, $msg, $data));exit;
+            echo dr_array2string(dr_return_data($code, $msg, $data));exit;
         } else {
-            echo $callback.'('.json_encode(dr_return_data($code, $msg, $data)).')';exit;
+            echo $callback.'('.dr_array2string(dr_return_data($code, $msg, $data)).')';exit;
         }
     }
 
@@ -870,7 +905,7 @@ abstract class Common extends \CodeIgniter\Controller
 
         // 格式验证
         if (!dr_is_app('httpapi')) {
-            $this->_json(0, '没有安装[API接口]插件');
+            $this->_json(0, '没有安装[API接口]应用');
         } elseif (!$appid || !$appsecret) {
             $this->_json(0, 'AppID和AppSecret值为空');
         } elseif (strtoupper($this->get_cache('api_auth', $appid)) != strtoupper($appsecret)) {
@@ -912,10 +947,11 @@ abstract class Common extends \CodeIgniter\Controller
         if (is_file(APPPATH.'Config/Cbottom.php')) {
             $data = require APPPATH.'Config/Cbottom.php';
         }
-        $local = dr_dir_map(APPSPATH, 1);
+        $local = dr_dir_map(dr_get_app_list(), 1);
         foreach ($local as $dir) {
-            if (is_file(APPSPATH.$dir.'/install.lock') && is_file(APPSPATH.$dir.'/Config/Cbottom.php')) {
-                $_clink = require APPSPATH.ucfirst($dir).'/Config/Cbottom.php';
+            $path = dr_get_app_dir($dir);
+            if (is_file($path.'install.lock') && is_file($path.'Config/Cbottom.php')) {
+                $_clink = require $path.'Config/Cbottom.php';
                 if ($_clink) {
                     $data = $data + $_clink;
                 }
@@ -926,7 +962,7 @@ abstract class Common extends \CodeIgniter\Controller
     }
 
     /**
-     * 天睿短信接口查询
+     * 官方短信接口查询
      */
     protected function _api_sms_info() {
 
@@ -936,7 +972,7 @@ abstract class Common extends \CodeIgniter\Controller
             $this->_json(0, dr_lang('uid或者key不能为空'));
         }
 
-        $url = "http://sms.tianruiyun.com/index.php?c=check&uid={$uid}&key={$key}";
+        $url = "http://www.xunruicms.com/index.php?s=vip&c=check&uid={$uid}&key={$key}";
         $data = dr_catcher_data($url);
 
         $this->_json(1, $data);
@@ -947,7 +983,7 @@ abstract class Common extends \CodeIgniter\Controller
 
         if (is_file(CMSPATH.'Config/Version.php')) {
             $v = require CMSPATH.'Config/Version.php';
-            $json = dr_catcher_data('http://www.phpcmf.net/version.php?action=new&id=1&v='.$v['version']);
+            $json = dr_catcher_data('http://www.xunruicms.com/version.php?action=new&id=1&v='.$v['version']);
             exit($json);
         }
 
@@ -961,7 +997,7 @@ abstract class Common extends \CodeIgniter\Controller
 
         if (is_file(MYPATH.'Config/Version.php')) {
             $v = require MYPATH.'Config/Version.php';
-            $json = dr_catcher_data('http://www.phpcmf.net/version.php?action=new&id='.$v['id'].'&v='.$v['version']);
+            $json = dr_catcher_data('http://www.xunruicms.com/version.php?action=new&id='.$v['id'].'&v='.$v['version']);
             exit($json);
         }
 
@@ -972,7 +1008,7 @@ abstract class Common extends \CodeIgniter\Controller
     protected function _api_search_help() {
 
         $kw = dr_safe_replace(\Phpcmf\Service::L('input')->get('kw'));
-        $url = 'http://help.phpcmf.net/index.php?c=search&keyword='.$kw.'&is_php7cms=cms';
+        $url = 'http://help.xunruicms.com/index.php?c=search&keyword='.$kw.'&is_phpcmf=cms';
         \Phpcmf\Service::V()->assign([
             'url' => $url,
         ]);

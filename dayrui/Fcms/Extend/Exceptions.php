@@ -93,7 +93,7 @@ class Exceptions extends \CodeIgniter\Debug\Exceptions
             $msg .= '文件: '.$file."\n";
             $msg .= '行号: '.$line."\n";
             $msg .= '错误: '.str_replace(PHP_EOL, '<br>', $message)."\n";
-            $msg .= json_encode(['html' => $is_kz ? var_export($_POST, true) : self::highlightFile($file, $line)])."\n";
+            $msg .= json_encode(['html' => $is_kz ? var_export($_POST, true) : self::highlightFile($file, $line)], JSON_UNESCAPED_UNICODE)."\n";
             $msg .= '地址: '.FC_NOW_URL."\n";
             $msg .= '来源: '.$_SERVER['HTTP_REFERER']."\n";
             $msg .= "\n\n";

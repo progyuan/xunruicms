@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -103,7 +103,7 @@ class Html
         $data = dr_save_bfb_data($data);
         !dr_count($data) && \Phpcmf\Service::C()->_json(0, '没有可用生成的栏目数据');
 
-        $name = 'category-'.$app.'-html-file';
+        $name = 'category-'.($app ? $app : '').'-html-file';
         \Phpcmf\Service::L('cache')->init()->save($name, $data, 3600);
         \Phpcmf\Service::C()->_json(1, $name);
     }

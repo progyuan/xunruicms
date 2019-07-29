@@ -489,25 +489,6 @@ CREATE TABLE IF NOT EXISTS `{dbprefix}member_paylog` (
   KEY `inputtime` (`inputtime`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='用户支付记录表';
 
-DROP TABLE IF EXISTS `{dbprefix}member_cashlog`;
-CREATE TABLE IF NOT EXISTS `{dbprefix}member_cashlog` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `uid` int(10) unsigned NOT NULL COMMENT '提现人',
-  `username` varchar(50) NOT NULL COMMENT '提现账号',
-  `value` decimal(10,2) NOT NULL COMMENT '提现金额',
-  `money` decimal(10,2) NOT NULL COMMENT '到账金额',
-  `content` text NOT NULL COMMENT '提现账号材料',
-  `status` tinyint(1) unsigned NOT NULL COMMENT '状态',
-  `result` text NOT NULL COMMENT '处理结果',
-  `paytime` int(10) unsigned NOT NULL COMMENT '处理时间',
-  `inputtime` int(10) unsigned NOT NULL COMMENT '创建时间',
-  PRIMARY KEY (`id`),
-  KEY `uid` (`uid`),
-  KEY `status` (`status`),
-  KEY `value` (`value`),
-  KEY `paytime` (`paytime`),
-  KEY `inputtime` (`inputtime`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='提现申请记录表';
 
 DROP TABLE IF EXISTS `{dbprefix}member_notice`;
 CREATE TABLE IF NOT EXISTS `{dbprefix}member_notice` (

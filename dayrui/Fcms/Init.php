@@ -16,30 +16,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
  * */
-
-
-// 当前URL
-$pageURL = 'http';
-((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on')
-    || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == '443')) && $pageURL.= 's';
-$pageURL.= '://';
-if (strpos($_SERVER['HTTP_HOST'], ':') !== FALSE) {
-    $url = explode(':', $_SERVER['HTTP_HOST']);
-    $url[0] ? $pageURL.= $_SERVER['HTTP_HOST'] : $pageURL.= $url[0];
-} else {
-    $pageURL.= $_SERVER['HTTP_HOST'];
-}
-
-define('FC_NOW_URL', $pageURL.($_SERVER['REQUEST_URI'] ? $_SERVER['REQUEST_URI'] : $_SERVER['PHP_SELF']));
-define('FC_NOW_HOST', $pageURL.'/');
-
-//率先读取静态文件
-//is_file(WRITEPATH.'html/'.md5(FC_NOW_URL).'.html') && exit(file_get_contents(WRITEPATH.'html/'.md5(FC_NOW_URL).'.html'));
 
 // 用于显示debug
 $startMemory = memory_get_usage();
@@ -58,6 +39,8 @@ define('COREPATH', FCPATH.'Core/');
 !defined('MYPATH') && define('MYPATH', FCPATH.'My/');
 // 定义模板目录
 !defined('TPLPATH') && define('TPLPATH', ROOTPATH.'template/');
+// 是否可编辑后模板
+!defined('IS_EDIT_TPL') && define('IS_EDIT_TPL', 0);
 
 // 是否来自ajax提交
 define('IS_AJAX', (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest'));

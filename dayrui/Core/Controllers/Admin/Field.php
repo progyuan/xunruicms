@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -450,7 +450,7 @@ class Field extends \Phpcmf\Common
             case 'order':
                 // 订单插件
                 $ismain = 1;
-                $this->name = '订单插件';
+                $this->name = '订单应用';
                 $this->backurl =\Phpcmf\Service::L('Router')->url('order/field/index'); // 返回uri地址
                 \Phpcmf\Service::M('Field')->func = 'order'; // 重要标识: 函数和识别码
                 break;

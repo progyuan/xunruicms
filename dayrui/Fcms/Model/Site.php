@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -131,35 +131,6 @@ class Site extends \Phpcmf\Model
         ]);
     }
 
-    // 删除站点
-    public function delete_site($ids) {
-
-        if (!$ids) {
-            return dr_return_data(0, dr_lang('参数不存在'));
-        }
-
-
-        $database = \Phpcmf\Service::M()->db->query('show table status')->getResultArray();
-
-        // 删除表
-        foreach ($ids as $siteid) {
-            if ($siteid > 1) {
-                $this->db->table('site')->where('id', $siteid)->delete();
-                // 删除表
-                $table = $this->dbprefix($siteid.'_');
-                foreach ($database as $t) {
-                    if (strpos($t['Name'], $table) === 0) {
-                        $this->db->query('DROP TABLE IF EXISTS `'.$t['Name'].'`;');
-                        log_message('error', '删除站点【'.$siteid.'】时联动删除表：'.$t['Name']);
-                    }
-                }
-            }
-        }
-
-        return dr_return_data(1, 'ok');
-
-    }
-
     // 变更主域名
     public function edit_domain($value) {
 
@@ -264,6 +235,9 @@ class Site extends \Phpcmf\Model
         $sso_domain = $client_name = $client_domain = $webpath = $app_domain = $site_domain = $config = $cache = [];
         if ($data) {
             foreach ($data as $t) {
+                if ($t['id'] > 1 && !dr_is_app('sites')) {
+                    break;
+                }
                 $t['setting'] = dr_string2array($t['setting']);
                 if ($t['setting']['config']) {
                     foreach ($t['setting']['config'] as $i => $v) {
@@ -407,7 +381,5 @@ class Site extends \Phpcmf\Model
         \Phpcmf\Service::L('Config')->file(WRITEPATH.'config/domain_site.php', '站点域名配置文件', 32)->to_require_one($site_domain);
         \Phpcmf\Service::L('Config')->file(WRITEPATH.'config/domain_client.php', '客户端域名配置文件', 32)->to_require_one($client_domain);
         \Phpcmf\Service::L('Config')->file(WRITEPATH.'config/webpath.php', '入口文件目录配置文件', 32)->to_require($webpath);
-
-
     }
 }

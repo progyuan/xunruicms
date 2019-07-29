@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -122,7 +122,26 @@ class Search extends \Phpcmf\Model {
             if ($catid) {
                 $more = 0;
                 $cat_field = $module['category'][$catid]['field'];
-                $where[0] = '`'.$table.'`.`catid`'.($module['category'][$catid]['child'] ? 'IN ('.$module['category'][$catid]['childids'].')' : '='.(int)$catid);
+
+                // 副栏目判断
+                if (isset($module['field']['catids']) && $module['field']['catids']['fieldtype'] = 'Catids') {
+                    $fwhere = [];
+                    if ($module['category'][$catid]['child']) {
+                        $fwhere[] = '`'.$table.'`.`catid` IN ('.implode(',', $module['category'][$catid]['childids']).')';
+                        $catids = @explode(',', $module['category'][$catid]['childids']);
+                    } else {
+                        $fwhere[] = '`'.$table.'`.`catid` = '.$catid;
+                        $catids = [ $catid ];
+                    }
+                    foreach ($catids as $c) {
+                        $fwhere[] = '`'.$table.'`.`catids` LIKE "%\"'.intval($c).'\"%"';
+                    }
+                    $where[0] = '('.implode(' OR ', $fwhere).')';
+                } else {
+                    // 无副栏目时
+                    $where[0] = '`'.$table.'`.`catid`'.($module['category'][$catid]['child'] ? 'IN ('.$module['category'][$catid]['childids'].')' : '='.(int)$catid);
+                }
+
                 if ($cat_field) {
                     $more_where = [];
                     foreach ($cat_field as $name => $field) {
@@ -239,7 +258,7 @@ class Search extends \Phpcmf\Model {
         $name = dr_safe_replace($name, ['\\', '/']);
         if (strpos($value, '%') === 0 && strrchr($value, '%') === '%') {
             // like 条件
-            return '`'.$table.'`.`'.$name.'` LIKE "%'.$this->db->escapeString($value, true).'%"';
+            return '`'.$table.'`.`'.$name.'` LIKE "%'.trim($this->db->escapeString($value, true), '%').'%"';
         } elseif (preg_match('/[0-9]+,[0-9]+/', $value)) {
             // BETWEEN 条件
             list($s, $e) = explode(',', $value);
@@ -265,8 +284,23 @@ class Search extends \Phpcmf\Model {
                     return '`'.$table.'`.`'.$name.'`='.intval($data['ii']);
                 }
             }
+        } elseif (isset($field['fieldtype']) && $field['fieldtype'] == 'Linkages') {
+            // 联动菜单多选
+            $data = dr_linkage($field['setting']['option']['linkage'], $value);
+            if ($data) {
+                if ($data['child']) {
+                    $ids = explode(',', $data['childids']);
+                    $fwhere = [];
+                    foreach ($ids as $id) {
+                        $fwhere[] = '`'.$table.'`.`'.$name.'` LIKE "%\"'.intval($id).'\"%"';
+                    }
+                    return '('.implode(' OR ', $fwhere).')';
+                } else {
+                    return '`'.$table.'`.`'.$name.'` LIKE "%\"'.intval($data['ii']).'\"%"';
+                }
+            }
         } elseif (isset($field['fieldtype']) && $field['fieldtype'] == 'Checkbox') {
-            return '`'.$table.'`.`'.$name.'` LIKE "%'.$this->db->escapeString(str_replace('\\', '\\\\\\', json_encode($value)), true).'%"';
+            return '`'.$table.'`.`'.$name.'` LIKE "%\"'.$this->db->escapeString($value, true).'\"%"';
         } elseif (is_numeric($value)) {
             return '`'.$table.'`.`'.$name.'`='.$value;
         } else {

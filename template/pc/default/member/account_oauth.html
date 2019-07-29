@@ -20,7 +20,7 @@
                             <tr class="uppercase">
                                 <th width="60" style="text-align:center"> 接入商 </th>
                                 <th width="150"> 昵称 </th>
-                                <th width="160"> 有效期 </th>
+                                <th width="160"> 时间 </th>
                                 <th> 操作 </th>
                             </tr>
                             </thead>
@@ -28,8 +28,8 @@
                             {loop $oauth $name}
                             <tr>
                                 <td style="text-align:center"> <img src="{THEME_PATH}assets/oauth/{$name}.png"> </td>
-                                <td> {dr_html2emoji($list[$name][nickname])} </td>
-                                <td> {dr_date($list[$name][expire_at])}  </td>
+                                <td> {dr_html2emoji($list[$name]['nickname'])} </td>
+                                <td> {dr_date($list[$name]['expire_at'])}  </td>
                                 <td>
                                     {if $list[$name]}
                                     <a href="{Router::oauth_url($name, 'bang')}" class="btn btn-xs blue"> <i class="fa fa-user-plus"></i> 更新</a>

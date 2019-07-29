@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -52,9 +52,12 @@ class Account extends \Phpcmf\Common
         }
 
         if (IS_POST) {
-            $post = \Phpcmf\Service::L('input')->post('data');
-            !$post['name'] && $this->_json(0, dr_lang('姓名没有填写'), ['field' => 'name']);
-            strlen($post['name']) > 20 && $this->_json(0, dr_lang('姓名太长了'), ['field' => 'name']);
+            $post = \Phpcmf\Service::L('input')->post('data', true);
+            if (!$post['name']) {
+                $this->_json(0, dr_lang('姓名没有填写'), ['field' => 'name']);
+            } elseif (strlen($post['name']) > 20) {
+                $this->_json(0, dr_lang('姓名太长了'), ['field' => 'name']);
+            }
             list($data, $return, $attach) = \Phpcmf\Service::L('form')->validation($post, null, $field, $this->member);
             // 输出错误
             $return && $this->_json(0, $return['error'], ['field' => $return['name']]);
@@ -143,7 +146,7 @@ class Account extends \Phpcmf\Common
     public function password() {
 
         if (IS_POST) {
-            $post = \Phpcmf\Service::L('input')->post('data');
+            $post = \Phpcmf\Service::L('input')->post('data', true);
             $password = dr_safe_password($post['password']);
             if ((empty($post['password2']) || empty($post['password3']))) {
                 $this->_json(0, dr_lang('密码不能为空'), ['field' => 'password2']);
@@ -180,7 +183,7 @@ class Account extends \Phpcmf\Common
         //$is_mobile && $this->member['phone'] && $is_update = 0;
 
         if (IS_POST) {
-            $post = \Phpcmf\Service::L('input')->post('data');
+            $post = \Phpcmf\Service::L('input')->post('data', true);
             $value = dr_safe_replace($post['phone']);
             $cache = $this->session()->get('member-mobile-code-'.$this->member['randcode']);
             if (!$this->member['randcode']) {

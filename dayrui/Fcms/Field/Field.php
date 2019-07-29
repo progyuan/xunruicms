@@ -109,7 +109,7 @@ return [
     ],
     [
         'id' => 'Linkage',
-        'name' => '联动菜单',
+        'name' => '联动菜单（单选）',
         'namespace' => '',
     ],
     [
@@ -132,6 +132,11 @@ return [
     [
         'id' => 'Related',
         'name' => '内容关联',
+        'namespace' => '',
+    ],
+    [
+        'id' => 'Members',
+        'name' => '用户关联',
         'namespace' => '',
     ],
     [

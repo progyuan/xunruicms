@@ -52,6 +52,17 @@
                                         <input type="hidden" id="dr_catid" name="catid" value="{$catid}">
                                         {else}
                                         <label>{$select}</label>
+                                        {if $module['setting']['sync_category']}
+                                        {if !$id || $is_sync_cat}
+                                        <label style="margin-right:10px"><a href="javascript:;" onclick="dr_syncat()">[{dr_lang('同步发布到其他栏目')}]</a></label>
+                                        <label>
+                                            <input id="dr_syncatid" name="sync_cat" type="hidden" value="{$is_sync_cat}" />
+                                            <span id="dr_syncat_text" class="label label-success" style="display: {if $is_sync_cat}blank{else}none{/if};"><b id="dr_syncat_num">{php echo substr_count($is_sync_cat, ',') + 1;}</b></span>
+                                        </label>
+                                        {else if $link_id != 0}
+                                        <label>{dr_lang('修改内容时会同步更新其他外联文档')}</label>
+                                        {/if}
+                                        {/if}
                                         {/if}
                                     </div>
 
@@ -153,10 +164,52 @@
     menu_url[{$i}] = "{$t.url}";
     {php $i++;}
     {/loop}
-    function show_category_field(catid) {
-        {if $category_field_url}
-        window.location.href = '{$category_field_url}&catid='+catid;
-        {/if}
-    }
+        function show_category_field(catid) {
+            {if $category_field_url}
+            window.location.href = '{$category_field_url}&catid='+catid;
+            {/if}
+            }
+            function dr_syncat() {
+                var width = '40%';
+                var height = '60%';
+                var title = '<i class="fa fa-refresh"></i> {dr_lang('同步到其他栏目')}';
+                var url = '{dr_member_url(MOD_DIR.'/home/syncat_edit')}&catid='+$('#dr_syncatid').val();
+                layer.open({
+                    type: 2,
+                    title: title,
+                    shadeClose: true,
+                    shade: 0,
+                    area: [width, height],
+                    btn: [lang['ok']],
+                    yes: function(index, layero){
+                        var body = layer.getChildFrame('body', index);
+                        $(body).find('.form-group').removeClass('has-error');
+                        // 延迟加载
+                        var loading = layer.load(2, {
+                            shade: [0.3,'#fff'], //0.1透明度的白色背景
+                            time: 10000
+                        });
+                        $.ajax({type: "POST",dataType:"json", url: url, data: $(body).find('#myform').serialize(),
+                            success: function(json) {
+                                layer.close(loading);
+                                if (json.code == 1) {
+                                    layer.close(index);
+                                    $('#dr_syncatid').val(json.data);
+                                    $('#dr_syncat_text').show();
+                                    $('#dr_syncat_num').html(json.msg);
+                                } else {
+                                    dr_tips(json.code, json.msg);
+                                }
+                                return false;
+                            },
+                            error: function(HttpRequest, ajaxOptions, thrownError) {
+                                dr_ajax_alert_error(HttpRequest, ajaxOptions, thrownError);
+                            }
+                        });
+                        return false;
+                    },
+                    content: url+'&is_ajax=1'
+                });
+            }
 </script>
 {template "mfooter.html"}

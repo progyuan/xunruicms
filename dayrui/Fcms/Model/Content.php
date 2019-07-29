@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -83,6 +83,10 @@ class Content extends \Phpcmf\Model {
         // 表示审核文章机制
         if ($data[1]['status'] >= 0 && $data[1]['status'] < 9) {
             // 存储到审核表中去
+            if (\Phpcmf\Service::L('input')->post('sync_cat')) {
+                // 同步栏目设置进审核表
+                $data[0]['sync_cat'] = \Phpcmf\Service::L('input')->post('sync_cat');
+            }
             $verify = $this->table($this->mytable.'_verify')->get($data[1]['id']);
             if ($verify) {
                 $rt = $this->table($this->mytable.'_verify')->update($data[1]['id'], [
@@ -256,8 +260,11 @@ class Content extends \Phpcmf\Model {
         $id && $old['link_id'] && $this->sync_update_cat($old['link_id'], $data);
 
         // 站长工具
-        if (dr_is_app_dir('zhanzhang')) {
-            \Phpcmf\Service::M('zhanzhang', 'zhanzhang')->bdts(MOD_DIR, dr_url_prefix($data[1]['url'], MOD_DIR, SITE_ID, 0), $id ? 'edit' : 'add');
+        if (dr_is_app_dir('bdts')) {
+            \Phpcmf\Service::M('bdts', 'bdts')->module_bdts(MOD_DIR, dr_url_prefix($data[1]['url'], MOD_DIR, SITE_ID, 0), $id ? 'edit' : 'add');
+        }
+        if (dr_is_app_dir('bdxz')) {
+            \Phpcmf\Service::M('bdxz', 'bdxz')->module_bdxz(MOD_DIR, dr_url_prefix($data[1]['url'], MOD_DIR, SITE_ID, 0), $id ? 'edit' : 'add');
         }
 
         // 自动关键词存储
@@ -838,8 +845,11 @@ class Content extends \Phpcmf\Model {
             $row['url'] = dr_url_prefix($row['url'], MOD_DIR, SITE_ID, 0);
 
             // 站长工具
-            if (dr_is_app_dir('zhanzhang')) {
-                \Phpcmf\Service::M('zhanzhang', 'zhanzhang')->bdts(MOD_DIR, $row['url'], 'del');
+            if (dr_is_app_dir('bdts')) {
+                \Phpcmf\Service::M('bdts', 'bdts')->module_bdts(MOD_DIR, $row['url'], 'del');
+            }
+            if (dr_is_app_dir('bdxz')) {
+                \Phpcmf\Service::M('bdxz', 'bdxz')->module_bdxz(MOD_DIR, $row['url'], 'del');
             }
 
             // 附表id
@@ -1204,7 +1214,7 @@ class Content extends \Phpcmf\Model {
         $insert['content'] = $data['content'];
         $insert['support'] = $insert['oppose'] = $insert['avgsort'] = 0;
         $insert['inputip'] = \Phpcmf\Service::L('input')->ip_address();
-        $insert['inputtime'] = SYS_TIME;
+        $insert['inputtime'] = $data['inputtime'] ? $data['inputtime'] : SYS_TIME;
         $insert['orderid'] = (int)$value['orderid'];
 
         // 点评选项值
@@ -1458,11 +1468,6 @@ class Content extends \Phpcmf\Model {
 
         // 更新到索引表
         $this->db->table($this->mytable.'_comment_index')->where('cid', $cid)->update($set);
-
-        // 更新当前记录的平均分
-        $this->table($this->mytable.'_comment')->update($id, [
-            'avgsort' => $set['avgsort'],
-        ]);
 
     }
 

@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -40,14 +40,18 @@ class Cloud extends \Phpcmf\Common
         if (!is_file(MYPATH.'Config/License.php')) {
             exit('授权识别文件不存在，请在官网重新下载程序');
         }
-        $this->license_sn = require MYPATH.'Config/License.php';
+        $this->license = require MYPATH.'Config/License.php';
+        if (!$this->license['license']) {
+            exit('程序不是最新，请在官网下载[安装包]并覆盖dayrui目录');
+        }
+        $this->license_sn = $this->license['license'];
         \Phpcmf\Service::V()->assign([
             'license_sn' => $this->license_sn,
             'cms_version' => $this->version,
             'cmf_version' => $this->cmf_version,
         ]);
         list($this->admin_url) = explode('?', FC_NOW_URL);
-        $this->service_url = 'http://www.tianruiyun.com/cloud.php?domain='.dr_get_domain_name(ROOT_URL).'&admin='.urlencode($this->admin_url).'&cms='.$this->version['id'].'&license='.$this->license_sn;
+        $this->service_url = 'http://www.xunruicms.com/cloud.php?domain='.dr_get_domain_name(ROOT_URL).'&admin='.urlencode($this->admin_url).'&cms='.$this->version['id'].'&license='.$this->license_sn;
 
     }
 
@@ -55,7 +59,7 @@ class Cloud extends \Phpcmf\Common
     public function service() {
 
         \Phpcmf\Service::V()->assign([
-            'url' => 'http://www.tianruiyun.com/service.php?cms='.$this->version['id'].'&license='.$this->license_sn,
+            'url' => 'http://www.xunruicms.com/service.php?cms='.$this->version['id'].'&license='.$this->license_sn,
         ]);
         \Phpcmf\Service::V()->display('cloud_online.html');exit;
     }
@@ -121,11 +125,10 @@ class Cloud extends \Phpcmf\Common
     }
 
 
-    // 本地插件
+    // 本地应用
     public function local() {
 
         $data = [];
-
         $local = dr_dir_map(dr_get_app_list(), 1);
         foreach ($local as $dir) {
             $path = dr_get_app_dir($dir);
@@ -151,7 +154,7 @@ class Cloud extends \Phpcmf\Common
             'list' => $data,
             'menu' => \Phpcmf\Service::M('auth')->_admin_menu(
                 [
-                    '本地插件' => [\Phpcmf\Service::L('Router')->class.'/'.\Phpcmf\Service::L('Router')->method, 'fa fa-puzzle-piece'],
+                    '本地应用' => [\Phpcmf\Service::L('Router')->class.'/'.\Phpcmf\Service::L('Router')->method, 'fa fa-puzzle-piece'],
                     'help' => [574],
                 ]
             ),
@@ -330,7 +333,7 @@ class Cloud extends \Phpcmf\Common
             $this->_copy_dir($cmspath.'COREPATH', COREPATH);
         }
 
-        $this->_json(1, '程序导入完成<br>1、如果本程序是插件：请到【插件】-【本地插件】中手动安装本程序<br>2、如果本程序是组件：请按本组件的使用教程来操作；<br>3、如果本程序是模板：请按本模板使用教程来操作');
+        $this->_json(1, '程序导入完成<br>1、如果本程序是应用插件：请到【应用】-【应用管理】中手动安装本程序<br>2、如果本程序是组件：请按本组件的使用教程来操作；<br>3、如果本程序是模板：请按本模板使用教程来操作');
     }
 
 
@@ -363,7 +366,7 @@ class Cloud extends \Phpcmf\Common
                         'id' => $cfg['type'].'-'.$vsn['id'],
                         'name' => $cfg['name'],
                         'type' => $cfg['type'],
-                        'tname' => '<a href="javascript:dr_help(540);">插件</a>',
+                        'tname' => '<a href="javascript:dr_help(540);">应用</a>',
                         'version' => $vsn['version'],
                         'license' => $vsn['license'],
                         'updatetime' => $vsn['updatetime'],
@@ -534,7 +537,7 @@ class Cloud extends \Phpcmf\Common
 
     // 版本日志
     function log_show() {
-        $url = 'http://www.tianruiyun.com/version.php?id='.\Phpcmf\Service::L('input')->get('id', true).'&version='.\Phpcmf\Service::L('input')->get('version', true);
+        $url = 'http://www.xunruicms.com/version.php?id='.\Phpcmf\Service::L('input')->get('id', true).'&version='.\Phpcmf\Service::L('input')->get('version', true);
         \Phpcmf\Service::V()->assign([
             'url' => $url,
         ]);
@@ -612,7 +615,7 @@ class Cloud extends \Phpcmf\Common
                     }
                 }
 
-                $html = '<p class=""><label class="rleft">升级应用插件【app】</label><label class="rright"><span class="ok">完成</span></label></p>';
+                $html = '<p class=""><label class="rleft">升级应用【app】</label><label class="rright"><span class="ok">完成</span></label></p>';
 
                 $this->_json(40, $html);
                 break;
@@ -656,7 +659,7 @@ class Cloud extends \Phpcmf\Common
 
     public function bf_count() {
 
-        $surl = 'http://www.tianruiyun.com/version.php?action=bf_count&domain='.dr_get_domain_name(ROOT_URL).'&cms='.$this->version['id'].'&license='.$this->license_sn;
+        $surl = 'http://www.xunruicms.com/version.php?action=bf_count&domain='.dr_get_domain_name(ROOT_URL).'&cms='.$this->version['id'].'&license='.$this->license_sn;
         $json = dr_catcher_data($surl);
         if (!$json) {
             $this->_json(0, '没有从服务端获取到数据');

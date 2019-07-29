@@ -1,81 +1,16 @@
 {template "header.html"}
+<header class="hui-header">
+    <div id="hui-back"></div>
+    <h1>{$cat.name}</h1>
+    <a id="hui-search" href="javascript:dr_m_top_category();"><i class="fa fa-navicon"></i></a>
+</header>
 
-<div class="page-wrapper-row full-height">
-    <div class="page-wrapper-middle">
-        <div class="page-head">
-            <div class="container">
-                <div class="page-title">
-                   这里是网站自定义页面
-                </div>
-            </div>
+<div class="page-wrapper-row full-height margin-top-20">
+    <div class="portlet light margin-top-20">
+        <div class="portlet-body  margin-top-40">
+            {$content}
         </div>
-        <div class="page-content">
 
-            <div class="container">
-
-                <ul class="page-breadcrumb breadcrumb">
-                    <li>
-                        <a href="{SITE_URL}">首页</a>
-                        <i class="fa fa-circle"></i>
-                    </li>
-                    {dr_page_catpos($id, '', '<li><a href="[url]">[name]</a><i class="fa fa-circle"></i></li>')}
-                    <li>
-                        <span>详情</span>
-                    </li>
-                </ul>
-
-                <div class="page-content-inner">
-                    <div class="search-page search-content-2">
-                        <div class="row">
-                            <div class="col-md-8">
-
-                                <div class="portlet light">
-                                    <div class="portlet-title">
-                                        <div class="caption">
-                                            <span class="caption-subject font-dark">{$name}</span>
-                                        </div>
-                                        <div class="actions">
-                                            <a class="btn btn-circle btn-icon-only btn-default fullscreen" href="javascript:;" data-original-title="" title="全屏查看"> </a>
-                                        </div>
-                                    </div>
-                                    <div class="portlet-body" style="height: auto;">
-                                        {$content}
-                                    </div>
-
-                                </div>
-
-
-                            </div>
-                            <div class="col-md-4">
-                                <!-- BEGIN PORTLET-->
-                                <div class="portlet light ">
-                                    <div class="portlet-title">
-                                        <div class="caption">
-                                            <span class="caption-subject font-dark bold uppercase">{$parent.name}</span>
-                                        </div>
-
-                                    </div>
-                                    <div class="portlet-body">
-                                        <div class="todo-project-list">
-                                            <ul class="nav nav-stacked">
-                                                <!--循环同级栏目或者子栏目-->
-                                                {loop $related $c}
-                                                <li {if $c.id==$id} class="active"{/if}><a href="{$c.url}">{$c.name}</a></li>
-                                                {/loop}
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- END PORTLET-->
-                            </div>
-                        </div>
-                    </div>
-
-
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 

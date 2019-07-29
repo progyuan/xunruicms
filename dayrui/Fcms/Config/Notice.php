@@ -15,7 +15,6 @@ return [
     'pay_admin'                 => '后台管理员充值',
     'member_edit_password'      => '用户修改密码',
     'member_verify_group'       => '审核用户组',
-    'member_verify_cash'        => '审核提现申请',
     'member_edit_group'         => '用户组变更',
     'member_edit_level'         => '用户组等级变更',
 

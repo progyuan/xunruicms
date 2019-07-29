@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -54,7 +54,9 @@ class File extends \Phpcmf\Common
 
         $file = $this->_safe_path(\Phpcmf\Service::L('input')->get('file'));
         $filename = $this->root_path.$file;
-        !is_file($filename) && exit(dr_lang('文件%s不存在', $file));
+        if (!is_file($filename)) {
+            exit(dr_lang('文件%s不存在', $file));
+        }
 
 
         $vals = getimagesize($filename);
@@ -112,10 +114,15 @@ class File extends \Phpcmf\Common
 
         if (IS_AJAX_POST) {
 
-            !IS_EDIT_TPL && $this->_json(0, dr_lang('系统不允许创建和修改模板文件'), ['field' => 'name']);
+            if (!IS_EDIT_TPL) {
+                $this->_json(0, dr_lang('系统不允许创建和修改模板文件'), ['field' => 'name']);
+            }
 
             $name = dr_safe_filename(\Phpcmf\Service::L('input')->post('name'));
-            !$name && $this->_json(0, dr_lang('文件名称不能为空'), ['field' => 'name']);
+            if (!$name) {
+                $this->_json(0, dr_lang('文件名称不能为空'), ['field' => 'name']);
+            }
+
             $path = $this->root_path.($this->dir ? $this->dir : trim($this->dir, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
             $file = $path.$name;
 
@@ -153,14 +160,19 @@ class File extends \Phpcmf\Common
                 // 目录修改
                 if (IS_AJAX_POST) {
 
-                    !IS_EDIT_TPL && $this->_json(0, dr_lang('系统不允许创建和修改模板文件'), ['field' => 'name']);
-                    !is_dir($filename) && $this->_json(0, dr_lang('此目录不存在'));
-
                     $name = dr_safe_filename(\Phpcmf\Service::L('input')->post('name'));
-                    !$name && $this->_json(0, dr_lang('目录名称不能为空'), ['field' => 'name']);
+                    if (!IS_EDIT_TPL) {
+                        $this->_json(0, dr_lang('系统不允许创建和修改模板文件'), ['field' => 'name']);
+                    } elseif (!is_dir($filename)) {
+                        $this->_json(0, dr_lang('此目录不存在'));
+                    } elseif (!$name) {
+                        $this->_json(0, dr_lang('目录名称不能为空'), ['field' => 'name']);
+                    }
 
                     // 开始修改
-                    basename($filename) != $name && !rename($filename, dirname($filename).'/'.$name) && $this->_json(0, dr_lang('重命名失败'), ['field' => 'name']);
+                    if ( basename($filename) != $name && !rename($filename, dirname($filename).'/'.$name)) {
+                        $this->_json(0, dr_lang('重命名失败'), ['field' => 'name']);
+                    }
 
                     \Phpcmf\Service::L('input')->system_log('目录['.$filename.']改为['.dirname($filename).'/'.$name.']');
                     $this->_json(1, dr_lang('操作成功'));
@@ -180,12 +192,17 @@ class File extends \Phpcmf\Common
 
                 if (IS_AJAX_POST) {
 
-                    !IS_EDIT_TPL && $this->_json(0, dr_lang('系统不允许创建和修改模板文件'), ['field' => 'name']);
                     $name = dr_safe_filename(\Phpcmf\Service::L('input')->post('name'));
-                    !$name && $this->_json(0, dr_lang('文件名称不能为空'), ['field' => 'name']);
+                    if (!IS_EDIT_TPL) {
+                        $this->_json(0, dr_lang('系统不允许创建和修改模板文件'), ['field' => 'name']);
+                    } elseif (!$name) {
+                        $this->_json(0, dr_lang('文件名称不能为空'), ['field' => 'name']);
+                    }
 
                     // 开始修改
-                    $fname != $name && !rename($filename, dirname($filename).'/'.$name.'.'.$fileext) && $this->_json(0, dr_lang('重命名失败'), ['field' => 'name']);
+                    if ($fname != $name && !rename($filename, dirname($filename).'/'.$name.'.'.$fileext)) {
+                        $this->_json(0, dr_lang('重命名失败'), ['field' => 'name']);
+                    }
 
                     \Phpcmf\Service::L('input')->system_log('文件['.$filename.']改为['.dirname($filename).'/'.$name.']');
                     $this->_json(1, dr_lang('操作成功'));
@@ -205,9 +222,12 @@ class File extends \Phpcmf\Common
 
                 if (IS_AJAX_POST) {
 
-                    !IS_EDIT_TPL && $this->_json(0, dr_lang('系统不允许创建和修改模板文件'), ['field' => 'name']);
                     $name = dr_safe_filename(\Phpcmf\Service::L('input')->post('name'));
-                    !$name && $this->_json(0, dr_lang('文件名称不能为空'), ['field' => 'name']);
+                    if (!IS_EDIT_TPL) {
+                        $this->_json(0, dr_lang('系统不允许创建和修改模板文件'), ['field' => 'name']);
+                    } elseif (!$name) {
+                        $this->_json(0, dr_lang('文件名称不能为空'), ['field' => 'name']);
+                    }
 
                     // 开始修改
                     $this->_save_name_ini($file, $name);
@@ -246,9 +266,12 @@ class File extends \Phpcmf\Common
 
                     if (IS_AJAX_POST) {
 
-                        !IS_EDIT_TPL && $this->_json(0, dr_lang('系统不允许创建和修改模板文件'), ['field' => 'name']);
                         $code = \Phpcmf\Service::L('input')->post('code');
-                        !$code && $this->_json(0, dr_lang('内容不能为空'));
+                        if (!IS_EDIT_TPL) {
+                            $this->_json(0, dr_lang('系统不允许创建和修改模板文件'), ['field' => 'name']);
+                        } elseif (!$code) {
+                            $this->_json(0, dr_lang('内容不能为空'));
+                        }
 
                         // 解析模板
                         if ($fileext == 'html') {
@@ -314,7 +337,9 @@ class File extends \Phpcmf\Common
 
                     $reply_url =\Phpcmf\Service::L('Router')->url(trim(APP_DIR.'/'.\Phpcmf\Service::L('Router')->class.'/index', '/'), ['dir' => dirname($file)]);
                     if (IS_POST) {
-                        !IS_EDIT_TPL && $this->_json(0, dr_lang('系统不允许创建和修改模板文件'), ['field' => 'name']);
+                        if (!IS_EDIT_TPL) {
+                            $this->_json(0, dr_lang('系统不允许创建和修改模板文件'), ['field' => 'name']);
+                        }
                         $rt = \Phpcmf\Service::L('upload')->update_file([
                             'file_name' => $filename,
                             'form_name' => 'file',
@@ -341,13 +366,15 @@ class File extends \Phpcmf\Common
 
             case 'zip':
 
-                !IS_EDIT_TPL && $this->_json(0, dr_lang('系统不允许创建和修改模板文件'), ['field' => 'name']);
-
-                // 解压zip
-                $fileext != 'zip' && $this->_json(0, dr_lang('不是zip压缩文件'));
-                if (!\Phpcmf\Service::L('file')->unzip($filename)) {
+                if (!IS_EDIT_TPL) {
+                    $this->_json(0, dr_lang('系统不允许创建和修改模板文件'), ['field' => 'name']);
+                } elseif ($fileext != 'zip') {
+                    $this->_json(0, dr_lang('不是zip压缩文件'));
+                } elseif (!\Phpcmf\Service::L('file')->unzip($filename)) {
+                    // 解压zip
                     $this->_json(0, dr_lang('zip解压失败'));
                 }
+
                 \Phpcmf\Service::L('input')->system_log('Zip解压['.$filename.']');
                 $this->_json(1, dr_lang('解压成功'));
                 break;
@@ -358,8 +385,11 @@ class File extends \Phpcmf\Common
     protected function _Del() {
 
         $ids = \Phpcmf\Service::L('input')->post('ids');
-        !$ids && $this->_json(0, dr_lang('还没有选择呢'));
-        !IS_EDIT_TPL && $this->_json(0, dr_lang('系统不允许创建和修改模板文件'), ['field' => 'name']);
+        if (!$ids) {
+            $this->_json(0, dr_lang('还没有选择呢'));
+        } elseif (!IS_EDIT_TPL) {
+            $this->_json(0, dr_lang('系统不允许创建和修改模板文件'), ['field' => 'name']);
+        }
 
         $path = $this->root_path.($this->dir ? $this->dir : trim($this->dir, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
 
@@ -387,7 +417,9 @@ class File extends \Phpcmf\Common
 
         $file = $this->_safe_path(\Phpcmf\Service::L('input')->get('file'));
         $filename = $this->root_path.$file;
-        !is_file($filename) && $this->_json(0, dr_lang('文件%s不存在', $file));
+        if (!is_file($filename)) {
+            $this->_json(0, dr_lang('文件%s不存在', $file));
+        }
 
         $dir = md5($filename);
 		\Phpcmf\Service::L('cache')->del_all('backups/'.$this->backups_dir.'/'.$dir.'/');
@@ -414,7 +446,7 @@ class File extends \Phpcmf\Common
      */
     protected function _safe_path($string) {
         return trim(str_replace(
-            ['..', "//", '\\', ' ', '<', '>', "{", '}'],
+            ['..', "//", ".//.", '\\', ' ', '<', '>', "{", '}'],
             '',
             $string
         ), '/');

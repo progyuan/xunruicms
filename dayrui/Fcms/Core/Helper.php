@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -1960,6 +1960,53 @@ function dr_member_order($url) {
     return $url;
 }
 
+/**
+ * 百度地图定位浏览器坐标
+ */
+function dr_baidu_position_js($ak = SYS_BDMAP_API) {
+	$code = \Phpcmf\Service::V()->load_js((strpos(FC_NOW_URL, 'https') === 0 ? 'https' : 'http').'://api.map.baidu.com/api?v=2.0&ak='.$ak);
+	$code.= '<script type="text/javascript">';
+	$code.= '// 百度地图定位坐标
+   var geolocation = new BMap.Geolocation();
+   geolocation.getCurrentPosition(function(r){
+      if(this.getStatus() == BMAP_STATUS_SUCCESS){
+         $.ajax({type: "GET", url: "/index.php?s=api&c=api&m=baidu_position&value="+r.point.lng+\',\'+r.point.lat, dataType:"jsonp"});
+      } else {
+         alert(\'定位失败：\'+this.getStatus());
+      }
+   },{enableHighAccuracy: true});';
+	$code.= '</script>';
+	return $code;
+}
+
+/**
+ * 百度地图定位浏览器坐标并设置为隐藏表单域
+ */
+function dr_baidu_map_form_hidden($field, $ak = SYS_BDMAP_API) {
+	$code = \Phpcmf\Service::V()->load_js((strpos(FC_NOW_URL, 'https') === 0 ? 'https' : 'http').'://api.map.baidu.com/api?v=2.0&ak='.$ak);
+	$code.= '<input type="hidden" id="dr_'.$field.'" name="data['.$field.']" value=""><script type="text/javascript">';
+	$code.= '<script type="text/javascript">';
+	$code.= '// 百度地图定位坐标
+   var geolocation = new BMap.Geolocation();
+   geolocation.getCurrentPosition(function(r){
+      if(this.getStatus() == BMAP_STATUS_SUCCESS){
+		 $("#dr_'.$field.'").val(r.point.lng+\',\'+r.point.lat);
+         $.ajax({type: "GET", url: "/index.php?s=api&c=api&m=baidu_position&value="+r.point.lng+\',\'+r.point.lat, dataType:"jsonp"});
+      } else {
+         alert(\'定位失败：\'+this.getStatus());
+      }
+   },{enableHighAccuracy: true});';
+	$code.= '</script>';
+	return $code;
+}
+
+
+/**
+ * 百度地图JS
+ */
+function dr_baidu_map_js($ak = SYS_BDMAP_API) {
+	return \Phpcmf\Service::V()->load_js((strpos(FC_NOW_URL, 'https') === 0 ? 'https' : 'http').'://api.map.baidu.com/api?v=2.0&ak='.$ak);
+}
 
 /**
  * 百度地图调用
@@ -2571,7 +2618,7 @@ function dr_string2array($data) {
  * @return	string
  */
 function dr_array2string($data) {
-    return $data ? json_encode($data) : '';
+    return $data ? json_encode($data, JSON_UNESCAPED_UNICODE) : '';
 }
 
 /**

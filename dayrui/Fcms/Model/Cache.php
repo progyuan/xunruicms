@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -301,7 +301,7 @@ class Cache extends \Phpcmf\Model
     }
 
     private function _error_msg($msg) {
-        echo json_encode(dr_return_data(0, $msg));exit;
+        echo dr_array2string(dr_return_data(0, $msg));exit;
     }
 
 

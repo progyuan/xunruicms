@@ -18,6 +18,9 @@
                 <li class=" {if $page==1}active{/if}">
                     <a href="#tab_1" data-toggle="tab" onclick="$('#dr_page').val('1')"> <i class="fa fa-table"></i> {dr_lang('后台显示字段')} </a>
                 </li>
+                <li class=" {if $page==3}active{/if}">
+                    <a href="#tab_3" data-toggle="tab" onclick="$('#dr_page').val('3')"> <i class="fa fa-volume-up"></i> {dr_lang('通知提醒')} </a>
+                </li>
             </ul>
         </div>
         <div class="portlet-body">
@@ -137,11 +140,62 @@
                 {if $diy_tpl}
                 <div class="tab-pane {if $page==2}active{/if}" id="tab_2">
                     <div class="form-body">
-                        1212
                          {load $diy_tpl}
                     </div>
                 </div>
                 {/if}
+
+                <div class="tab-pane {if $page==3}active{/if}" id="tab_3">
+                    <div class="form-body">
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">{dr_lang('通知提醒')}</label>
+                            <div class="col-md-9">
+                                <input type="checkbox" name="data[setting][notice][use]" value="1" {if $data['setting']['notice']['use']}checked{/if} data-on-text="{dr_lang('开启')}" data-off-text="{dr_lang('关闭')}" data-on-color="success" data-off-color="danger" class="make-switch" data-size="small">
+                            </div>
+                        </div>
+                        <div class="form-group" id="dr_row_username">
+                            <label class="control-label col-md-2">{dr_lang('通知账号')}</label>
+                            <div class="col-md-9">
+                                <div class="input-group" style="width:200px;">
+                                    <input class="form-control " type="text" name="data[setting][notice][username]" id="dr_username" value="{$member.username}"  />
+                                    <span class="input-group-btn">
+                                        <a class="btn btn-success default" href="javascript:dr_show_member('username');" ><i class="fa fa-user" /></i> {dr_lang('验证')}</a>
+                                    </span>
+                                </div>
+                                <span class="help-block" id="dr_username_tips">{dr_lang('当有人提交表单时，会通知到这个账号')}</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-2">{dr_lang('通知方式')}</label>
+                            <div class="col-md-9">
+
+                                <div class="mt-checkbox-inline">
+                                    <label class="mt-checkbox mt-checkbox-outline">
+                                        <input type="checkbox" name="data[setting][notice][mobile]" value="1"  {if $data['setting']['notice']['mobile']}checked{/if}  /> {dr_lang('短信')} <span></span>
+                                    </label>
+                                    <label class="mt-checkbox mt-checkbox-outline">
+                                        <input type="checkbox" name="data[setting][notice][email]" value="1"  {if $data['setting']['notice']['email']}checked{/if}  /> {dr_lang('邮件')} <span></span>
+                                    </label>
+                                    <label class="mt-checkbox mt-checkbox-outline">
+                                        <input type="checkbox" name="data[setting][notice][weixin]" value="1"  {if $data['setting']['notice']['weixin']}checked{/if}  /> {dr_lang('微信')} <span></span>
+                                    </label>
+                                    <label class="mt-checkbox mt-checkbox-outline">
+                                        <input type="checkbox" name="data[setting][notice][notice]" value="1"  {if $data['setting']['notice']['notice']}checked{/if}  /> {dr_lang('消息')} <span></span>
+                                    </label>
+                                    <label class="mt-checkbox mt-checkbox-outline">
+                                        <a href="javascript:dr_iframe_show('{dr_lang('通知内容')}', '{dr_url('member_setting_notice/edit')}&file=form_{$data.table}_post', '90%','90%', 'nogo');">{dr_lang('内容设置')}</a>
+                                    </label>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    </div>
+                </div>
             </div>
         </div>
     </div>

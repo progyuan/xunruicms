@@ -14,8 +14,8 @@
 return [
 
     'type' => 'app',
-    'name' => '我的插件',
+    'name' => '我的应用',
     'icon' => 'fa fa-user',
-    'author' => '天睿程序设计',
+    'author' => 'PHP7程序设计',
 
 ];

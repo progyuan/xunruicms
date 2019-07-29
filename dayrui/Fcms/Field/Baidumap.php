@@ -189,7 +189,7 @@ class Baidumap extends \Phpcmf\Library\A_Field {
         !$value && $value = $this->get_default_value($field['setting']['option']['value']);
         $value = ($value == '0,0' || $value == '0.000000,0.000000' || strlen($value) < 5) ? '' : $value;
 
-        $city = \Phpcmf\Service::L('ip')->city(\Phpcmf\Service::L('input')->ip_address());
+        $city = \Phpcmf\Service::L('ip')->address(\Phpcmf\Service::L('input')->ip_address());
         $level = $field['setting']['option']['level'] ? $field['setting']['option']['level'] : 15;
 
         $str = '';

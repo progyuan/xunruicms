@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -156,7 +156,6 @@ class Module extends \Phpcmf\Table
             exit;
         }
 
-
         if (!$this->is_hcategory) {
             // 可编辑的栏目
             $category = $this->_module_member_category($this->module['category'], $this->module['dirname'], 'edit');
@@ -175,6 +174,7 @@ class Module extends \Phpcmf\Table
                 '', 1, 1
             ),
             'is_verify' => defined('IS_MODULE_VERIFY') ? 1 : 0,
+            'is_sync_cat' => defined('IS_MODULE_VERIFY') ? $data['sync_cat'] : '',
             'draft_url' =>\Phpcmf\Service::L('Router')->member_url($this->module['dirname'].'/home/edit', ['id' => $id]),
             'draft_list' => $this->content_model->get_draft_list('cid='.$id),
             'is_post_code' => $this->is_hcategory ? $this->content_model->_hcategory_member_post_code() : $this->is_post_code,
@@ -294,6 +294,50 @@ class Module extends \Phpcmf\Table
         $this->_Del(\Phpcmf\Service::L('input')->get_post_ids());
     }
 
+    public function syncat_edit() {
+
+        $sync = \Phpcmf\Service::L('input')->get('catid');
+
+        if (IS_AJAX_POST) {
+
+            $catid = \Phpcmf\Service::L('input')->post('catid');
+            !$catid && $this->_json(0, dr_lang('你没有选择同步的栏目'));
+
+            $syncat = [];
+            foreach ($catid as $i) {
+                if ($this->where_list_sql && \Phpcmf\Service::M('content', 'cqx')->is_edit($i)) {
+                    $this->_json(0, dr_lang('当前角色无权限管理此栏目'));
+                }
+                if (!$this->module['category'][$i]) {
+                    continue;
+                } elseif ($this->module['category'][$i]['tid'] != 1) {
+                    continue;
+                } elseif ($this->module['category'][$i]['child'] != 0) {
+                    continue;
+                } else {
+                    $syncat[] = $i;
+                }
+            }
+
+            !$syncat && $this->_json(0, dr_lang('所选栏目无效'));
+
+            $this->_json(1, dr_count($syncat), implode(',', $syncat));
+        }
+
+        \Phpcmf\Service::V()->admin();
+        \Phpcmf\Service::V()->assign([
+            'form' => dr_form_hidden(),
+            'menu' => '',
+            'select' => \Phpcmf\Service::L('Tree')->select_category(
+                $this->module['category'],
+                $sync ? explode(',', $sync) : 0,
+                'id=\'dr_catid\' name=\'catid[]\' multiple="multiple" style="height:200px"',
+                '', 1, 1
+            ),
+        ]);
+        \Phpcmf\Service::V()->display('share_syncat.html');exit;
+
+    }
 
     // ===========================
 
@@ -371,6 +415,7 @@ class Module extends \Phpcmf\Table
         // 判断是否来至审核
         if (defined('IS_MODULE_VERIFY')) {
             $data[1]['status'] = 1;
+            // 审核时
         } else {
             // 判断权限
 
@@ -467,6 +512,10 @@ class Module extends \Phpcmf\Table
                 },
                 // 保存之后
                 function ($id, $data, $old) {
+                    // 同步发送到其他栏目
+                    if ($data[1]['status'] == 9 && \Phpcmf\Service::L('input')->post('sync_cat')) {
+                        $this->content_model->sync_cat(\Phpcmf\Service::L('input')->post('sync_cat'), $data);
+                    }
                     return $data;
                 }
             );

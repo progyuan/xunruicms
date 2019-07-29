@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -27,6 +27,20 @@
 // 通用接口处理
 class Api extends \Phpcmf\Home\Api
 {
+
+	/**
+     * 保存浏览器定位坐标
+     */
+    public function baidu_position() {
+
+        $value = dr_safe_replace(\Phpcmf\Service::L('input')->get('value'));
+        $cookie = \Phpcmf\Service::L('input')->get_cookie('baidu_position');
+        if ($cookie != $value) {
+            \Phpcmf\Service::L('input')->set_cookie('baidu_position', $value, 10000);
+            exit('ok');
+        }
+        exit('none');
+    }
 
     /**
      * 二维码显示
@@ -140,7 +154,9 @@ class Api extends \Phpcmf\Home\Api
      */
     public function captcha() {
 
-        $code = \Phpcmf\Service::L('captcha')->create();
+        $w = intval($_GET['width']);
+        $h = intval($_GET['height']);
+        $code = \Phpcmf\Service::L('captcha')->create($w, $h);
         $this->session()->set('captcha', $code);
         exit();
     }
@@ -346,6 +362,118 @@ class Api extends \Phpcmf\Home\Api
             'search' => dr_form_search_hidden(['search' => 1, 'module' => $dirname, 'site' => $site, 'limit' => $limit]),
         ));
         \Phpcmf\Service::V()->display('api_related.html');exit;
+    }
+
+    /**
+     * 会员关联字段数据读取
+     */
+    public function members() {
+
+        // 强制将模板设置为后台
+        \Phpcmf\Service::V()->admin();
+
+        // 登陆判断
+        !$this->uid && $this->_json(0, dr_lang('会话超时，请重新登录'));
+
+
+        $field = array(
+            'id' => array(
+                'ismain' => 1,
+                'name' => 'Uid',
+                'fieldname' => 'username',
+                'fieldtype' => 'Text',
+            ),
+            'username' => array(
+                'ismain' => 1,
+                'name' => dr_lang('账号'),
+                'fieldname' => 'username',
+                'fieldtype' => 'Text',
+            ),
+            'email' => array(
+                'ismain' => 1,
+                'name' => dr_lang('邮箱'),
+                'fieldname' => 'email',
+                'fieldtype' => 'Text',
+            ),
+            'phone' => array(
+                'ismain' => 1,
+                'name' => dr_lang('手机'),
+                'fieldname' => 'phone',
+                'fieldtype' => 'Text',
+            ),
+            'name' => array(
+                'ismain' => 1,
+                'name' => dr_lang('姓名'),
+                'fieldname' => 'name',
+                'fieldtype' => 'Text',
+            ),
+        );
+
+        $builder = \Phpcmf\Service::M()->db->table('member');
+
+
+        // 搜索结果显示条数
+        $limit = (int)$_GET['limit'];
+        $limit = $limit ? $limit : 50;
+
+
+        if (IS_POST) {
+            $ids = \Phpcmf\Service::L('input')->get_post_ids();
+            !$ids && $this->_json(0, dr_lang('没有选择项'));
+            $id = array();
+            foreach ($ids as $i) {
+                $id[] = (int)$i;
+            }
+            $builder->whereIn('id', $id);
+            $list = $builder->limit($limit)->orderBy('id DESC')->get()->getResultArray();
+            !$list && $this->_json(0, dr_lang('没有相关数据'));
+            $rt = [];
+            foreach ($list as $t) {
+                $rt[] = [
+                    'id' => $t['id'],
+                    'value' => '<img class="img-circle" src="'.dr_avatar($t['id']).'" style="width:30px;height:30px;margin-right:10px;"> '.$t['username'],
+                ];
+            }
+            $this->_json(1, dr_lang('操作成功'), ['result' => $rt]);
+        }
+
+        $data = $_GET;
+
+        if ($data['search']) {
+            $gid = (int)$data['groupid'];
+            if ($gid) {
+                $builder->where('`id` IN (select uid from `'.\Phpcmf\Service::M()->dbprefix('member_group_index').'` where gid='.$gid.')');
+            }
+            $data['keyword'] = dr_safe_replace(urldecode($data['keyword']));
+            if (isset($data['keyword']) && $data['keyword']
+                && $data['field'] && isset($field[$data['field']])) {
+                $data['keyword'] = dr_safe_replace(urldecode($data['keyword']));
+                if ($data['field'] == 'id') {
+                    // id搜索
+                    $id = array();
+                    $ids = explode(',', $data['keyword']);
+                    foreach ($ids as $i) {
+                        $id[] = (int)$i;
+                    }
+                    $builder->whereIn('id', $id);
+                } else {
+                    // 其他模糊搜索
+                    $builder->like($data['field'], $data['keyword']);
+                }
+            }
+        }
+
+        $db = $builder->limit($limit)->orderBy('id DESC')->get();
+        $list = $db ? $db->getResultArray() : [];
+
+        \Phpcmf\Service::V()->assign(array(
+            'list' => $list,
+            'param' => $data,
+            'field' => $field,
+            'group' => $this->member_cache['group'],
+            'search' => dr_form_search_hidden(['search' => 1, 'limit' => $limit]),
+        ));
+        \Phpcmf\Service::V()->display('api_members.html');exit;
     }
 
     /**

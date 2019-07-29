@@ -770,13 +770,13 @@ function dr_url_module_index() {
 function dr_url_module_list() {
     layer.alert('<b>举例</b><hr>'+
         '默认模块地址: <br>index.php?s=news&c=category&id=1<br>'+
-        '形如news/1.html <br>这种地址格式为: {modname}/{id}.html'+
+        '形如news/1.html <br>这种地址格式为: {dirname}/{id}.html'+
         '<br><br><b>通配符</b><hr>'+
         '{id}   表示栏目id<br>'+
         '{page}   表示分页号<br>'+
         '{dirname}   表示栏目目录名称<br>'+
         '{pdirname}   包含父级层次的目录<br>'+
-        '{modname}  表示模块目录<br>'+
+        '{modname}  表示模块目录（只能独立模块使用，共享模块不能使用）<br>'+
         '支持主表任何字段，格式：{字段名}，如：{name}表示栏目名称<br>'+
         '<br><br><b>使用自定义函数方法(需要有php开发经验)</b><hr>'+
         '{自定义函数方法名($data)}	   表示用自定义函数方法来定义url<br>'+
@@ -992,7 +992,7 @@ function dr_help(id) {
             scrollbar: false,
             shade: 0,
             area: ['80%', '90%'],
-            content: '<div style="padding: 20px;text-align: center"><p>由于你的服务器启用了HTTPS安全认证，需要单击下发链接进行访问该页面</p>'+'<p><a style="color: red;" href="http://help.phpcmf.net/index.php?c=show&id='+id+'&is_phpcmf=cms" target="_blank">单击访问手册文档</a></p></div>'
+            content: '<div style="padding: 20px;text-align: center"><p>由于你的服务器启用了HTTPS安全认证，需要单击下发链接进行访问该页面</p>'+'<p><a style="color: red;" href="http://help.xunruicms.com/index.php?c=show&id='+id+'&is_phpcmf=cms" target="_blank">单击访问手册文档</a></p></div>'
         });
     } else {
         layer.open({
@@ -1002,7 +1002,7 @@ function dr_help(id) {
             scrollbar: false,
             shade: 0,
             area: ['80%', '90%'],
-            content: 'http://help.phpcmf.net/index.php?c=show&id='+id+'&is_phpcmf=cms'
+            content: 'http://help.xunruicms.com/index.php?c=show&id='+id+'&is_phpcmf=cms'
         });
     }
 

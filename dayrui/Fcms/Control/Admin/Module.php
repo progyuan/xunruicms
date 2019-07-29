@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -251,6 +251,8 @@ class Module extends \Phpcmf\Table
     // 同步栏目选择器
     protected function _Admin_Syncat() {
 
+        $sync = \Phpcmf\Service::L('input')->get('catid');
+
         if (IS_AJAX_POST) {
 
             $catid = \Phpcmf\Service::L('input')->post('catid');
@@ -281,7 +283,7 @@ class Module extends \Phpcmf\Table
             'form' =>  dr_form_hidden(),
             'select' => \Phpcmf\Service::L('Tree')->select_category(
                 $this->module['category'],
-                0,
+                $sync ? explode(',', $sync) : 0,
                 'id=\'dr_catid\' name=\'catid[]\' multiple="multiple" style="height:200px"',
                 '', 1, 1
             ),
@@ -381,7 +383,7 @@ class Module extends \Phpcmf\Table
             $this->_json(1, dr_lang('任务添加成功'));
         } else if ($page == 2) {
             dr_count($ids) > 9 && $this->_json(0, dr_lang('微信推送不能超过9条数据'));
-            !dr_is_app('weixin') && $this->_json(0, '没有安装[微信]插件');
+            !dr_is_app('weixin') && $this->_json(0, '没有安装[微信]应用');
             \Phpcmf\Service::C()->init_file('weixin');
             $rt = \Phpcmf\Service::M('Weixin', 'Weixin')->send_for_module(APP_DIR, $ids);
             !$rt['code'] && $this->_json(0, $rt['msg']);
@@ -512,6 +514,7 @@ class Module extends \Phpcmf\Table
             ),
             'form' =>  dr_form_hidden(['is_draft' => 0, 'module' => MOD_DIR, 'id' => $id]),
             'select' => $select,
+            'is_sync_cat' => $data['sync_cat'],
             'is_verify' => 1,
             'verify_msg' => $verify_msg,
             'verify_step' => $step,
@@ -933,6 +936,12 @@ class Module extends \Phpcmf\Table
                     return dr_return_data(1, 'ok', $data);
                 },
                 function ($id, $data, $old) {
+
+                    // 同步发送到其他栏目
+                    if ($data[1]['status'] == 9 && \Phpcmf\Service::L('input')->post('sync_cat')) {
+                        $this->content_model->sync_cat(\Phpcmf\Service::L('input')->post('sync_cat'), $data);
+                    }
+
                     // 审核跳过
                     if (defined('IS_MODULE_VERIFY')) {
                         return $data;
@@ -951,10 +960,7 @@ class Module extends \Phpcmf\Table
                         }
                     }
                     $data[1]['id'] = $id;
-                    // 同步发送到其他栏目
-                    !$old && \Phpcmf\Service::L('input')->post('sync_cat') && $this->content_model->sync_cat(\Phpcmf\Service::L('input')->post('sync_cat'), $data);
-                    // 同步微博
-                    !$old && \Phpcmf\Service::L('input')->post('sync_weibo') && $this->content_model->sync_weibo($data);
+
                     return $data;
                 }
             );

@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
@@ -87,7 +87,6 @@ class Auth extends \Phpcmf\Model {
 
         // 保存会话
         \Phpcmf\Service::C()->session()->set('uid', $uid);
-        \Phpcmf\Service::C()->session()->set('admin', $uid);
         \Phpcmf\Service::L('input')->set_cookie('member_uid', $uid, SITE_LOGIN_TIME);
         \Phpcmf\Service::L('input')->set_cookie('member_cookie', substr(md5(SYS_KEY . $data['password']), 5, 20), SITE_LOGIN_TIME);
 
@@ -279,8 +278,7 @@ class Auth extends \Phpcmf\Model {
         }
 
         $uid = (int)\Phpcmf\Service::C()->session()->get('uid');
-        $admin = (int)\Phpcmf\Service::C()->session()->get('admin');
-        if (!$member || $uid != $member['uid'] || $admin != $uid) {
+        if (!$member || $uid != $member['uid']) {
             // 登录超时
             if (\Phpcmf\Service::L('router')->class == 'api') {
                 if (\Phpcmf\Service::L('router')->method == 'search_help') {
@@ -405,21 +403,17 @@ class Auth extends \Phpcmf\Model {
                 $h = isset($t[3]) ? $t[3] : '';
                 $uri = substr($uri, 5);
                 $url = 'javascript:dr_iframe_show(\''.$name.'\', \'' . \Phpcmf\Service::L('router')->url($uri, $p) . '\', \'' . $w . '\',\'' . $h . '\');';
-            } elseif ($name == 'help') {
-                $t[1] = 'fa fa-question-circle';
-                $name = dr_lang('在线帮助');
-                if (SYS_HTTPS) {
-                    $url = 'http://help.phpcmf.net/'.$uri.'.html" target="_blank';
+            } elseif (in_array($name, ['help', 'ba'])) {
+                if (IS_DEV) {
+                    $t[1] = 'fa fa-question-circle';
+                    $name = dr_lang('在线帮助');
+                    if (SYS_HTTPS) {
+                        $url = 'http://help.xunruicms.com/'.$uri.'.html" target="_blank';
+                    } else {
+                        $url = 'javascript:dr_help(\''.$uri.'\');';
+                    }
                 } else {
-                    $url = 'javascript:dr_help(\''.$uri.'\');';
-                }
-            } elseif ($name == 'ba') {
-                $t[1] = 'fa fa-question-circle';
-                $name = dr_lang('在线帮助');
-                if (SYS_HTTPS) {
-                    $url = 'http://help.phpcmf.net/'.$uri.'.html " target="_blank';
-                } else {
-                    $url = 'javascript:dr_help(\''.$uri.'\');';
+                    continue;
                 }
             } elseif (strpos($uri, 'hide:') === 0) {
                 $uri = substr($uri, 5);
@@ -459,7 +453,8 @@ class Auth extends \Phpcmf\Model {
     // 模块后台菜单
     public function _module_menu($module, $list_name, $list_url, $post_url) {
 
-        $module_menu = '<a class="dropdown-toggle {ON}"  data-hover="dropdown" data-close-others="true" aria-expanded="true"><i class="fa fa-angle-double-down"></i></a>';
+        // <a class="btn green-haze btn-outline btn-circle btn-sm" href="javascript:;" data-toggle="dropdown" data-hover="dropdown" data-close-others="true" aria-expanded="false">
+        $module_menu = '<a class="dropdown-toggle {ON}" '.(\Phpcmf\Service::C()->_is_mobile() ? ' data-toggle="dropdown"' : '').' data-hover="dropdown" data-close-others="true" aria-expanded="true"><i class="fa fa-angle-double-down"></i></a>';
         $module_menu.= '<ul class="dropdown-menu">';
         $this->_is_admin_auth($module['dirname'].'/home/index') && $module_menu.= '<li><a href="'.\Phpcmf\Service::L('router')->url($module['dirname'].'/home/index').'"> <i class="'.dr_icon($module['icon']).'"></i> '.dr_lang('%s管理', $module['cname']).' </a></li>';
         $this->_is_admin_auth($module['dirname'].'/comment/index') && $module['comment'] && $module_menu.= '<li><a href="'.\Phpcmf\Service::L('router')->url($module['dirname'].'/comment/index').'"> <i class="fa fa-comment"></i> '.dr_lang('评论管理').' </a></li>';
@@ -597,7 +592,7 @@ class Auth extends \Phpcmf\Model {
                     $t['system']['uri'] = @array_unique($uri);
                     sort($t['system']['uri']);
                     sort($t['module']);
-                    $t['module'] && $t['system']['uri'] = $t['module'] + $t['system']['uri'];
+                    $t['module'] && $t['system']['uri'] = dr_array2array($t['module'], $t['system']['uri']);
                 }
                 $cache[$t['id']] = $t;
             }

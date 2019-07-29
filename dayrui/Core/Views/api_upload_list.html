@@ -1,5 +1,10 @@
 {template "header.html"}
-
+<style>
+    .preview img {
+        max-width: 100px !important;
+        max-height: 100px !important;
+    }
+</style>
 <form class="form-horizontal" method="post" role="form" id="myform" style="margin-top:-20px;">
     {$form}
     <input type="hidden" name="is_ajax" value="1">
@@ -26,11 +31,13 @@
                         {loop $list.unused $i $t}
                         {php $url = dr_get_file_url($t);}
                         <tr class="template-download files_row {if $i==0}border_none{/if}">
-                            <td width="100" style="text-align:center;">
+                            <td width="60" style="text-align:center;">
                                 <label class="mt-table mt-table mt-checkbox mt-checkbox-single mt-checkbox-outline">
                                     <input type="checkbox" class="checkboxes" name="ids0[]" value="{$t.id}" />
                                     <span></span>
                                 </label>
+                            </td>
+                            <td width="100" style="text-align:center;">
                                 <span class="files_row_preview preview">{dr_file_preview_html($url)}</span>
                             </td>
                             <td>
@@ -53,11 +60,13 @@
                         {loop $list.used $i $t}
                         {php $url = dr_get_file_url($t);}
                         <tr class="template-download files_row {if $i==0}border_none{/if}">
-                            <td width="100" style="text-align:center;">
+                            <td width="60" style="text-align:center;">
                                 <label class="mt-table mt-table mt-checkbox mt-checkbox-single mt-checkbox-outline">
                                     <input type="checkbox" class="checkboxes" name="ids1[]" value="{$t.id}" />
                                     <span></span>
                                 </label>
+                            </td>
+                            <td width="100" style="text-align:center;">
                                 <span class="files_row_preview preview">{dr_file_preview_html($url)}</span>
                             </td>
                             <td>

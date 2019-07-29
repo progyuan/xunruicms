@@ -84,6 +84,7 @@ Page Header
       display: block;
       width: 150px;
       height: 75px;
+      padding-left: 20px;
       overflow: hidden;}
       .page-header .page-header-top .page-logo .logo-default {
         margin: 0; }

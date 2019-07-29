@@ -18,7 +18,7 @@
  *
  * 本文件是框架系统文件，二次开发时不建议修改本文件
  *
- * http://www.tianruixinxi.com
+ * www.xunruicms.com
  *
  * */
 class Text extends \Phpcmf\Library\A_Field {

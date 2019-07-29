@@ -150,14 +150,14 @@ function dr_iframe(type, url, width, height, nogo) {
     }
 
     if (is_mobile_cms == 1) {
-        width = height = '90%';
+        width = height = '50%';
     }
 
     layer.open({
         type: 2,
         title: title,
         fix:true,
-        //scrollbar: false,
+        scrollbar: false,
         shadeClose: true,
         shade: 0,
         area: [width, height],
@@ -234,14 +234,14 @@ function dr_iframe_show(type, url, width, height) {
     }
 
     if (is_mobile_cms == 1) {
-        width = height = '90%';
+        width = height = '95%';
     }
 
     layer.open({
         type: 2,
         title: title,
         fix:true,
-        //scrollbar: false,
+        scrollbar: false,
         shadeClose: true,
         shade: 0,
         area: [width, height],
@@ -272,7 +272,7 @@ function dr_insert_emoji(name) {
         type: 2,
         title: '<i class="fa fa-smile-o"></i> Emoji',
         fix:true,
-        //scrollbar: false,
+        scrollbar: false,
         shadeClose: true,
         shade: 0,
         area: [width, height],
@@ -674,7 +674,7 @@ function dr_file_edit(e) {
 // 显示ip信息
 function dr_show_ip(name) {
     if (is_mobile_cms == 1) {
-        width = height = '90%';
+        width = height = '95%';
     } else {
         width = height = '70%';
     }
