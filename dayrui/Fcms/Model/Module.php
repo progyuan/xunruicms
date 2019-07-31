@@ -923,7 +923,7 @@ class Module extends \Phpcmf\Model
                     'hlist' => (int)$config['hlist'],
                     'hcategory' => (int)$config['hcategory'],
                     'scategory' => (int)$config['scategory'],
-                    'search' => $cache['setting']['search']['close'] ? 0 : 1,
+                    'search' => $cache['setting']['search']['use'] ? 1 : 0,
                     'dirname' => $mdir,
                     'comment' => $cache['comment'] ? 1 : 0,
                     'is_index_html' => $cache['setting']['module_index_html'] ? 1 : 0,

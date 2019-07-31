@@ -674,10 +674,11 @@ class Member extends \Phpcmf\Model
             } elseif (in_array('phone', \Phpcmf\Service::C()->member_cache['login']['field'])
                 && \Phpcmf\Service::L('Form')->check_phone($username)) {
                 $data = $this->db->table('member')->where('phone', $username)->get()->getRowArray();
-                if (!$data) {
-                    return [];
-                }
             }
+        }
+
+        if (!$data) {
+            return [];
         }
 
         $data['uid'] = $data['id'];

@@ -180,7 +180,8 @@ class Router
         }
 
         if (!IS_ADMIN) {
-            $self = '/'.$self;
+            // 非后台统一index.php入口
+            $self = '/index.php';
         }
 
         $url = explode('/', $url);
@@ -230,6 +231,8 @@ class Router
         if (!$url || $url == 'home/index' || $url == '/') {
             return MEMBER_URL;
         }
+
+        $self = 'index.php';
 
         if (!$query && strpos($url, ':') !== false) {
             list($a, $b) = explode(':', $url);

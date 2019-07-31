@@ -65,7 +65,7 @@ class Upload
     }
 
     // 安全验证
-    private function _safe_check($data) {
+    private function _safe_check($file_ext, $data) {
 
         $data = strtolower($data);
         if (strpos($data, '<?php') !== false) {
@@ -76,6 +76,16 @@ class Upload
             return dr_return_data(0, dr_lang('此文件不安全，禁止上传'));
         } elseif (strpos($data, 'base64_decode(') !== false) {
             return dr_return_data(0, dr_lang('此文件不安全，禁止上传'));
+        }
+
+        // 检查系统保留文件格式
+        if (in_array($file_ext, $this->notallowed)) {
+            return dr_return_data(0, $this->error['ERROR_SYSTEM_TYPE_NOT_ALLOWED']);
+        }
+
+        // 验证扩展名格式
+        if (!preg_match('/^[a-z0-9]+$/i', $file_ext)) {
+            return dr_return_data(0, dr_lang('此文件扩展名不安全，禁止上传'));
         }
 
         return dr_return_data(1, 'ok');
@@ -103,7 +113,7 @@ class Upload
         $file_name = $this->_file_name($file['name']); // 文件实际名字
 
         // 安全验证
-        $rt = $this->_safe_check(file_get_contents($file["tmp_name"]));
+        $rt = $this->_safe_check($file_ext, file_get_contents($file["tmp_name"]));
         if (!$rt['code']) {
             return dr_return_data(0, $rt['msg']);
         }
@@ -114,9 +124,6 @@ class Upload
         } elseif ($config['file_exts'][0] != '*' && !in_array($file_ext, $config['file_exts'])) {
             // 检查是文件格式
             return dr_return_data(0, $this->error['ERROR_TYPE_NOT_ALLOWED'] . $file_ext);
-        } elseif (in_array($file_ext, $this->notallowed)) {
-            // 检查系统保留文件格式
-            return dr_return_data(0, $this->error['ERROR_SYSTEM_TYPE_NOT_ALLOWED']);
         }
 
         // 保存目录名称
@@ -177,7 +184,7 @@ class Upload
 
         $file_ext = $this->_file_ext($file['name']); // 扩展名
         // 安全验证
-        $rt = $this->_safe_check(file_get_contents($file["tmp_name"]));
+        $rt = $this->_safe_check($file_ext, file_get_contents($file["tmp_name"]));
         if (!$rt['code']) {
             return dr_return_data(0, $rt['msg']);
         }
@@ -185,11 +192,6 @@ class Upload
         // 检查是文件格式
         if ($config['file_exts'][0] != '*' && !in_array($file_ext, $config['file_exts'])) {
             return dr_return_data(0, $this->error['ERROR_TYPE_NOT_ALLOWED'] . $file_ext);
-        }
-
-        // 检查系统保留文件格式
-        if (in_array($file_ext, $this->notallowed)) {
-            return dr_return_data(0, $this->error['ERROR_SYSTEM_TYPE_NOT_ALLOWED']);
         }
 
         if (!(move_uploaded_file($file["tmp_name"], $config['file_name']) || !is_file($config['file_name']))) {
@@ -209,24 +211,20 @@ class Upload
             log_message('error', '服务器无法下载文件：'.$config['url']);
             return dr_return_data(0, dr_lang('文件下载失败'));
         }
+
+        $name = substr(md5(SYS_TIME), rand(0, 20), 15); // 随机新名字
+        $file_ext = $this->_file_ext($config['url']); // 扩展名
+
         // 安全验证
-        $rt = $this->_safe_check($data);
+        $rt = $this->_safe_check($file_ext, $data);
         if (!$rt['code']) {
             return dr_return_data(0, $rt['msg']);
         }
 
-        $name = substr(md5(SYS_TIME), rand(0, 20), 15); // 随机新名字
-        $file_ext = $this->_file_ext($config['url']); // 扩展名
         $file_name = $this->_file_name($config['url']); // 文件实际名字
         if (!$file_ext) {
             log_message('error', '无法获取文件扩展名：'.$config['url']);
             return dr_return_data(0, dr_lang('无法获取文件扩展名'));
-        }
-
-        // 检查系统保留文件格式
-        if (in_array($file_ext, $this->notallowed)) {
-            log_message('error', '此扩展名被系统保留：'.$config['url']);
-            return dr_return_data(0, $this->error['ERROR_SYSTEM_TYPE_NOT_ALLOWED']);
         }
 
         // 保存目录名称
@@ -267,15 +265,16 @@ class Upload
 
         $data = $config['content'];
 
-        // 安全验证
-        $rt = $this->_safe_check($data);
-        if (!$rt['code']) {
-            return dr_return_data(0, $rt['msg']);
-        }
-
         $name = substr(md5(SYS_TIME), rand(0, 20), 15); // 随机新名字
         $file_ext = $config['ext'] ? $config['ext'] : 'jpg'; // 扩展名
         $file_name = 'base64_image'; // 文件实际名字
+
+
+        // 安全验证
+        $rt = $this->_safe_check($file_ext, $data);
+        if (!$rt['code']) {
+            return dr_return_data(0, $rt['msg']);
+        }
 
         // 保存目录名称
         $path = isset($config['path']) && $config['path'] ? $config['path'].'/' : date('Ym', SYS_TIME).'/';
@@ -339,7 +338,7 @@ class Upload
      * 获取文件扩展名
      */
     private function _file_ext($name) {
-        return trim(strtolower(strrchr($name, '.')), '.');
+        return str_replace('.', '', trim(strtolower(strrchr($name, '.')), '.'));
     }
 
 }

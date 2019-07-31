@@ -34,7 +34,7 @@ class Attachment extends \Phpcmf\Common
             //1 => 'FTP服务器',
             2 => '阿里云',
             3 => '腾讯云',
-            4 => '百度云',
+            4 => '百度云（Beta）',
             5 => '七牛',
         ];;
 	}

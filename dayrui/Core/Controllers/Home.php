@@ -39,6 +39,7 @@ class Home extends \Phpcmf\Common
 
 	// 首页显示
 	public function index() {
+        \Phpcmf\Service::L('Router')->is_redirect_url(dr_url_prefix('/'));
         // 系统开启静态首页
         if ($this->site_info[SITE_ID]['SITE_INDEX_HTML'] && !$this->member_cache['auth_site'][SITE_ID]['home']) {
             ob_start();

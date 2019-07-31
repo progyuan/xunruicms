@@ -2376,10 +2376,47 @@ function dr_safe_filename($string) {
 }
 
 /**
+ * 安全过滤用户名函数
+ */
+function dr_safe_username($string) {
+    return str_replace(
+        ['..', "/", '\\', ' ', "#",'\'', '"'],
+        '',
+        $string
+    );
+}
+
+/**
  * 安全过滤密码函数
  */
 function dr_safe_password($string) {
     return trim(str_replace(["'", '"', '&', '?'], '',$string));
+}
+
+
+/**
+ * 将路径进行安全转换变量模式
+ */
+function dr_safe_replace_path($path) {
+    return str_replace(
+        [
+            WRITEPATH,
+            WEBPATH,
+            APPSPATH,
+            TPLPATH,
+            FCPATH,
+            MYPATH,
+        ],
+        [
+            'WRITEPATH/',
+            'WEBPATH/',
+            'APPSPATH/',
+            'TPLPATH/',
+            'FCPATH/',
+            'MYPATH/',
+        ],
+        $path
+    );
 }
 
 /**
@@ -3290,31 +3327,6 @@ function dr_module_url($dir) {
     }
 
     return \Phpcmf\Service::L('cache')->get('module-'.SITE_ID.'-'.$dir, 'url');
-}
-
-/**
- * 将路径进行安全转换变量模式
- */
-function dr_safe_replace_path($path) {
-    return str_replace(
-        [
-            WRITEPATH,
-            WEBPATH,
-            APPSPATH,
-            TPLPATH,
-            FCPATH,
-            MYPATH,
-        ],
-        [
-            'WRITEPATH/',
-            'WEBPATH/',
-            'APPSPATH/',
-            'TPLPATH/',
-            'FCPATH/',
-            'MYPATH/',
-        ],
-        $path
-    );
 }
 
 /**

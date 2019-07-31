@@ -44,7 +44,7 @@ class Login extends \Phpcmf\Common
             } elseif (empty($post['username']) || empty($post['password'])) {
                 $this->_json(0, dr_lang('账号或密码必须填写'));
             } else {
-                $rt = \Phpcmf\Service::M('member')->login($post['username'], $post['password'], (int)$_POST['remember']);
+                $rt = \Phpcmf\Service::M('member')->login(dr_safe_username($post['username']), $post['password'], (int)$_POST['remember']);
                 if ($rt['code']) {
                     // 登录成功
                     $rt['data']['url'] = urldecode(\Phpcmf\Service::L('input')->xss_clean($_POST['back'] ? $_POST['back'] : MEMBER_URL));
